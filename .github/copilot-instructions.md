@@ -7,7 +7,7 @@ This is a **Tauri desktop application** with a React frontend using **file-based
 - **Frontend**: React 19 + TypeScript + Vite + TailwindCSS
 - **Backend**: Rust (Tauri v2)
 - **Routing**: TanStack Router with auto-generated route tree
-- **State**: React Query + Zustand + react-auth-kit for authentication
+- **State**: React Query + Zustand + Custom Authentication with React Context API
 - **UI**: shadcn/ui components with Radix primitives
 
 ## Critical Architecture Patterns
@@ -45,16 +45,13 @@ Routes follow TanStack Router's file-based pattern in `src/routes/`:
 
 ### Authentication Integration
 
-Uses react-auth-kit with localStorage persistence. Auth state is managed via:
+Uses custom React Context API authentication system with real API integration. Auth state is managed via:
 
 ```tsx
-export const authStore = createStore("localstorage", {
-  authName: "_auth",
-  debug: true,
-});
+const { user, isAuthenticated, signIn, signOut, error } = useAuth();
 ```
 
-Access auth state in routes using `useAuthUser()` hook.
+Access auth state in routes using `useAuth()` hook to get user, authentication status, and all auth functions.
 
 ### React Query Integration
 

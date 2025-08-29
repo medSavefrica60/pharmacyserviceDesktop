@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { useAuth } from "./context";
+import { useAuth } from "./store";
 
 interface ProtectedRouteProps {
   children: ReactNode;

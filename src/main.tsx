@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "@/lib/auth";
+import { AuthProvider, TokenRefreshManager } from "@/lib/auth";
 
 import { routeTree } from "./routeTree.gen";
 import "./App.css";
@@ -40,7 +40,8 @@ if (!rootElement.innerHTML) {
   const { router, queryClient } = makeQueryRouter();
 
   root.render(
-    <AuthProvider refreshInterval={30}>
+    <AuthProvider>
+      <TokenRefreshManager />
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
       </QueryClientProvider>

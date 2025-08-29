@@ -9,18 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PostsIndexRouteImport } from './routes/posts/index'
 import { Route as PostsBackRouteImport } from './routes/posts/back'
-import { Route as PostsLoveRouteImport } from './routes/posts/$love'
-import { Route as PostsPostidEditRouteImport } from './routes/posts/$postid/edit'
 
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -36,87 +28,39 @@ const PostsBackRoute = PostsBackRouteImport.update({
   path: '/posts/back',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PostsLoveRoute = PostsLoveRouteImport.update({
-  id: '/posts/$love',
-  path: '/posts/$love',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PostsPostidEditRoute = PostsPostidEditRouteImport.update({
-  id: '/posts/$postid/edit',
-  path: '/posts/$postid/edit',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/posts/$love': typeof PostsLoveRoute
   '/posts/back': typeof PostsBackRoute
   '/posts': typeof PostsIndexRoute
-  '/posts/$postid/edit': typeof PostsPostidEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/posts/$love': typeof PostsLoveRoute
   '/posts/back': typeof PostsBackRoute
   '/posts': typeof PostsIndexRoute
-  '/posts/$postid/edit': typeof PostsPostidEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/posts/$love': typeof PostsLoveRoute
   '/posts/back': typeof PostsBackRoute
   '/posts/': typeof PostsIndexRoute
-  '/posts/$postid/edit': typeof PostsPostidEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/about'
-    | '/posts/$love'
-    | '/posts/back'
-    | '/posts'
-    | '/posts/$postid/edit'
+  fullPaths: '/' | '/posts/back' | '/posts'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/about'
-    | '/posts/$love'
-    | '/posts/back'
-    | '/posts'
-    | '/posts/$postid/edit'
-  id:
-    | '__root__'
-    | '/'
-    | '/about'
-    | '/posts/$love'
-    | '/posts/back'
-    | '/posts/'
-    | '/posts/$postid/edit'
+  to: '/' | '/posts/back' | '/posts'
+  id: '__root__' | '/' | '/posts/back' | '/posts/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
-  PostsLoveRoute: typeof PostsLoveRoute
   PostsBackRoute: typeof PostsBackRoute
   PostsIndexRoute: typeof PostsIndexRoute
-  PostsPostidEditRoute: typeof PostsPostidEditRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -138,30 +82,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostsBackRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/posts/$love': {
-      id: '/posts/$love'
-      path: '/posts/$love'
-      fullPath: '/posts/$love'
-      preLoaderRoute: typeof PostsLoveRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/posts/$postid/edit': {
-      id: '/posts/$postid/edit'
-      path: '/posts/$postid/edit'
-      fullPath: '/posts/$postid/edit'
-      preLoaderRoute: typeof PostsPostidEditRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
-  PostsLoveRoute: PostsLoveRoute,
   PostsBackRoute: PostsBackRoute,
   PostsIndexRoute: PostsIndexRoute,
-  PostsPostidEditRoute: PostsPostidEditRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

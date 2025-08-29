@@ -2,6 +2,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  tokenExpiresAt?: number; // Token expiration timestamp in milliseconds
   [key: string]: any;
 }
 
