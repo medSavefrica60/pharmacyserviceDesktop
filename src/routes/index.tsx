@@ -1,27 +1,17 @@
-import * as React from "react";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SiteHeader } from "@/components/site-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { createFileRoute } from "@tanstack/react-router";
+
 export const Route = createFileRoute("/")({
   component: DashboardPage,
+  beforeLoad: async () => {},
 });
 
 function DashboardPage() {
+  const a = Route.useRouteContext();
+
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="sidebar" />
-      <SidebarInset>
-        <SiteHeader />
-        <Outlet />
-      </SidebarInset>
-    </SidebarProvider>
+    <>
+      <h1>Dashboard Page</h1>
+      <p>isAuthenticated: {a.isAuthenticated.toString()}</p>
+    </>
   );
 }
