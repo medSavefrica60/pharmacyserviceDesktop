@@ -14,6 +14,7 @@ const makeQueryRouter = () => {
       routeTree,
       context: {
         queryClient,
+        isAuthenticated: false,
       },
 
       defaultPreload: "intent",
@@ -41,7 +42,7 @@ if (!rootElement.innerHTML) {
 
   root.render(
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <RouterProvider router={router} context={{ isAuthenticated: true }} />
     </QueryClientProvider>
   );
 }
