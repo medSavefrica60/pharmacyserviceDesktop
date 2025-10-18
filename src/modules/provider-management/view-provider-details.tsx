@@ -1,0 +1,224 @@
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
+import { useGetProvider } from "@/hooks/api/use-providers";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import {
+  MailIcon,
+  CalendarIcon,
+  PhoneIcon,
+  MapPinIcon,
+  BuildingIcon,
+  IdCardIcon,
+} from "lucide-react";
+
+export const ViewProviderDetails = () => {
+  const navigate = useNavigate();
+  const search = useSearch({ from: "/providers" }) as {
+    sheet?: string;
+    providerId?: string;
+  };
+
+  const isOpen = search.sheet === "details" && !!search.providerId;
+  const { data: provider, isLoading } = useGetProvider(search.providerId);
+
+  const handleClose = () => {
+    navigate({
+      to: "/providers",
+      search: { sheet: undefined, dialog: undefined, providerId: undefined },
+    });
+  };
+
+  const handleEdit = () => {
+    navigate({
+      to: "/providers",
+      search: {
+        sheet: "edit",
+        dialog: undefined,
+        providerId: search.providerId,
+      },
+    });
+  };
+
+  return (
+    <Sheet open={isOpen} onOpenChange={handleClose}>
+      <SheetContent className="sm:max-w-md">
+        <SheetHeader className="px-6">
+          <SheetTitle>Provider Details</SheetTitle>
+          <SheetDescription>
+            View detailed information about this provider
+          </SheetDescription>
+        </SheetHeader>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center py-8 px-6">
+            <p className="text-sm text-muted-foreground">Loading...</p>
+          </div>
+        ) : provider ? (
+          <div className="flex flex-col gap-6 py-4 px-6">
+            {/* Provider Avatar and Name */}
+            <div className="flex flex-col items-center gap-3">
+              <Avatar className="h-20 w-20">
+                <AvatarImage
+                  src={
+                    provider.avatar || `https://github.com/shadcn.png?size=160`
+                  }
+                  alt={provider.name}
+                />
+                <AvatarFallback className="text-xl font-semibold">
+                  {provider.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()
+                    .slice(0, 2)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="text-center">
+                <h3 className="text-lg font-semibold">{provider.name}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {provider.providerId}
+                </p>
+              </div>
+              <Badge
+                variant={provider.status === "Active" ? "default" : "secondary"}
+                className={cn(
+                  "px-4 py-1",
+                  provider.status === "Active"
+                    ? "bg-medsave-success-50 text-medsave-success-500 border-medsave-success-100"
+                    : "bg-gray-50 text-gray-500 border-gray-200"
+                )}
+              >
+                {provider.status}
+              </Badge>
+            </div>
+
+            <Separator />
+
+            {/* Provider Information */}
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="rounded-md bg-muted p-2">
+                  <BuildingIcon className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Facility Type</p>
+                  <p className="text-sm text-muted-foreground">
+                    {provider.facilityType}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="rounded-md bg-muted p-2">
+                  <MapPinIcon className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Location</p>
+                  <p className="text-sm text-muted-foreground">
+                    {provider.location}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="rounded-md bg-muted p-2">
+                  <MailIcon className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Email Address</p>
+                  <p className="text-sm text-muted-foreground">
+                    {provider.email}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="rounded-md bg-muted p-2">
+                  <PhoneIcon className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Phone Number</p>
+                  <p className="text-sm text-muted-foreground">
+                    {provider.phone}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="rounded-md bg-muted p-2">
+                  <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Date Registered</p>
+                  <p className="text-sm text-muted-foreground">
+                    {provider.dateRegistered
+                      ? new Date(provider.dateRegistered).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        )
+                      : "N/A"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="rounded-md bg-muted p-2">
+                  <IdCardIcon className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Provider ID</p>
+                  <p className="text-sm text-muted-foreground">
+                    {provider.providerId}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Actions */}
+            <div className="flex gap-2">
+              <Button onClick={handleEdit} className="flex-1">
+                Edit Provider
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() =>
+                  navigate({
+                    to: "/providers",
+                    search: {
+                      sheet: undefined,
+                      dialog: "delete",
+                      providerId: provider.id,
+                    },
+                  })
+                }
+                className="flex-1"
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center py-8 px-6">
+            <p className="text-sm text-muted-foreground">Provider not found</p>
+          </div>
+        )}
+      </SheetContent>
+    </Sheet>
+  );
+};
