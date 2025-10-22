@@ -11,27 +11,12 @@ import { useGetProvider, useUpsertProvider } from "@/hooks/api/use-providers";
 import { Button } from "@/components/ui/button";
 import { useForm, FormProvider } from "react-hook-form";
 import { FormInput } from "@/components/common/form/form-input";
+import { FormTextarea } from "@/components/common/form/form-textarea";
+import { FormSelect } from "@/components/common/form/form-select";
 import { useEffect } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Controller } from "react-hook-form";
 import { toast } from "sonner";
-
-type ProviderFormData = {
-  name: string;
-  email: string;
-  phone: string;
-  facilityType: string;
-  location: string;
-  status: "Active" | "Inactive";
-  providerId: string;
-};
+import { zodResolver } from "@hookform/resolvers/zod";
+import { providerSchema, type ProviderFormData } from "@/lib/zod/providers";
 
 export const UpdateProvider = () => {
   const navigate = useNavigate();
@@ -41,6 +26,7 @@ export const UpdateProvider = () => {
   };
 
   const isEdit = search.sheet === "edit" && !!search.providerId;
+
   const isCreate = search.sheet === "create";
   const isOpen = isEdit || isCreate;
 
@@ -50,14 +36,14 @@ export const UpdateProvider = () => {
   const upsertMutation = useUpsertProvider();
 
   const methods = useForm<ProviderFormData>({
+    resolver: zodResolver(providerSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      facilityType: "Clinic",
-      location: "",
-      status: "Active",
-      providerId: "",
+      email: "test.provider@example.com",
+      organizationName: "Test Medical Center",
+      licenseNumber: "LCN-2025-TEST001",
+      address: "123 Test Street, Test City, Test Region, Ghana",
+      contactPhone: "+233500000000",
+      status: "PENDING_VERIFICATION",
     },
   });
 
@@ -65,23 +51,21 @@ export const UpdateProvider = () => {
   useEffect(() => {
     if (provider && isEdit) {
       methods.reset({
-        name: provider.name,
         email: provider.email,
-        phone: provider.phone,
-        facilityType: provider.facilityType,
-        location: provider.location,
+        organizationName: provider.organizationName,
+        licenseNumber: provider.licenseNumber,
+        address: provider.address,
+        contactPhone: provider.contactPhone,
         status: provider.status,
-        providerId: provider.providerId,
       });
     } else if (isCreate) {
       methods.reset({
-        name: "",
-        email: "",
-        phone: "",
-        facilityType: "Clinic",
-        location: "",
-        status: "Active",
-        providerId: `PRV${Date.now().toString().slice(-6)}`,
+        email: "test.provider@example.com",
+        organizationName: "Test Medical Center",
+        licenseNumber: "LCN-2025-TEST001",
+        address: "123 Test Street, Test City, Test Region, Ghana",
+        contactPhone: "+233500000000",
+        status: "PENDING_VERIFICATION",
       });
     }
   }, [provider, isEdit, isCreate, methods]);
@@ -91,16 +75,34 @@ export const UpdateProvider = () => {
       to: "/providers",
       search: { sheet: undefined, dialog: undefined, providerId: undefined },
     });
-    methods.reset();
+    // Reset to test values for next time
+    if (isCreate) {
+      methods.reset({
+        email: "test.provider@example.com",
+        organizationName: "Test Medical Center",
+        licenseNumber: "LCN-2025-TEST001",
+        address: "123 Test Street, Test City, Test Region, Ghana",
+        contactPhone: "+233500000000",
+        status: "PENDING_VERIFICATION",
+      });
+    }
   };
 
   const onSubmit = async (data: ProviderFormData) => {
     try {
-      await upsertMutation.mutateAsync({
-        ...(isEdit && { id: search.providerId }),
-        ...data,
-        dateRegistered: provider?.dateRegistered || new Date().toISOString(),
-      });
+      if (isEdit && search.providerId) {
+        await upsertMutation.mutateAsync({
+          id: search.providerId,
+          data,
+        });
+      }
+
+      if (isCreate) {
+        await upsertMutation.mutateAsync({
+          id: null,
+          data,
+        });
+      }
 
       toast.success(
         isEdit
@@ -140,9 +142,17 @@ export const UpdateProvider = () => {
               className="flex flex-col gap-4 py-4 px-6"
             >
               <FormInput
-                name="name"
-                label="Provider Name"
-                placeholder="Enter provider/facility name"
+                name="organizationName"
+                label="Organization Name"
+                placeholder="Enter organization name"
+                required
+                wrapperClassName="space-y-2"
+              />
+
+              <FormInput
+                name="licenseNumber"
+                label="License Number"
+                placeholder="Enter license number (e.g., LCN-2025-001235)"
                 required
                 wrapperClassName="space-y-2"
               />
@@ -157,75 +167,38 @@ export const UpdateProvider = () => {
               />
 
               <FormInput
-                name="phone"
-                label="Phone Number"
+                name="contactPhone"
+                label="Contact Phone"
                 type="tel"
-                placeholder="+233 XX XXX XXXX"
+                placeholder="Enter phone number (e.g., +233592330177)"
                 required
                 wrapperClassName="space-y-2"
               />
 
-              <FormInput
-                name="providerId"
-                label="Provider ID"
-                placeholder="PRV123456"
-                required
-                disabled={isEdit}
-                wrapperClassName="space-y-2"
-              />
-
-              <div className="space-y-2">
-                <Label htmlFor="facilityType">Facility Type</Label>
-                <Controller
-                  name="facilityType"
-                  control={methods.control}
-                  rules={{ required: "Facility type is required" }}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select facility type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Hospital">Hospital</SelectItem>
-                        <SelectItem value="Clinic">Clinic</SelectItem>
-                        <SelectItem value="Pharmacy">Pharmacy</SelectItem>
-                        <SelectItem value="Laboratory">Laboratory</SelectItem>
-                        <SelectItem value="Diagnostic Center">
-                          Diagnostic Center
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-
-              <FormInput
-                name="location"
-                label="Location"
-                placeholder="Enter city/region"
+              <FormTextarea
+                name="address"
+                label="Address"
+                placeholder="Enter complete address"
                 required
                 wrapperClassName="space-y-2"
+                rows={3}
               />
 
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Controller
-                  name="status"
-                  control={methods.control}
-                  rules={{ required: "Status is required" }}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Active">Active</SelectItem>
-                        <SelectItem value="Inactive">Inactive</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
+              <FormSelect
+                name="status"
+                label="Status"
+                placeholder="Select status"
+                required
+                wrapperClassName="space-y-2"
+                options={[
+                  { label: "Active", value: "ACTIVE" },
+                  {
+                    label: "Pending Verification",
+                    value: "PENDING_VERIFICATION",
+                  },
+                  { label: "Suspended", value: "SUSPENDED" },
+                ]}
+              />
 
               <SheetFooter className="mt-4 px-0">
                 <div className="flex gap-2 w-full">

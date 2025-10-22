@@ -61,10 +61,10 @@ export const DeleteProvider = () => {
         {provider && (
           <div className="rounded-md bg-muted p-4 my-2">
             <div className="space-y-1">
-              <p className="text-sm font-medium">{provider.name}</p>
+              <p className="text-sm font-medium">{provider.organizationName}</p>
               <p className="text-sm text-muted-foreground">{provider.email}</p>
               <p className="text-xs text-muted-foreground">
-                {provider.providerId}
+                {provider.licenseNumber}
               </p>
             </div>
           </div>

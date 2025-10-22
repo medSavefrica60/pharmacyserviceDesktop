@@ -143,7 +143,7 @@ export const ViewProviderClaims = () => {
           <DialogTitle>Provider Claims</DialogTitle>
           <DialogDescription>
             {provider
-              ? `View all claims for ${provider.name}`
+              ? `View all claims for ${provider.organizationName}`
               : "View all claims for this provider"}
           </DialogDescription>
         </DialogHeader>

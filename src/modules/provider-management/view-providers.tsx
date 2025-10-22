@@ -9,7 +9,7 @@ import { useNavigate } from "@tanstack/react-router";
 
 export const ViewProviders = () => {
   const columns = useProvidersTableColumns();
-  const { data: providers, isLoading } = useGetProviders();
+  const { data: providersData, isLoading } = useGetProviders();
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -22,7 +22,8 @@ export const ViewProviders = () => {
     );
   }
 
-  const providerData = providers || [];
+  const providers = providersData?.providers || [];
+  const totalCount = providersData?.total || 0;
 
   return (
     <div className="flex-1 flex flex-col">
@@ -50,11 +51,11 @@ export const ViewProviders = () => {
         </Button>
       </div>
 
-      {providerData.length > 0 ? (
+      {providers.length > 0 ? (
         <DataTable
-          data={providerData}
+          data={providers}
           className=""
-          count={providerData.length}
+          count={totalCount}
           limit={100}
           pageSizeOptions={[5, 10, 20, 50, 100]}
           columns={columns}
@@ -80,10 +81,10 @@ export const ViewProviders = () => {
                 <path d="M9 18V6" />
               </svg>
             </div>
-            <p className="text-center text-sm text-medsave-black-500 font-semibold">
+            <p className="text-center text-sm text-gray-900 font-semibold">
               No Providers Yet
             </p>
-            <p className="text-center text-sm text-medsave-black-300">
+            <p className="text-center text-sm text-gray-700">
               No providers have been registered yet. Add your first provider to
               get started.
             </p>

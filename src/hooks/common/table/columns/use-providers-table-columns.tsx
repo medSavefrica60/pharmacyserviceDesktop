@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { DataTableColumnHeader } from "@/components/common/data-table/data-table-column-header";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { LucideCopy, LucideCopyCheck } from "lucide-react";
@@ -12,19 +12,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "@tanstack/react-router";
-
-export type Provider = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  facilityType: string;
-  location: string;
-  dateRegistered: string;
-  providerId: string;
-  avatar?: string;
-  status: "Active" | "Inactive";
-};
+import { Provider } from "@/types";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 export const useProvidersTableColumns = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -40,40 +34,35 @@ export const useProvidersTableColumns = () => {
 
   const columns: ColumnDef<Provider>[] = useMemo(
     () => [
+      // {
+      //   id: "index",
+      //   header: "",
+      //   cell: ({ row }) => (
+      //     <div className="text-sm text-gray-700 font-medium">
+      //       {row.index + 1}
+      //     </div>
+      //   ),
+      // },
       {
-        id: "index",
-        header: "",
-        cell: ({ row }) => (
-          <div className="text-sm text-medsave-black-300 font-medium">
-            {row.index + 1}
-          </div>
-        ),
-      },
-      {
-        accessorKey: "providerId",
+        accessorKey: "licenseNumber",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Provider ID" />
+          <DataTableColumnHeader column={column} title="License Number" />
         ),
         cell: ({ row }) => {
-          const providerId = row.original.providerId;
-          const isCopied = copiedId === providerId;
+          const licenseNumber = row.original.licenseNumber;
+          const isCopied = copiedId === licenseNumber;
 
           return (
             <div className="group flex items-center justify-between">
-              <span className="text-sm text-medsave-black-300">
-                {providerId}
-              </span>
+              <span className="text-sm text-gray-700">{licenseNumber}</span>
               <button
-                onClick={() => handleCopyID(providerId)}
+                onClick={() => handleCopyID(licenseNumber)}
                 className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
               >
                 {isCopied ? (
-                  <LucideCopyCheck
-                    size={20}
-                    className="text-medsave-success-500"
-                  />
+                  <LucideCopyCheck size={20} className="text-green-600" />
                 ) : (
-                  <LucideCopy size={20} className="text-medsave-black-400" />
+                  <LucideCopy size={20} className="text-gray-600" />
                 )}
               </button>
             </div>
@@ -82,14 +71,12 @@ export const useProvidersTableColumns = () => {
       },
 
       {
-        accessorKey: "name",
+        accessorKey: "organizationName",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Provider Name" />
+          <DataTableColumnHeader column={column} title="Organization Name" />
         ),
         cell: ({ row }) => {
-          const name = row.original.name;
-          const avatar =
-            row.original.avatar || `https://github.com/shadcn.png?size=80`;
+          const name = row.original.organizationName;
           const initials = name
             .split(" ")
             .map((n: string) => n[0])
@@ -99,63 +86,71 @@ export const useProvidersTableColumns = () => {
 
           return (
             <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8 bg-medsave-black-50">
-                <AvatarImage alt={name} src={avatar} />
-                <AvatarFallback className="text-sm font-medium text-medsave-black-300">
+              <Avatar className="h-8 w-8 bg-gray-100">
+                <AvatarFallback className="text-sm font-medium text-gray-700">
                   {initials}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-sm text-medsave-black-300">{name}</span>
+              <span className="text-sm text-gray-700">{name}</span>
             </div>
           );
         },
       },
 
       {
-        accessorKey: "facilityType",
+        accessorKey: "email",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Facility Type" />
+          <DataTableColumnHeader column={column} title="Email" />
         ),
         cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300">
-            {row.original.facilityType}
-          </span>
+          <span className="text-sm text-gray-700">{row.original.email}</span>
         ),
       },
 
       {
-        accessorKey: "location",
+        accessorKey: "address",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Location" />
+          <DataTableColumnHeader column={column} title="Address" />
         ),
+        size: 200,
+        maxSize: 250,
         cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300">
-            {row.original.location}
-          </span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="text-sm text-gray-700 truncate block max-w-[200px] cursor-help">
+                  {row.original.address}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="text-sm">{row.original.address}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         ),
       },
 
       {
-        accessorKey: "phone",
+        accessorKey: "contactPhone",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Phone" />
         ),
         cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300">
-            {row.original.phone}
+          <span className="text-sm text-gray-700">
+            {row.original.contactPhone}
           </span>
         ),
       },
 
       {
-        accessorKey: "dateRegistered",
+        accessorKey: "createdAt",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Date Registered" />
         ),
         cell: ({ row }) => {
-          const dateStr = row.original.dateRegistered;
+          const dateStr = row.original.createdAt;
           if (!dateStr)
-            return <span className="text-sm text-medsave-black-300">N/A</span>;
+            return <span className="text-sm text-gray-700">N/A</span>;
 
           try {
             const date = new Date(dateStr);
@@ -165,12 +160,10 @@ export const useProvidersTableColumns = () => {
               year: "numeric",
             });
             return (
-              <span className="text-sm text-medsave-black-300">
-                {formattedDate}
-              </span>
+              <span className="text-sm text-gray-700">{formattedDate}</span>
             );
           } catch {
-            return <span className="text-sm text-medsave-black-300">N/A</span>;
+            return <span className="text-sm text-gray-700">N/A</span>;
           }
         },
       },
@@ -182,17 +175,22 @@ export const useProvidersTableColumns = () => {
         ),
         cell: ({ row }) => {
           const status = row.original.status;
+          const isActive = status === "ACTIVE";
+          const isPending = status === "PENDING_VERIFICATION";
+
           return (
             <Badge
-              variant={status === "Active" ? "default" : "secondary"}
+              variant={isActive ? "default" : "secondary"}
               className={cn(
-                "px-6 py-0.5 min-w-30 text-base rounded-sm",
-                status === "Active"
-                  ? "bg-medsave-success-50 text-medsave-success-500 border-medsave-success-100 hover:bg-green-50"
-                  : "bg-gray-50 text-gray-500 border-gray-200"
+                "px-4 py-0.5 min-w-24 text-sm rounded-sm",
+                isActive
+                  ? "bg-green-50 text-green-600 border-green-200 hover:bg-green-50"
+                  : isPending
+                    ? "bg-yellow-50 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
+                    : "bg-gray-50 text-gray-500 border-gray-200"
               )}
             >
-              {status}
+              {status.replace(/_/g, " ")}
             </Badge>
           );
         },
