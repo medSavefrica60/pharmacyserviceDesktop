@@ -95,3 +95,31 @@ export type PaginatedData<T> = {
  * Providers Response Type
  */
 export type ProvidersResponse = BaseSuccessResponse<PaginatedData<Provider>>;
+
+/**
+ * Medication Status Types
+ */
+export type MedicationStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";
+
+/**
+ * Medication Type
+ */
+export type Medication = {
+  id: string;
+  name: string;
+  minAmount: number;
+  status: MedicationStatus;
+  isActive: boolean;
+  createdBy: string;
+  updatedBy: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+/**
+ * Medications Response Type
+ */
+export type MedicationsResponse = BaseSuccessResponse<
+  PaginatedData<Medication>
+>;

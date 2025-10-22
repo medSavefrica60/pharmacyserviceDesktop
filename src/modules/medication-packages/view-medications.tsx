@@ -9,7 +9,7 @@ import { useNavigate } from "@tanstack/react-router";
 
 export const ViewMedications = () => {
   const columns = useMedicationsTableColumns();
-  const { data: medications, isLoading } = useGetMedications();
+  const { data: medicationsData, isLoading } = useGetMedications();
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -24,7 +24,8 @@ export const ViewMedications = () => {
     );
   }
 
-  const medicationData = medications || [];
+  const medications = medicationsData?.medications || [];
+  const totalCount = medicationsData?.total || 0;
 
   return (
     <div className="flex-1 flex flex-col">
@@ -52,11 +53,11 @@ export const ViewMedications = () => {
         </Button>
       </div>
 
-      {medicationData.length > 0 ? (
+      {medications.length > 0 ? (
         <DataTable
-          data={medicationData}
+          data={medications}
           className=""
-          count={medicationData.length}
+          count={totalCount}
           limit={100}
           pageSizeOptions={[5, 10, 20, 50, 100]}
           columns={columns}
@@ -83,10 +84,10 @@ export const ViewMedications = () => {
                 <path d="M9 17h6" />
               </svg>
             </div>
-            <p className="text-center text-sm text-medsave-black-500 font-semibold">
+            <p className="text-center text-sm text-gray-900 font-semibold">
               No Packages Yet
             </p>
-            <p className="text-center text-sm text-medsave-black-300">
+            <p className="text-center text-sm text-gray-700">
               No medication packages have been created yet. Create your first
               package to get started.
             </p>

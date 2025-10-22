@@ -11,68 +11,45 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "@tanstack/react-router";
-
-export type MedicationPackage = {
-  id: string;
-  packageName: string;
-  packageCode: string;
-  category: string;
-  coverage: string;
-  monthlyPremium: string;
-  annualLimit: string;
-  description: string;
-  dateCreated: string;
-  status: "Active" | "Inactive" | "Draft";
-};
+import { Medication } from "@/types";
 
 export const useMedicationsTableColumns = () => {
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleCopyCode = async (packageCode: string) => {
-    setCopiedCode(packageCode);
-    await navigator.clipboard.writeText(packageCode);
+  const handleCopyId = async (id: string) => {
+    setCopiedId(id);
+    await navigator.clipboard.writeText(id);
     setTimeout(() => {
-      setCopiedCode(null);
+      setCopiedId(null);
     }, 2000);
   };
 
-  const columns: ColumnDef<MedicationPackage>[] = useMemo(
+  const columns: ColumnDef<Medication>[] = useMemo(
     () => [
       {
-        id: "index",
-        header: "",
-        cell: ({ row }) => (
-          <div className="text-sm text-medsave-black-300 font-medium">
-            {row.index + 1}
-          </div>
-        ),
-      },
-      {
-        accessorKey: "packageCode",
+        accessorKey: "id",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Package Code" />
+          <DataTableColumnHeader column={column} title="ID" />
         ),
         cell: ({ row }) => {
-          const packageCode = row.original.packageCode;
-          const isCopied = copiedCode === packageCode;
+          const id = row.original.id;
+          const isCopied = copiedId === id;
+          const shortId = id.split("-")[0];
 
           return (
             <div className="group flex items-center justify-between">
-              <span className="text-sm text-medsave-black-300 font-medium">
-                {packageCode}
+              <span className="text-sm text-gray-700 font-mono">
+                {shortId}...
               </span>
               <button
-                onClick={() => handleCopyCode(packageCode)}
+                onClick={() => handleCopyId(id)}
                 className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
               >
                 {isCopied ? (
-                  <LucideCopyCheck
-                    size={20}
-                    className="text-medsave-success-500"
-                  />
+                  <LucideCopyCheck size={20} className="text-green-600" />
                 ) : (
-                  <LucideCopy size={20} className="text-medsave-black-400" />
+                  <LucideCopy size={20} className="text-gray-600" />
                 )}
               </button>
             </div>
@@ -81,67 +58,38 @@ export const useMedicationsTableColumns = () => {
       },
 
       {
-        accessorKey: "packageName",
+        accessorKey: "name",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Package Name" />
         ),
         cell: ({ row }) => (
-          <div className="flex flex-col">
-            <span className="text-sm text-medsave-black-300 font-medium">
-              {row.original.packageName}
-            </span>
-            <span className="text-xs text-medsave-black-200">
-              {row.original.category}
-            </span>
-          </div>
-        ),
-      },
-
-      {
-        accessorKey: "coverage",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Coverage" />
-        ),
-        cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300">
-            {row.original.coverage}
+          <span className="text-sm text-gray-700 font-medium">
+            {row.original.name}
           </span>
         ),
       },
 
       {
-        accessorKey: "monthlyPremium",
+        accessorKey: "minAmount",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Monthly Premium" />
+          <DataTableColumnHeader column={column} title="Minimum Amount" />
         ),
         cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300 font-semibold">
-            {row.original.monthlyPremium}
+          <span className="text-sm text-gray-700 font-semibold">
+            ₵{row.original.minAmount.toLocaleString()}
           </span>
         ),
       },
 
       {
-        accessorKey: "annualLimit",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Annual Limit" />
-        ),
-        cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300">
-            {row.original.annualLimit}
-          </span>
-        ),
-      },
-
-      {
-        accessorKey: "dateCreated",
+        accessorKey: "createdAt",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Date Created" />
         ),
         cell: ({ row }) => {
-          const dateStr = row.original.dateCreated;
+          const dateStr = row.original.createdAt;
           if (!dateStr)
-            return <span className="text-sm text-medsave-black-300">N/A</span>;
+            return <span className="text-sm text-gray-700">N/A</span>;
 
           try {
             const date = new Date(dateStr);
@@ -151,12 +99,10 @@ export const useMedicationsTableColumns = () => {
               year: "numeric",
             });
             return (
-              <span className="text-sm text-medsave-black-300">
-                {formattedDate}
-              </span>
+              <span className="text-sm text-gray-700">{formattedDate}</span>
             );
           } catch {
-            return <span className="text-sm text-medsave-black-300">N/A</span>;
+            return <span className="text-sm text-gray-700">N/A</span>;
           }
         },
       },
@@ -168,16 +114,18 @@ export const useMedicationsTableColumns = () => {
         ),
         cell: ({ row }) => {
           const status = row.original.status;
+          const isActive = status === "ACTIVE";
+
           return (
             <Badge
-              variant={status === "Active" ? "default" : "secondary"}
+              variant={isActive ? "default" : "secondary"}
               className={cn(
                 "px-4 py-0.5 min-w-20 text-sm rounded-sm",
-                status === "Active"
-                  ? "bg-medsave-success-50 text-medsave-success-500 border-medsave-success-100 hover:bg-green-50"
-                  : status === "Draft"
-                    ? "bg-blue-50 text-blue-600 border-blue-200"
-                    : "bg-gray-50 text-gray-500 border-gray-200"
+                isActive
+                  ? "bg-green-50 text-green-600 border-green-200 hover:bg-green-50"
+                  : status === "INACTIVE"
+                    ? "bg-gray-50 text-gray-500 border-gray-200"
+                    : "bg-red-50 text-red-600 border-red-200"
               )}
             >
               {status}
@@ -260,7 +208,7 @@ export const useMedicationsTableColumns = () => {
         },
       },
     ],
-    [copiedCode, navigate]
+    [copiedId, navigate]
   );
 
   return columns;

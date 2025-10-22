@@ -64,12 +64,12 @@ export const DeleteMedication = () => {
         {medication && (
           <div className="rounded-md bg-muted p-4 my-2">
             <div className="space-y-1">
-              <p className="text-sm font-medium">{medication.packageName}</p>
+              <p className="text-sm font-medium">{medication.name}</p>
               <p className="text-sm text-muted-foreground">
-                {medication.category} - {medication.coverage}
+                Minimum Amount: ₵{medication.minAmount.toLocaleString()}
               </p>
               <p className="text-xs text-muted-foreground">
-                {medication.packageCode}
+                Status: {medication.status}
               </p>
             </div>
           </div>
