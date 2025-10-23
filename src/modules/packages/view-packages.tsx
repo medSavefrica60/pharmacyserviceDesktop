@@ -10,16 +10,6 @@ export const ViewPackages = () => {
   const { data: packages, isLoading } = useGetPackages();
   const navigate = useNavigate();
 
-  if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">Loading packages...</p>
-        </div>
-      </div>
-    );
-  }
-
   const packageData = packages?.packages || [];
   const totalCount = packages?.pagination?.total || 0;
 
@@ -55,6 +45,7 @@ export const ViewPackages = () => {
           className=""
           count={totalCount}
           limit={100}
+          skeleton={isLoading}
           pageSizeOptions={[5, 10, 20, 50, 100]}
           columns={columns}
         />

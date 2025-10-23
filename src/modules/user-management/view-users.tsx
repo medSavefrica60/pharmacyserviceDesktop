@@ -10,16 +10,6 @@ export const ViewUsers = () => {
   const { data: usersData, isLoading } = useGetUsers();
   const navigate = useNavigate();
 
-  if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">Loading users...</p>
-        </div>
-      </div>
-    );
-  }
-
   const users = usersData?.users || [];
   const totalCount = usersData?.total || 0;
 
@@ -47,6 +37,7 @@ export const ViewUsers = () => {
 
       {users.length > 0 ? (
         <DataTable
+          skeleton={isLoading}
           data={users}
           className=""
           count={totalCount}

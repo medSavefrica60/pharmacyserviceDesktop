@@ -10,16 +10,6 @@ export const ViewProviders = () => {
   const { data: providersData, isLoading } = useGetProviders();
   const navigate = useNavigate();
 
-  if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">Loading providers...</p>
-        </div>
-      </div>
-    );
-  }
-
   const providers = providersData?.providers || [];
   const totalCount = providersData?.total || 0;
 
@@ -51,6 +41,7 @@ export const ViewProviders = () => {
 
       {providers.length > 0 ? (
         <DataTable
+          skeleton={isLoading}
           data={providers}
           className=""
           count={totalCount}

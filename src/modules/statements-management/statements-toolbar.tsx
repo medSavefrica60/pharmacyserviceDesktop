@@ -10,8 +10,7 @@ import {
 } from "./statements-search";
 import { useGetUsers } from "@/hooks/api/use-users";
 import { StatementsSearch } from "./statements-search";
-import { logger } from "@/lib/logger";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export interface StatementsToolbar<TData> {
   table?: Table<TData>;
