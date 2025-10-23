@@ -6,6 +6,7 @@ import {
   DeleteUser,
 } from "@/modules/user-management";
 import { UserMiniStatement } from "@/modules/user-management/misc/user-mini-statement";
+import { UserPackageEnrollment } from "@/modules/user-management/misc/user-package-enrollment";
 
 export const Route = createFileRoute("/users")({
   component: RouteComponent,
@@ -28,6 +29,7 @@ function RouteComponent() {
 
       {/* miscellaneous user routes */}
       <UserMiniStatement />
+      <UserPackageEnrollment />
     </>
   );
 }

@@ -319,6 +319,20 @@ export const useUsersTableColumns = () => {
                 >
                   View Mini Statement
                 </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() =>
+                    navigate({
+                      to: "/users",
+                      search: {
+                        sheet: undefined,
+                        dialog: "packages",
+                        userId: row.original.id,
+                      },
+                    })
+                  }
+                >
+                  View Packages
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           );

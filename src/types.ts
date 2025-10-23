@@ -328,3 +328,27 @@ export type ProviderClaimsResponse = BaseSuccessResponse<{
   limit: number;
   total: number;
 }>;
+
+/**
+ * User Package Enrollment Types
+ */
+export type UserPackageEnrollment = {
+  id: string;
+  packageId: string;
+  packageName: string;
+  balance: number;
+  totalContributions: number;
+  totalDeposits: number;
+  totalClaims: number;
+  status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
+  enrolledAt: string;
+  lastTransactionAt: string;
+};
+
+/**
+ * User Package Enrollments Response Type
+ */
+export type UserPackageEnrollmentsResponse = BaseSuccessResponse<{
+  packages: UserPackageEnrollment[];
+  total: number;
+}>;
