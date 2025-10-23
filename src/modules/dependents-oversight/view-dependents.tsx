@@ -1,5 +1,3 @@
-"use client";
-
 import { DataTable } from "@/components/common/data-table/data-table";
 import { useGetDependents } from "@/hooks/api/use-dependents";
 import { useDependentsTableColumns } from "@/hooks/common/table/columns/use-dependents-table-columns";

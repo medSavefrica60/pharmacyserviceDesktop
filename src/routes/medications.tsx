@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ViewMedications } from "@/modules/medication-packages/view-medications";
 import { ViewMedicationDetails } from "@/modules/medication-packages/view-medication-details";
-import { UpdateMedication } from "@/modules/medication-packages/update-medication";
+import { UpdateMedication } from "@/modules/medication-packages/upsert-medications";
+import { DeleteMedication } from "@/modules/medication-packages/delete-medication";
 
 export const Route = createFileRoute("/medications")({
   component: RouteComponent,
@@ -20,6 +21,7 @@ function RouteComponent() {
       <ViewMedications />
       <ViewMedicationDetails />
       <UpdateMedication />
+      <DeleteMedication />
     </>
   );
 }

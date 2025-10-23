@@ -1,5 +1,3 @@
-"use client";
-
 import { useId } from "react";
 import { FieldValues, useFormContext } from "react-hook-form";
 import { withMask } from "use-mask-input";

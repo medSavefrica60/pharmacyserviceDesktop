@@ -7,7 +7,7 @@ import { useNavigate } from "@tanstack/react-router";
 
 export const ViewUsers = () => {
   const columns = useUsersTableColumns();
-  const { data: users, isLoading } = useGetUsers();
+  const { data: usersData, isLoading } = useGetUsers();
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -20,7 +20,8 @@ export const ViewUsers = () => {
     );
   }
 
-  const userData = users || [];
+  const users = usersData?.users || [];
+  const totalCount = usersData?.total || 0;
 
   return (
     <div className="flex-1 flex flex-col">
@@ -44,11 +45,11 @@ export const ViewUsers = () => {
         </Button>
       </div>
 
-      {userData.length > 0 ? (
+      {users.length > 0 ? (
         <DataTable
-          data={userData}
+          data={users}
           className=""
-          count={userData.length}
+          count={totalCount}
           limit={100}
           pageSizeOptions={[5, 10, 20, 50, 100]}
           columns={columns}
@@ -75,10 +76,10 @@ export const ViewUsers = () => {
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
             </div>
-            <p className="text-center text-sm text-medsave-black-500 font-semibold">
+            <p className="text-center text-sm text-gray-900 font-semibold">
               No Users Yet
             </p>
-            <p className="text-center text-sm text-medsave-black-300">
+            <p className="text-center text-sm text-gray-700">
               No users have been created yet. Add your first user to get
               started.
             </p>

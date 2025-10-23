@@ -20,12 +20,12 @@ export const Route = createFileRoute("/providers")({
 
 function RouteComponent() {
   return (
-    <>
+    <div className="flex-1 ">
       <ViewProviders />
       <ViewProviderDetails />
       <UpdateProvider />
       <DeleteProvider />
       <ViewProviderClaims />
-    </>
+    </div>
   );
 }

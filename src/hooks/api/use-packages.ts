@@ -1,119 +1,110 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Package } from "@/hooks/common/table/columns/use-packages-table-columns";
+import { Package, PackagesResponse, BaseSuccessResponse } from "@/types";
+import { queryFn } from "@/api";
+import { AppServices } from "@/lib/services/providers";
 
-// Mock data - Replace with actual API calls
-const mockPackages: Package[] = [
+// Enable/disable mock mode
+const USE_MOCK = false;
+
+// Mock data generator
+const generateMockPackages = (): Package[] => [
   {
-    id: "pkg001",
-    packageId: "PKG-2024-001",
-    name: "Basic Medication Plan",
-    description: "Essential medications for common ailments",
-    price: "₵150.00",
-    duration: "12 months",
-    coverage: "Basic medications only",
-    status: "Active",
-    memberCount: 245,
-    createdAt: "2024-01-15T10:00:00Z",
+    id: "e5f15625-f58f-4f11-aeb3-bfc71df4aed3",
+    name: "Diabetes Package",
+    minAmount: 300,
+    status: "ACTIVE",
+    isActive: true,
+    createdBy: "358bfc6f-ac6e-4a90-bcec-d9b21d42be79",
+    updatedBy: "358bfc6f-ac6e-4a90-bcec-d9b21d42be79",
+    createdAt: "2025-10-22T12:58:59.767Z",
+    updatedAt: "2025-10-22T12:58:59.767Z",
+    deletedAt: null,
   },
   {
-    id: "pkg002",
-    packageId: "PKG-2024-002",
-    name: "Comprehensive Medication Plan",
-    description: "Full coverage for chronic and acute conditions",
-    price: "₵350.00",
-    duration: "12 months",
-    coverage: "All medications + specialist consultations",
-    status: "Active",
-    memberCount: 189,
-    createdAt: "2024-01-20T14:30:00Z",
+    id: "d4431658-065e-433b-9af1-325516035825",
+    name: "Hypertension Package",
+    minAmount: 300,
+    status: "ACTIVE",
+    isActive: true,
+    createdBy: "358bfc6f-ac6e-4a90-bcec-d9b21d42be79",
+    updatedBy: "358bfc6f-ac6e-4a90-bcec-d9b21d42be79",
+    createdAt: "2025-10-22T12:58:47.129Z",
+    updatedAt: "2025-10-22T12:58:47.129Z",
+    deletedAt: null,
   },
   {
-    id: "pkg003",
-    packageId: "PKG-2024-003",
-    name: "Family Medication Plan",
-    description: "Coverage for entire family unit",
-    price: "₵450.00",
-    duration: "12 months",
-    coverage: "Family coverage up to 6 members",
-    status: "Active",
-    memberCount: 156,
-    createdAt: "2024-02-01T09:15:00Z",
-  },
-  {
-    id: "pkg004",
-    packageId: "PKG-2024-004",
-    name: "Student Medication Plan",
-    description: "Affordable plan for students",
-    price: "₵100.00",
-    duration: "12 months",
-    coverage: "Basic medications with student discount",
-    status: "Active",
-    memberCount: 78,
-    createdAt: "2024-02-10T11:45:00Z",
-  },
-  {
-    id: "pkg005",
-    packageId: "PKG-2024-005",
-    name: "Premium Medication Plan",
-    description: "Premium coverage with priority access",
-    price: "₵500.00",
-    duration: "12 months",
-    coverage: "Premium medications + priority consultations",
-    status: "Active",
-    memberCount: 92,
-    createdAt: "2024-02-15T16:20:00Z",
-  },
-  {
-    id: "pkg006",
-    packageId: "PKG-2024-006",
-    name: "Chronic Disease Plan",
-    description: "Specialized plan for chronic conditions",
-    price: "₵250.00",
-    duration: "12 months",
-    coverage: "Chronic disease medications + monitoring",
-    status: "Active",
-    memberCount: 134,
-    createdAt: "2024-03-01T13:00:00Z",
-  },
-  {
-    id: "pkg007",
-    packageId: "PKG-2024-007",
-    name: "Senior Citizen Plan",
-    description: "Specialized plan for senior citizens",
-    price: "₵200.00",
-    duration: "12 months",
-    coverage: "Senior-focused medications + geriatric care",
-    status: "Inactive",
-    memberCount: 45,
-    createdAt: "2024-03-10T10:30:00Z",
-  },
-  {
-    id: "pkg008",
-    packageId: "PKG-2024-008",
-    name: "Emergency Care Plan",
-    description: "Emergency and urgent care coverage",
-    price: "₵300.00",
-    duration: "12 months",
-    coverage: "Emergency medications + urgent care access",
-    status: "Suspended",
-    memberCount: 67,
-    createdAt: "2024-03-20T15:45:00Z",
+    id: "ffc0eb67-5d06-4a82-84ec-fcc3f91c723e",
+    name: "Malaria Package",
+    minAmount: 1000,
+    status: "ACTIVE",
+    isActive: true,
+    createdBy: "358bfc6f-ac6e-4a90-bcec-d9b21d42be79",
+    updatedBy: "358bfc6f-ac6e-4a90-bcec-d9b21d42be79",
+    createdAt: "2025-10-22T12:59:12.475Z",
+    updatedAt: "2025-10-22T12:59:12.475Z",
+    deletedAt: null,
   },
 ];
 
 // Mock API delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Mock implementation
+const mockGetAllPackages = async (params?: Record<string, unknown>) => {
+  await delay(500);
+  let packages = generateMockPackages();
+
+  // Apply filters if params exist
+  if (params?.status) {
+    packages = packages.filter((p) => p.status === params.status);
+  }
+
+  return {
+    packages,
+    pagination: {
+      page: 1,
+      limit: 50,
+      total: packages.length,
+      totalPages: 1,
+    },
+  };
+};
+
+const mockGetPackage = async (id: string) => {
+  await delay(300);
+  const packages = generateMockPackages();
+  const packageData = packages.find((p) => p.id === id);
+  if (!packageData) throw new Error("Package not found");
+  return packageData;
+};
+
+const mockCreatePackage = async (data: Record<string, unknown>) => {
+  await delay(500);
+  return { id: `pkg${Date.now()}`, ...data };
+};
+
+const mockUpdatePackage = async (id: string, data: Record<string, unknown>) => {
+  await delay(500);
+  return { id, ...data };
+};
+
+const mockDeletePackage = async (id: string) => {
+  await delay(500);
+  return { success: true, id };
+};
+
 // Fetch all packages
-export const useGetPackages = () => {
+export const useGetPackages = (params?: Record<string, unknown>) => {
   return useQuery({
-    queryKey: ["packages"],
+    queryKey: ["packages", params],
     queryFn: async () => {
-      await delay(500); // Simulate API delay
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/packages');
-      // return response.json();
-      return mockPackages;
+      if (USE_MOCK) {
+        return mockGetAllPackages(params);
+      }
+      const response = await queryFn<PackagesResponse>(
+        AppServices.packages.get_all_packages(params)
+      );
+      return response.data;
     },
   });
 };
@@ -123,15 +114,57 @@ export const useGetPackage = (packageId: string | undefined) => {
   return useQuery({
     queryKey: ["package", packageId],
     queryFn: async () => {
-      await delay(300);
-      // TODO: Replace with actual API call
-      // const response = await fetch(`/api/packages/${packageId}`);
-      // return response.json();
-      const packageData = mockPackages.find((p) => p.id === packageId);
-      if (!packageData) throw new Error("Package not found");
-      return packageData;
+      if (!packageId) throw new Error("Package ID is required");
+
+      if (USE_MOCK) {
+        return mockGetPackage(packageId);
+      }
+      const response = await queryFn<BaseSuccessResponse<Package>>(
+        AppServices.packages.get_id_package(packageId)
+      );
+      return response.data;
     },
     enabled: !!packageId,
+  });
+};
+
+// Create package
+export const useCreatePackage = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: Record<string, unknown>) => {
+      if (USE_MOCK) {
+        return mockCreatePackage(data);
+      }
+      return queryFn(AppServices.packages.create_package(data));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["packages"] });
+    },
+  });
+};
+
+// Update package
+export const useUpdatePackage = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Record<string, unknown>;
+    }) => {
+      if (USE_MOCK) {
+        return mockUpdatePackage(id, data);
+      }
+      return queryFn(AppServices.packages.update_package(id, data));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["packages"] });
+    },
   });
 };
 
@@ -141,10 +174,10 @@ export const useDeletePackage = () => {
 
   return useMutation({
     mutationFn: async (packageId: string) => {
-      await delay(500);
-      // TODO: Replace with actual API call
-      // await fetch(`/api/packages/${packageId}`, { method: 'DELETE' });
-      return packageId;
+      if (USE_MOCK) {
+        return mockDeletePackage(packageId);
+      }
+      return queryFn(AppServices.packages.delete_package(packageId));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["packages"] });

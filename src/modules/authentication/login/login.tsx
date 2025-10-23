@@ -14,9 +14,12 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { OtpForm } from "./otp";
+import { useSession } from "@/hooks/auth";
+import { logger } from "@/lib/logger";
 
 interface LoginFormProps extends React.ComponentProps<"div"> {
   onLoginSuccess?: () => void;
@@ -27,26 +30,68 @@ export function LoginForm({
   onLoginSuccess,
   ...props
 }: LoginFormProps) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("medsave.africa@gmail.com");
+  const [password, setPassword] = useState("Amoako@21");
   const [showOtp, setShowOtp] = useState(false);
-  const [otp, setOtp] = useState("");
+  const [error, setError] = useState("");
+  const [otpData, setOtpData] = useState<{
+    email: string;
+    request_id: string;
+  } | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { requestOtp } = useSession();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    logger.debug("handleSubmit called");
     e.preventDefault();
+    setError("");
 
     if (!showOtp) {
-      // First step: show OTP input
-      setShowOtp(true);
-    } else {
-      // Second step: verify OTP and redirect to dashboard
-      if (otp.length === 6) {
-        // Simulate successful login
-        localStorage.setItem("isAuthenticated", "true");
-        onLoginSuccess?.();
+      // First step: request OTP
+      if (email && password) {
+        setIsLoading(true);
+        try {
+          const otpResponse = await requestOtp(email, password);
+
+          setOtpData({
+            email: otpResponse.email,
+            request_id: otpResponse.requestId,
+          });
+          setShowOtp(true);
+        } catch (error) {
+          setError(error as string);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        setError("Please enter both email and password");
       }
     }
   };
+
+  const handleOtpSuccess = () => {
+    onLoginSuccess?.();
+  };
+
+  const handleBack = () => {
+    setShowOtp(false);
+    setError("");
+    setOtpData(null);
+  };
+
+  if (showOtp && otpData) {
+    return (
+      <OtpForm
+        email={otpData.email}
+        request_id={otpData.request_id}
+        onOtpSuccess={handleOtpSuccess}
+        onBack={handleBack}
+        className={className}
+        {...props}
+      />
+    );
+  }
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -54,106 +99,50 @@ export function LoginForm({
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
           <CardDescription>
-            {showOtp
-              ? "Enter the OTP code sent to your email"
-              : "Login with your Apple or Google account"}
+            Login with your Apple or Google account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
             <FieldGroup>
-              {!showOtp ? (
-                <>
-                  <Field>
-                    <Button variant="outline" type="button">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"
-                          fill="currentColor"
-                        />
-                      </svg>
-                      Login with Apple
-                    </Button>
-                    <Button variant="outline" type="button">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-                          fill="currentColor"
-                        />
-                      </svg>
-                      Login with Google
-                    </Button>
-                  </Field>
-                  <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-                    Or continue with
-                  </FieldSeparator>
-                  <Field>
-                    <FieldLabel htmlFor="email">Email</FieldLabel>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="m@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </Field>
-                  <Field>
-                    <div className="flex items-center">
-                      <FieldLabel htmlFor="password">Password</FieldLabel>
-                      <a
-                        href="#"
-                        className="ml-auto text-sm underline-offset-4 hover:underline"
-                      >
-                        Forgot your password?
-                      </a>
-                    </div>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </Field>
-                </>
-              ) : (
-                <Field>
-                  <FieldLabel htmlFor="otp">OTP Code</FieldLabel>
-                  <Input
-                    id="otp"
-                    type="text"
-                    placeholder="Enter 6-digit code"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    maxLength={6}
-                    required
-                  />
-                  <FieldDescription>
-                    A 6-digit code has been sent to {email}
-                  </FieldDescription>
-                </Field>
+              <Field>
+                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </Field>
+              <Field>
+                <div className="flex items-center">
+                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <a
+                    href="#"
+                    className="ml-auto text-sm underline-offset-4 hover:underline"
+                  >
+                    Forgot your password?
+                  </a>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </Field>
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               )}
               <Field>
-                <Button type="submit" className="w-full">
-                  {showOtp ? "Verify OTP" : "Send OTP"}
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Sending OTP..." : "Send OTP"}
                 </Button>
-                {showOtp && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full bg-transparent"
-                    onClick={() => setShowOtp(false)}
-                  >
-                    Back
-                  </Button>
-                )}
                 <FieldDescription className="text-center">
                   Don&apos;t have an account? <a href="#">Sign up</a>
                 </FieldDescription>

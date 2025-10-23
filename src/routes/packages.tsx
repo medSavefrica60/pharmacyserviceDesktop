@@ -3,7 +3,7 @@ import {
   ViewPackages,
   ViewPackageDetails,
   DeletePackage,
-} from "@/modules/medication-packages";
+} from "@/modules/packages";
 
 export const Route = createFileRoute("/packages")({
   component: RouteComponent,

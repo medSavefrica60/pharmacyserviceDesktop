@@ -4,6 +4,7 @@ import {
   ProvidersResponse,
   PaginatedData,
   BaseSuccessResponse,
+  ProviderClaimsResponse,
 } from "@/types";
 import { queryFn } from "@/api";
 import { AppServices } from "@/lib/services/providers";
@@ -143,32 +144,6 @@ const mockGetAllProviders = async (
   };
 };
 
-const mockGetProvider = async (id: string) => {
-  await delay(300);
-  const providers = generateMockProviders();
-  const provider = providers.find((p) => p.id === id);
-  if (!provider) throw new Error("Provider not found");
-  return provider;
-};
-
-const mockCreateProvider = async (data: Record<string, unknown>) => {
-  await delay(500);
-  return { id: `p${Date.now()}`, ...data };
-};
-
-const mockUpdateProvider = async (
-  id: string,
-  data: Record<string, unknown>
-) => {
-  await delay(500);
-  return { id, ...data };
-};
-
-const mockDeleteProvider = async (id: string) => {
-  await delay(500);
-  return { success: true, id };
-};
-
 // Fetch all providers
 export const useGetProviders = (params?: Record<string, unknown>) => {
   return useQuery({
@@ -207,9 +182,6 @@ export const useCreateProvider = () => {
 
   return useMutation({
     mutationFn: async (data: Record<string, unknown>) => {
-      if (USE_MOCK) {
-        return mockCreateProvider(data);
-      }
       return queryFn(AppServices.providers.create_provider(data));
     },
     onSuccess: () => {
@@ -247,13 +219,26 @@ export const useDeleteProvider = () => {
 
   return useMutation({
     mutationFn: async (providerId: string) => {
-      if (USE_MOCK) {
-        return mockDeleteProvider(providerId);
-      }
       return queryFn(AppServices.providers.delete_provider(providerId));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["providers"] });
     },
+  });
+};
+
+// Provider Claims API Hook
+export const useGetProviderClaims = (providerId: string | undefined) => {
+  return useQuery({
+    queryKey: ["providers", "claims", providerId],
+    queryFn: async () => {
+      if (!providerId) throw new Error("Provider ID is required");
+
+      const response = await queryFn<ProviderClaimsResponse>(
+        AppServices.providers.get_provider_claims(providerId)
+      );
+      return response;
+    },
+    enabled: !!providerId,
   });
 };

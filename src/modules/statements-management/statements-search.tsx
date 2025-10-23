@@ -1,178 +1,127 @@
-"use client";
-
-import { useState, useId } from "react";
-import { X } from "lucide-react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
+import { InputSearch, SearchOption } from "@/components/common/input-search";
+import { ReactNode } from "react";
+import { User } from "@/types";
+import { CommandItem } from "@/components/ui/command";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { User as UserIcon, Mail, Hash, X } from "lucide-react";
 
-// Types
-export interface SearchOption {
-  id: string;
-  name: string;
-  email?: string;
-  memberId?: string;
-  avatar?: string;
-  status?: string;
+// User search option interface (extends User with SearchOption requirements)
+export interface UserSearchOption extends User, SearchOption {
+  name: string; // Computed from firstName + lastName
 }
 
+// Helper function to transform User to UserSearchOption
+export const transformUserToSearchOption = (user: User): UserSearchOption => ({
+  ...user,
+  name: `${user.firstName} ${user.lastName}`.trim(),
+});
+
 export interface StatementsSearchProps {
-  options: SearchOption[];
+  options: UserSearchOption[];
   placeholder?: string;
   emptyText?: string;
   disabled?: boolean;
-  displayValue?: (option: SearchOption) => string;
-  onSelect?: (option: SearchOption) => void;
+  displayValue?: (option: UserSearchOption) => string;
+  onSelect?: (option: UserSearchOption) => void;
   onClear?: () => void;
-  filterOptions?: (options: SearchOption[], search: string) => SearchOption[];
+  filterOptions?: (
+    options: UserSearchOption[],
+    search: string
+  ) => UserSearchOption[];
   className?: string;
+  renderOption?: (
+    option: UserSearchOption,
+    onSelect: (option: UserSearchOption) => void
+  ) => ReactNode;
+  renderSelected?: (option: UserSearchOption, onClear: () => void) => ReactNode;
 }
 
-// Selected Option Display Component
-interface SelectedOptionDisplayProps {
-  option: SearchOption;
-  displayValue?: (option: SearchOption) => string;
-  onClear: () => void;
-  disabled?: boolean;
-}
-
-function SelectedOptionDisplay({
-  option,
-  displayValue,
-  onClear,
-  disabled,
-}: SelectedOptionDisplayProps) {
-  return (
-    <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-1.5">
+// Default render option component
+const DefaultRenderOption = (
+  option: UserSearchOption,
+  onSelect: (option: UserSearchOption) => void
+) => (
+  <CommandItem
+    key={option.id}
+    onSelect={() => onSelect(option)}
+    className="flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer aria-selected:bg-accent/50 hover:bg-accent/30 transition-colors"
+  >
+    <div className="flex items-center gap-3 flex-1 min-w-0">
+      <Avatar className="h-8 w-8 shrink-0">
+        <AvatarFallback className="bg-primary/10 text-primary">
+          <UserIcon className="h-4 w-4" />
+        </AvatarFallback>
+      </Avatar>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <p className="text-sm font-medium text-foreground">
-            {displayValue ? displayValue(option) : option.name}
+          <p className="text-sm font-medium text-foreground truncate">
+            {option.name}
           </p>
-          {option.memberId && (
-            <span className="text-xs text-muted-foreground">
-              • {option.memberId}
-            </span>
-          )}
         </div>
-      </div>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="size-8 shrink-0 hover:bg-destructive/10 hover:text-destructive"
-        onClick={onClear}
-        disabled={disabled}
-      >
-        <X className="size-4" />
-        <span className="sr-only">Remove selection</span>
-      </Button>
-    </div>
-  );
-}
-
-// Search Option Item Component
-interface SearchOptionItemProps {
-  option: SearchOption;
-  displayValue?: (option: SearchOption) => string;
-  onSelect: (option: SearchOption) => void;
-}
-
-function SearchOptionItem({
-  option,
-  displayValue,
-  onSelect,
-}: SearchOptionItemProps) {
-  return (
-    <CommandItem
-      key={option.id}
-      onSelect={() => {
-        onSelect(option);
-      }}
-      className="flex items-center gap-3 px-3 py-1.5 rounded-md cursor-pointer aria-selected:bg-accent/50 hover:bg-accent/30 transition-colors"
-    >
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <p className="text-sm font-medium text-foreground">
-            {displayValue ? displayValue(option) : option.name}
-          </p>
-          {option.memberId && (
-            <span className="text-xs text-muted-foreground">
-              • {option.memberId}
-            </span>
-          )}
-        </div>
-      </div>
-    </CommandItem>
-  );
-}
-
-// Search Dropdown Component
-interface SearchDropdownProps {
-  id: string;
-  searchValue: string;
-  onSearchChange: (value: string) => void;
-  filteredOptions: SearchOption[];
-  placeholder: string;
-  emptyText: string;
-  disabled?: boolean;
-  displayValue?: (option: SearchOption) => string;
-  onSelectOption: (option: SearchOption) => void;
-}
-
-function SearchDropdown({
-  id,
-  searchValue,
-  onSearchChange,
-  filteredOptions,
-  placeholder,
-  emptyText,
-  disabled,
-  displayValue,
-  onSelectOption,
-}: SearchDropdownProps) {
-  return (
-    <div className="relative">
-      <Command className="rounded-lg border border-border bg-card">
-        <CommandInput
-          id={id}
-          placeholder={placeholder}
-          value={searchValue}
-          onValueChange={onSearchChange}
-          disabled={disabled}
-        />
-        {searchValue && (
-          <div className="absolute top-full left-0 right-0 z-50 mt-1 animate-in fade-in-0 slide-in-from-top-2 duration-200">
-            <div className="rounded-lg border border-border bg-card">
-              <CommandList className="max-h-[320px] overflow-y-auto p-2">
-                <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
-                  {emptyText}
-                </CommandEmpty>
-                <CommandGroup>
-                  {filteredOptions.map((option) => (
-                    <SearchOptionItem
-                      key={option.id}
-                      option={option}
-                      displayValue={displayValue}
-                      onSelect={onSelectOption}
-                    />
-                  ))}
-                </CommandGroup>
-              </CommandList>
+        <div className="flex items-center gap-3 mt-1">
+          {option.email && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Mail className="h-3 w-3" />
+              <span className="truncate">{option.email}</span>
             </div>
+          )}
+          {option.ghanaCardNumber && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Hash className="h-3 w-3" />
+              <span className="font-mono">{option.ghanaCardNumber}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </CommandItem>
+);
+
+// Default render selected component
+const DefaultRenderSelected = (
+  option: UserSearchOption,
+  onClear: () => void
+) => (
+  <div className="flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 p-2">
+    <Avatar className="h-8 w-8 shrink-0">
+      <AvatarFallback className="bg-primary/10 text-primary">
+        <UserIcon className="h-4 w-4" />
+      </AvatarFallback>
+    </Avatar>
+    <div className="flex-1 min-w-0">
+      <div className="flex items-center gap-2">
+        <p className="text-sm font-medium text-foreground truncate">
+          {option.name}
+        </p>
+      </div>
+      <div className="flex items-center gap-3 mt-1">
+        {option.email && (
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Mail className="h-3 w-3" />
+            <span className="truncate">{option.email}</span>
           </div>
         )}
-      </Command>
+        {option.ghanaCardNumber && (
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Hash className="h-3 w-3" />
+            <span className="font-mono">{option.ghanaCardNumber}</span>
+          </div>
+        )}
+      </div>
     </div>
-  );
-}
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={onClear}
+      className="size-8 shrink-0 hover:bg-destructive/10 hover:text-destructive"
+    >
+      <X className="size-4" />
+    </Button>
+  </div>
+);
+
+// Export the UserSearchOption type for external use
 
 export function StatementsSearch({
   options,
@@ -184,69 +133,22 @@ export function StatementsSearch({
   onSelect,
   onClear,
   className,
+  renderOption,
+  renderSelected,
 }: StatementsSearchProps) {
-  const id = useId();
-  const [searchValue, setSearchValue] = useState("");
-  const [selectedOption, setSelectedOption] = useState<SearchOption | null>(
-    null
-  );
-
-  const defaultFilterOptions = (opts: SearchOption[], search: string) => {
-    return opts.filter(
-      (option) =>
-        option.name
-          .trim()
-          .toLowerCase()
-          .includes(search.trim().toLowerCase()) ||
-        option.email
-          ?.trim()
-          .toLowerCase()
-          .includes(search.trim().toLowerCase()) ||
-        option.memberId
-          ?.trim()
-          .toLowerCase()
-          .includes(search.trim().toLowerCase())
-    );
-  };
-
-  const filteredOptions = filterOptions
-    ? filterOptions(options, searchValue)
-    : defaultFilterOptions(options, searchValue);
-
-  const handleSelectOption = (option: SearchOption) => {
-    setSelectedOption(option);
-    setSearchValue("");
-    onSelect?.(option);
-  };
-
-  const handleClearOption = () => {
-    setSelectedOption(null);
-    setSearchValue("");
-    onClear?.();
-  };
-
   return (
-    <div className={cn("w-full max-w-2xl space-y-4 relative", className)}>
-      {selectedOption ? (
-        <SelectedOptionDisplay
-          option={selectedOption}
-          displayValue={displayValue}
-          onClear={handleClearOption}
-          disabled={disabled}
-        />
-      ) : (
-        <SearchDropdown
-          id={id}
-          searchValue={searchValue}
-          onSearchChange={setSearchValue}
-          filteredOptions={filteredOptions}
-          placeholder={placeholder}
-          emptyText={emptyText}
-          disabled={disabled}
-          displayValue={displayValue}
-          onSelectOption={handleSelectOption}
-        />
-      )}
-    </div>
+    <InputSearch
+      options={options}
+      placeholder={placeholder}
+      emptyText={emptyText}
+      disabled={disabled}
+      displayValue={displayValue}
+      filterOptions={filterOptions}
+      onSelect={onSelect}
+      onClear={onClear}
+      className={className}
+      renderOption={renderOption}
+      renderSelected={renderSelected}
+    />
   );
 }

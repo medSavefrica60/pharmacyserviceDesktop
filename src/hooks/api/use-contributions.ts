@@ -1,8 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Contribution } from "@/hooks/common/table/columns/use-contributions-table-columns";
+import { queryFn } from "@/api";
+import { AppServices } from "@/lib/services/providers";
 
-// Mock data - Replace with actual API calls
-const mockContributions: Contribution[] = [
+// Enable/disable mock mode
+const USE_MOCK = true;
+
+// Mock data generator
+const generateMockContributions = (): Contribution[] => [
   {
     id: "con001",
     contributionId: "CONT-2024-001",
@@ -96,16 +101,66 @@ const mockContributions: Contribution[] = [
 // Mock API delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Mock implementation
+const mockGetAllContributions = async (params?: Record<string, unknown>) => {
+  await delay(500);
+  let contributions = generateMockContributions();
+
+  // Apply filters if params exist
+  if (params?.userId) {
+    contributions = contributions.filter((c) => c.memberId === params.userId);
+  }
+  if (params?.startDate) {
+    contributions = contributions.filter(
+      (c) => new Date(c.paymentDate) >= new Date(params.startDate as string)
+    );
+  }
+  if (params?.endDate) {
+    contributions = contributions.filter(
+      (c) => new Date(c.paymentDate) <= new Date(params.endDate as string)
+    );
+  }
+
+  return contributions;
+};
+
+const mockGetContribution = async (id: string) => {
+  await delay(300);
+  const contributions = generateMockContributions();
+  const contribution = contributions.find((c) => c.id === id);
+  if (!contribution) throw new Error("Contribution not found");
+  return contribution;
+};
+
+const mockCreateContribution = async (data: Record<string, unknown>) => {
+  await delay(500);
+  return { id: `con${Date.now()}`, ...data };
+};
+
+const mockUpdateContribution = async (
+  id: string,
+  data: Record<string, unknown>
+) => {
+  await delay(500);
+  return { id, ...data };
+};
+
+const mockDeleteContribution = async (id: string) => {
+  await delay(500);
+  return { success: true, id };
+};
+
 // Fetch all contributions
-export const useGetContributions = () => {
+export const useGetContributions = (params?: Record<string, unknown>) => {
   return useQuery({
-    queryKey: ["contributions"],
+    queryKey: ["contributions", params],
     queryFn: async () => {
-      await delay(500); // Simulate API delay
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/contributions');
-      // return response.json();
-      return mockContributions;
+      if (USE_MOCK) {
+        return mockGetAllContributions(params);
+      }
+      return queryFn<Contribution[]>(
+        AppServices.contributions.get_all_contributions(params)
+      );
     },
   });
 };
@@ -115,17 +170,56 @@ export const useGetContribution = (contributionId: string | undefined) => {
   return useQuery({
     queryKey: ["contribution", contributionId],
     queryFn: async () => {
-      await delay(300);
-      // TODO: Replace with actual API call
-      // const response = await fetch(`/api/contributions/${contributionId}`);
-      // return response.json();
-      const contribution = mockContributions.find(
-        (c) => c.id === contributionId
+      if (!contributionId) throw new Error("Contribution ID is required");
+
+      if (USE_MOCK) {
+        return mockGetContribution(contributionId);
+      }
+      return queryFn<Contribution>(
+        AppServices.contributions.get_id_contribution(contributionId)
       );
-      if (!contribution) throw new Error("Contribution not found");
-      return contribution;
     },
     enabled: !!contributionId,
+  });
+};
+
+// Create contribution
+export const useCreateContribution = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: Record<string, unknown>) => {
+      if (USE_MOCK) {
+        return mockCreateContribution(data);
+      }
+      return queryFn(AppServices.contributions.create_contribution(data));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["contributions"] });
+    },
+  });
+};
+
+// Update contribution
+export const useUpdateContribution = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Record<string, unknown>;
+    }) => {
+      if (USE_MOCK) {
+        return mockUpdateContribution(id, data);
+      }
+      return queryFn(AppServices.contributions.update_contribution(id, data));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["contributions"] });
+    },
   });
 };
 
@@ -135,10 +229,12 @@ export const useDeleteContribution = () => {
 
   return useMutation({
     mutationFn: async (contributionId: string) => {
-      await delay(500);
-      // TODO: Replace with actual API call
-      // await fetch(`/api/contributions/${contributionId}`, { method: 'DELETE' });
-      return contributionId;
+      if (USE_MOCK) {
+        return mockDeleteContribution(contributionId);
+      }
+      return queryFn(
+        AppServices.contributions.delete_contribution(contributionId)
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contributions"] });

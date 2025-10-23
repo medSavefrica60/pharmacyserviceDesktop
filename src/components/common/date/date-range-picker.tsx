@@ -1,6 +1,4 @@
 /* eslint-disable max-lines */
-"use client";
-
 import { type FC, useState, useEffect, useRef, JSX } from "react";
 import { Button } from "@/components/ui/button";
 import {

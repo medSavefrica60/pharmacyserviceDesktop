@@ -7,7 +7,7 @@ import {
   SheetDescription,
   SheetFooter,
 } from "@/components/ui/sheet";
-import { useGetClaim, useUpsertClaim } from "@/hooks/api/use-claims";
+import { useGetClaim, useUpdateClaim } from "@/hooks/api/use-claims";
 import { Button } from "@/components/ui/button";
 import { useForm, FormProvider } from "react-hook-form";
 import { FormInput } from "@/components/common/form/form-input";
@@ -50,7 +50,7 @@ export const UpdateClaim = () => {
   const { data: claim, isLoading } = useGetClaim(
     isEdit ? search.claimId : undefined
   );
-  const upsertMutation = useUpsertClaim();
+  const updateMutation = useUpdateClaim();
 
   const methods = useForm<ClaimFormData>({
     defaultValues: {
@@ -71,16 +71,20 @@ export const UpdateClaim = () => {
   useEffect(() => {
     if (claim && isEdit) {
       methods.reset({
-        claimNumber: claim.claimNumber,
-        patientName: claim.patientName,
-        patientId: claim.patientId,
-        providerName: claim.providerName,
-        providerId: claim.providerId,
-        serviceType: claim.serviceType,
-        claimDate: claim.claimDate.split("T")[0],
-        claimAmount: claim.claimAmount,
-        approvedAmount: claim.approvedAmount,
-        status: claim.status,
+        claimNumber: claim.reference,
+        patientName: `${claim.user.firstName} ${claim.user.lastName}`,
+        patientId: claim.user.medsaveId,
+        providerName: claim.provider.organizationName,
+        providerId: claim.provider.id,
+        serviceType: claim.medicationPackage.name,
+        claimDate: claim.createdAt.split("T")[0],
+        claimAmount: claim.amount,
+        approvedAmount: claim.amount,
+        status: claim.status as
+          | "Approved"
+          | "Pending"
+          | "Rejected"
+          | "Processing",
       });
     } else if (isCreate) {
       const today = new Date().toISOString().split("T")[0];
@@ -109,11 +113,15 @@ export const UpdateClaim = () => {
 
   const onSubmit = async (data: ClaimFormData) => {
     try {
-      await upsertMutation.mutateAsync({
-        ...(isEdit && { id: search.claimId }),
-        ...data,
-        claimDate: new Date(data.claimDate).toISOString(),
-      });
+      if (isEdit && search.claimId) {
+        await updateMutation.mutateAsync({
+          id: search.claimId,
+          data: {
+            ...data,
+            claimDate: new Date(data.claimDate).toISOString(),
+          },
+        });
+      }
 
       toast.success(
         isEdit ? "Claim updated successfully" : "Claim submitted successfully"
@@ -253,10 +261,10 @@ export const UpdateClaim = () => {
                   </Button>
                   <Button
                     type="submit"
-                    disabled={upsertMutation.isPending}
+                    disabled={updateMutation.isPending}
                     className="flex-1"
                   >
-                    {upsertMutation.isPending
+                    {updateMutation.isPending
                       ? "Saving..."
                       : isEdit
                         ? "Update Claim"

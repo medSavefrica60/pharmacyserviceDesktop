@@ -1,8 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Dependent } from "@/hooks/common/table/columns/use-dependents-table-columns";
+import { queryFn } from "@/api";
+import { AppServices } from "@/lib/services/providers";
 
-// Mock data - Replace with actual API calls
-const mockDependents: Dependent[] = [
+// Enable/disable mock mode
+const USE_MOCK = true;
+
+// Mock data generator
+const generateMockDependents = (): Dependent[] => [
   {
     id: "d001",
     name: "Akosua Mensah",
@@ -68,16 +73,59 @@ const mockDependents: Dependent[] = [
 // Mock API delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Mock implementation
+const mockGetAllDependents = async (params?: Record<string, unknown>) => {
+  await delay(500);
+  let dependents = generateMockDependents();
+
+  // Apply filters if params exist
+  if (params?.userId) {
+    dependents = dependents.filter((d) => d.primaryMemberId === params.userId);
+  }
+  if (params?.status) {
+    dependents = dependents.filter((d) => d.status === params.status);
+  }
+
+  return dependents;
+};
+
+const mockGetDependent = async (id: string) => {
+  await delay(300);
+  const dependents = generateMockDependents();
+  const dependent = dependents.find((d) => d.id === id);
+  if (!dependent) throw new Error("Dependent not found");
+  return dependent;
+};
+
+const mockCreateDependent = async (data: Record<string, unknown>) => {
+  await delay(500);
+  return { id: `d${Date.now()}`, ...data };
+};
+
+const mockUpdateDependent = async (
+  id: string,
+  data: Record<string, unknown>
+) => {
+  await delay(500);
+  return { id, ...data };
+};
+
+const mockDeleteDependent = async (id: string) => {
+  await delay(500);
+  return { success: true, id };
+};
+
 // Fetch all dependents
-export const useGetDependents = () => {
+export const useGetDependents = (params?: Record<string, unknown>) => {
   return useQuery({
-    queryKey: ["dependents"],
+    queryKey: ["dependents", params],
     queryFn: async () => {
-      await delay(500); // Simulate API delay
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/dependents');
-      // return response.json();
-      return mockDependents;
+      if (USE_MOCK) {
+        return mockGetAllDependents(params);
+      }
+      return queryFn<Dependent[]>(
+        AppServices.dependents.get_all_dependents(params)
+      );
     },
   });
 };
@@ -87,33 +135,52 @@ export const useGetDependent = (dependentId: string | undefined) => {
   return useQuery({
     queryKey: ["dependent", dependentId],
     queryFn: async () => {
-      await delay(300);
-      // TODO: Replace with actual API call
-      // const response = await fetch(`/api/dependents/${dependentId}`);
-      // return response.json();
-      const dependent = mockDependents.find((d) => d.id === dependentId);
-      if (!dependent) throw new Error("Dependent not found");
-      return dependent;
+      if (!dependentId) throw new Error("Dependent ID is required");
+
+      if (USE_MOCK) {
+        return mockGetDependent(dependentId);
+      }
+      return queryFn<Dependent>(
+        AppServices.dependents.get_id_dependent(dependentId)
+      );
     },
     enabled: !!dependentId,
   });
 };
 
-// Create or update dependent
-export const useUpsertDependent = () => {
+// Create dependent
+export const useCreateDependent = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (dependent: Partial<Dependent> & { id?: string }) => {
-      await delay(500);
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/dependents', {
-      //   method: dependent.id ? 'PUT' : 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(dependent),
-      // });
-      // return response.json();
-      return dependent;
+    mutationFn: async (data: Record<string, unknown>) => {
+      if (USE_MOCK) {
+        return mockCreateDependent(data);
+      }
+      return queryFn(AppServices.dependents.create_dependent(data));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dependents"] });
+    },
+  });
+};
+
+// Update dependent
+export const useUpdateDependent = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Record<string, unknown>;
+    }) => {
+      if (USE_MOCK) {
+        return mockUpdateDependent(id, data);
+      }
+      return queryFn(AppServices.dependents.update_dependent(id, data));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dependents"] });
@@ -127,10 +194,10 @@ export const useDeleteDependent = () => {
 
   return useMutation({
     mutationFn: async (dependentId: string) => {
-      await delay(500);
-      // TODO: Replace with actual API call
-      // await fetch(`/api/dependents/${dependentId}`, { method: 'DELETE' });
-      return dependentId;
+      if (USE_MOCK) {
+        return mockDeleteDependent(dependentId);
+      }
+      return queryFn(AppServices.dependents.delete_dependent(dependentId));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dependents"] });

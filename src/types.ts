@@ -123,3 +123,208 @@ export type Medication = {
 export type MedicationsResponse = BaseSuccessResponse<
   PaginatedData<Medication>
 >;
+
+/**
+ * Package Type (same structure as Medication)
+ */
+export type Package = Medication;
+
+/**
+ * Packages Response Type
+ */
+export type PackagesResponse = BaseSuccessResponse<{
+  packages: Package[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}>;
+
+/**
+ * User Types
+ */
+export type UserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";
+export type UserRole = "END_USER" | "ADMIN" | "SUPER_ADMIN";
+export type UserChannel = "USSD" | "WEB" | "MOBILE";
+export type UserGender = "MALE" | "FEMALE" | "OTHER" | "";
+
+export type User = {
+  id: string;
+  ghanaCardNumber: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  dateOfBirth: string;
+  gender: UserGender;
+  channel: UserChannel;
+  status: UserStatus;
+  role: UserRole;
+  isPinSet: boolean;
+  isPhoneVerified: boolean;
+  isEmailVerified: boolean;
+  ghanaCardVerified: boolean;
+  isMomoNumber: boolean;
+  momoNumber: string;
+  termsAccepted: boolean;
+  trustScore: number;
+  failedLoginAttempts: number;
+  lastLoginAt: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/**
+ * Users Response Type (different structure - pagination at root level)
+ */
+export type UsersResponse = BaseSuccessResponse<{ users: User[] }> & {
+  limit: number;
+  totalPages: number;
+  currentPage: number;
+  total: number;
+};
+
+/**
+ * Claim Types - Updated for new API structure
+ */
+export type ClaimStatus =
+  | "pending"
+  | "approved"
+  | "rejected"
+  | "expired"
+  | "cancelled";
+
+export type Claim = {
+  id: string;
+  amount: string;
+  status: ClaimStatus;
+  reference: string;
+  claimCode: string;
+  expiresAt: string | null;
+  approvedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    medsaveId: string;
+  };
+  provider: {
+    id: string;
+    email: string;
+    organizationName: string;
+    contactPhone: string;
+  };
+  medicationPackage: {
+    id: string;
+    name: string;
+    minAmount: number;
+  };
+};
+
+/**
+ * Claims Response Type (pagination in data object)
+ */
+export type ClaimsResponse = BaseSuccessResponse<{
+  page: number;
+  limit: number;
+  total: number;
+  claims: Claim[];
+}>;
+
+/**
+ * Provider Claim Types - Extended claim with full user and provider data
+ */
+export type ProviderClaim = {
+  id: string;
+  userId: string;
+  providerId: string;
+  packageId: string;
+  amount: string;
+  status: string;
+  reference: string;
+  claimCode: string;
+  approvedBy: string | null;
+  expiresAt: string | null;
+  approvedAt: string | null;
+  metadata: any | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  user: {
+    id: string;
+    ghanaCardNumber: string;
+    firstName: string;
+    lastName: string;
+    dateOfBirth: string | null;
+    gender: UserGender | null;
+    phoneNumber: string;
+    email: string | null;
+    channel: UserChannel;
+    passwordHash: string;
+    isPinSet: boolean;
+    isPhoneVerified: boolean;
+    isEmailVerified: boolean;
+    ghanaCardVerified: boolean;
+    isMomoNumber: boolean;
+    momoNumber: string | null;
+    termsAccepted: boolean;
+    role: UserRole;
+    status: UserStatus;
+    failedLoginAttempts: number;
+    lockedUntil: string | null;
+    lastLoginAt: string | null;
+    phoneVerificationToken: string | null;
+    emailVerificationToken: string | null;
+    pinResetToken: string | null;
+    pinResetExpires: string | null;
+    securityQuestions: any | null;
+    preferredLanguage: string;
+    notificationPreferences: any | null;
+    receivePromotions: boolean;
+    momoLinkingOTP: string | null;
+    momoLinkingOTPExpires: string | null;
+    momoLinkingRequestId: string | null;
+    medsaveId: string;
+    trustScore: number;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+  };
+  provider: {
+    id: string;
+    email: string;
+    organizationName: string;
+    licenseNumber: string;
+    address: string;
+    contactPhone: string;
+    passwordHash: string;
+    status: ProviderStatus;
+    verificationDocuments: VerificationDocument[];
+    emailVerificationToken: string | null;
+    emailVerifiedAt: string | null;
+    failedLoginAttempts: number;
+    lockedUntil: string | null;
+    lastLoginAt: string | null;
+    lastLoginIp: string | null;
+    refreshToken: string | null;
+    passwordResetToken: string | null;
+    passwordResetExpiresAt: string | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+};
+
+/**
+ * Provider Claims Response Type
+ */
+export type ProviderClaimsResponse = BaseSuccessResponse<{
+  claims: ProviderClaim[];
+  page: number;
+  limit: number;
+  total: number;
+}>;

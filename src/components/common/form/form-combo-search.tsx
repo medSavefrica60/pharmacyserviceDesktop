@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useId } from "react";
 import { useFormContext, Controller, FieldValues } from "react-hook-form";
 import { X } from "lucide-react";

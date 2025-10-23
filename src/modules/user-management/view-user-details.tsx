@@ -57,30 +57,29 @@ export const ViewUserDetails = () => {
             {/* User Avatar and Name */}
             <div className="flex flex-col items-center gap-3">
               <Avatar className="h-20 w-20">
-                <AvatarImage
-                  src={user.avatar || `https://github.com/shadcn.png?size=160`}
-                  alt={user.name}
-                />
+                <AvatarImage alt={user.firstName + " " + user.lastName || ""} />
                 <AvatarFallback className="text-xl font-semibold">
-                  {user.name
+                  {(user.firstName + " " + user.lastName || "")
                     .split(" ")
-                    .map((n) => n[0])
+                    .map((n: string) => n[0])
                     .join("")
                     .toUpperCase()
                     .slice(0, 2)}
                 </AvatarFallback>
               </Avatar>
               <div className="text-center">
-                <h3 className="text-lg font-semibold">{user.name}</h3>
+                <h3 className="text-lg font-semibold">
+                  {user.firstName + " " + user.lastName || ""}
+                </h3>
                 <p className="text-sm text-muted-foreground">
-                  {user.medsaveId}
+                  {user.ghanaCardNumber}
                 </p>
               </div>
               <Badge
-                variant={user.status === "Active" ? "default" : "secondary"}
+                variant={user.status === "ACTIVE" ? "default" : "secondary"}
                 className={cn(
                   "px-4 py-1",
-                  user.status === "Active"
+                  user.status === "ACTIVE"
                     ? "bg-medsave-success-50 text-medsave-success-500 border-medsave-success-100"
                     : "bg-gray-50 text-gray-500 border-gray-200"
                 )}
@@ -120,8 +119,8 @@ export const ViewUserDetails = () => {
                 <div className="flex-1">
                   <p className="text-sm font-medium">Date Joined</p>
                   <p className="text-sm text-muted-foreground">
-                    {user.dateJoined
-                      ? new Date(user.dateJoined).toLocaleDateString("en-US", {
+                    {user.createdAt
+                      ? new Date(user.createdAt).toLocaleDateString("en-US", {
                           year: "numeric",
                           month: "long",
                           day: "numeric",
@@ -138,7 +137,7 @@ export const ViewUserDetails = () => {
                 <div className="flex-1">
                   <p className="text-sm font-medium">MedSave ID</p>
                   <p className="text-sm text-muted-foreground">
-                    {user.medsaveId}
+                    {user.ghanaCardNumber}
                   </p>
                 </div>
               </div>

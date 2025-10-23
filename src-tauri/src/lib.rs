@@ -12,8 +12,6 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .manage(init_session_store())
         .invoke_handler(tauri::generate_handler![
-            greet,
-            get_user,
             commands::request_otp,
             commands::verify_otp,
             commands::refresh_otp,

@@ -1,18 +1,23 @@
 import { forwardRef } from "react";
 import { Table } from "@tanstack/react-table";
-import { ExtendDataTableProps } from "@/components/common/data-table/types";
 import { Button } from "@/components/ui/button";
 import { DateRangePicker } from "@/components/common/date/date-range-picker";
-import { DownloadIcon } from "lucide-react";
+import { DownloadIcon, UserIcon, X } from "lucide-react";
 import { useState } from "react";
-import { StatementsSearch, SearchOption } from "./statements-search";
-import { useSearchUsers } from "@/hooks/api/use-statements";
+import {
+  UserSearchOption,
+  transformUserToSearchOption,
+} from "./statements-search";
+import { useGetUsers } from "@/hooks/api/use-users";
+import { StatementsSearch } from "./statements-search";
+import { logger } from "@/lib/logger";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export interface StatementsToolbar<TData> extends ExtendDataTableProps<TData> {
-  table: Table<TData>;
-  searchOptions?: SearchOption[];
+export interface StatementsToolbar<TData> {
+  table?: Table<TData>;
+  searchOptions?: UserSearchOption[];
   onSearch?: (query: string) => void;
-  onUserSelect?: (user: SearchOption) => void;
+  onUserSelect?: (user: UserSearchOption) => void;
   onDateRangeChange?: (startDate: string, endDate: string) => void;
   onDownload?: () => void;
   onClearFilters?: () => void;
@@ -38,7 +43,7 @@ export const useStatementsToolbar = forwardRef<
       to: new Date(),
     });
 
-    const handleUserSelect = (user: SearchOption) => {
+    const handleUserSelect = (user: UserSearchOption) => {
       onUserSelect?.(user);
     };
 
@@ -64,7 +69,13 @@ export const useStatementsToolbar = forwardRef<
       onClearFilters?.();
     };
 
-    const { data: searchOptionsData = [] } = useSearchUsers("");
+    const { data: usersData } = useGetUsers();
+    const users = usersData?.users || [];
+
+    // Transform users to search options
+    const searchOptionsData: UserSearchOption[] = users.map(
+      transformUserToSearchOption
+    );
 
     return (
       <div className="flex items-center justify-between py-4">
@@ -77,6 +88,20 @@ export const useStatementsToolbar = forwardRef<
             onSelect={handleUserSelect}
             onClear={handleClearFilters}
             className="w-80"
+            // renderOption={ }
+            renderSelected={(option, onClear) => (
+              <div className="flex items-center gap-2">
+                <Avatar className="h-8 w-8 shrink-0">
+                  <AvatarFallback className="bg-primary/10 text-primary">
+                    <UserIcon className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+                <p>{option.name}</p>
+                <Button variant="ghost" size="icon" onClick={onClear}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           />
 
           {/* Date Range Picker */}

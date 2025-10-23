@@ -27,3 +27,7 @@ dist-ssr
 routeTree.gen.ts
 target/
 .tanstack
+rust.md
+intermediate.md
+beginner.md
+advanced.md

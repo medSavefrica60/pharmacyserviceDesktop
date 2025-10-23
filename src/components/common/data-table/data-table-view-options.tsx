@@ -1,5 +1,3 @@
-"use client";
-
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import type { Table } from "@tanstack/react-table";
 

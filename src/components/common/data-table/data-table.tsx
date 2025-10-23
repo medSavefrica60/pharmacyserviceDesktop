@@ -1,5 +1,3 @@
-"use client";
-
 import { ColumnDef, flexRender } from "@tanstack/react-table";
 
 import {
@@ -63,7 +61,7 @@ export function DataTable<TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
-                      className="font-medium px-4 text-gray-500 text-base border"
+                      className="font-medium px-4 text-gray-500 text-sm border"
                     >
                       {header.isPlaceholder
                         ? null
@@ -83,15 +81,13 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   className={cn(
                     `hover:cursor-pointer`,
-                    index % 2 === 0
-                      ? "bg-transparent"
-                      : "bg-medsave-black-50/50"
+                    index % 2 === 0 ? "bg-transparent" : "bg-gray-50/50"
                   )}
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-2 px-4 border">
+                    <TableCell key={cell.id} className="py-2 px-2 border">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

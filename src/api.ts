@@ -2,6 +2,7 @@ import axios, { isAxiosError } from "axios";
 import { ServiceDefinition } from "./types";
 import { invoke } from "@tauri-apps/api/core";
 import { Session } from "@/hooks/auth/use-auth";
+import { logger } from "./lib/logger";
 
 const index = axios.create({
   baseURL: import.meta.env.VITE_PUBLIC_BASE_URL,
@@ -10,10 +11,9 @@ const index = axios.create({
 
 const axiosClient = async (config: ServiceDefinition) => {
   const session = (await invoke("get_current_session")) as Session | null;
-  console.log("session", session);
   const jwt = session?.tokens?.accessToken;
 
-  console.log("jwt", jwt);
+  logger.info("jwt", jwt);
 
   return index({
     ...config,

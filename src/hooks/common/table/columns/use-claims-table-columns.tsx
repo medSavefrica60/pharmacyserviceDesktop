@@ -1,7 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { DataTableColumnHeader } from "@/components/common/data-table/data-table-column-header";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { LucideCopy, LucideCopyCheck } from "lucide-react";
@@ -12,21 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "@tanstack/react-router";
-
-export type Claim = {
-  id: string;
-  claimNumber: string;
-  patientName: string;
-  patientId: string;
-  providerName: string;
-  providerId: string;
-  serviceType: string;
-  claimDate: string;
-  claimAmount: string;
-  approvedAmount: string;
-  status: "Approved" | "Pending" | "Rejected" | "Processing";
-  avatar?: string;
-};
+import { Claim } from "@/types";
 
 export const useClaimsTableColumns = () => {
   const [copiedNumber, setCopiedNumber] = useState<string | null>(null);
@@ -52,21 +37,54 @@ export const useClaimsTableColumns = () => {
         ),
       },
       {
-        accessorKey: "claimNumber",
+        accessorKey: "id",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Claim Number" />
+          <DataTableColumnHeader column={column} title="Claim ID" />
         ),
         cell: ({ row }) => {
-          const claimNumber = row.original.claimNumber;
-          const isCopied = copiedNumber === claimNumber;
+          const claimId = row.original.id;
+          const shortId = claimId.slice(0, 8);
+          const isCopied = copiedNumber === claimId;
 
           return (
-            <div className="group flex items-center justify-between">
-              <span className="text-sm text-medsave-black-300 font-medium">
-                {claimNumber}
+            <div className="group flex items-center justify-between gap-2">
+              <span className="text-sm font-mono text-medsave-black-300">
+                {shortId}...
               </span>
               <button
-                onClick={() => handleCopyNumber(claimNumber)}
+                onClick={() => handleCopyNumber(claimId)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck
+                    size={16}
+                    className="text-medsave-success-500"
+                  />
+                ) : (
+                  <LucideCopy size={16} className="text-medsave-black-400" />
+                )}
+              </button>
+            </div>
+          );
+        },
+      },
+
+      {
+        accessorKey: "claimCode",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Claim Code" />
+        ),
+        cell: ({ row }) => {
+          const claimCode = row.original.claimCode;
+          const isCopied = copiedNumber === claimCode;
+
+          return (
+            <div className="group flex items-center justify-between gap-2">
+              <span className="text-sm text-medsave-black-300 font-medium">
+                {claimCode}
+              </span>
+              <button
+                onClick={() => handleCopyNumber(claimCode)}
                 className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
               >
                 {isCopied ? (
@@ -84,90 +102,193 @@ export const useClaimsTableColumns = () => {
       },
 
       {
-        accessorKey: "patientName",
+        accessorKey: "reference",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Patient" />
+          <DataTableColumnHeader column={column} title="Reference" />
         ),
         cell: ({ row }) => {
-          const name = row.original.patientName;
-          const avatar =
-            row.original.avatar || `https://github.com/shadcn.png?size=80`;
-          const initials = name
-            .split(" ")
-            .map((n: string) => n[0])
-            .join("")
-            .toUpperCase()
-            .slice(0, 2);
+          const reference = row.original.reference;
+          const isCopied = copiedNumber === reference;
 
           return (
-            <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8 bg-medsave-black-50">
-                <AvatarImage alt={name} src={avatar} />
-                <AvatarFallback className="text-sm font-medium text-medsave-black-300">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <span className="text-sm text-medsave-black-300">{name}</span>
-                <span className="text-xs text-medsave-black-200">
-                  {row.original.patientId}
-                </span>
-              </div>
+            <div className="group flex items-center justify-between gap-2">
+              <span className="text-sm font-mono text-medsave-black-400 bg-medsave-black-25 px-2 py-1 rounded">
+                {reference}
+              </span>
+              <button
+                onClick={() => handleCopyNumber(reference)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck
+                    size={16}
+                    className="text-medsave-success-500"
+                  />
+                ) : (
+                  <LucideCopy size={16} className="text-medsave-black-400" />
+                )}
+              </button>
             </div>
           );
         },
       },
 
       {
-        accessorKey: "providerName",
+        accessorKey: "user",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="User" />
+        ),
+        cell: ({ row }) => {
+          const user = row.original.user;
+          if (!user)
+            return <span className="text-sm text-medsave-black-300">-</span>;
+
+          const userName = `${user.firstName} ${user.lastName}`;
+          const medsaveId = user.medsaveId;
+          const isCopied = copiedNumber === user.medsaveId;
+
+          return (
+            <div className="group flex items-center justify-between gap-2">
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-medsave-black-400">
+                  {userName}
+                </span>
+                <span className="text-xs text-medsave-black-300">
+                  {medsaveId}
+                </span>
+              </div>
+              <button
+                onClick={() => handleCopyNumber(user.medsaveId)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck
+                    size={16}
+                    className="text-medsave-success-500"
+                  />
+                ) : (
+                  <LucideCopy size={16} className="text-medsave-black-400" />
+                )}
+              </button>
+            </div>
+          );
+        },
+      },
+
+      {
+        accessorKey: "provider",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Provider" />
         ),
-        cell: ({ row }) => (
-          <div className="flex flex-col">
-            <span className="text-sm text-medsave-black-300">
-              {row.original.providerName}
-            </span>
-            <span className="text-xs text-medsave-black-200">
-              {row.original.providerId}
-            </span>
-          </div>
-        ),
+        cell: ({ row }) => {
+          const provider = row.original.provider;
+          if (!provider)
+            return <span className="text-sm text-medsave-black-300">-</span>;
+
+          const organizationName = provider.organizationName;
+          const contactPhone = provider.contactPhone;
+          const isCopied = copiedNumber === organizationName;
+
+          return (
+            <div className="group flex items-center justify-between gap-2">
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-medsave-black-400">
+                  {organizationName}
+                </span>
+                <span className="text-xs text-medsave-black-300">
+                  {contactPhone}
+                </span>
+              </div>
+              <button
+                onClick={() => handleCopyNumber(provider.organizationName)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck
+                    size={16}
+                    className="text-medsave-success-500"
+                  />
+                ) : (
+                  <LucideCopy size={16} className="text-medsave-black-400" />
+                )}
+              </button>
+            </div>
+          );
+        },
       },
 
       {
-        accessorKey: "serviceType",
+        accessorKey: "medicationPackage",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Service Type" />
+          <DataTableColumnHeader column={column} title="Medication Package" />
         ),
-        cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300">
-            {row.original.serviceType}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const medicationPackage = row.original.medicationPackage;
+          if (!medicationPackage)
+            return <span className="text-sm text-medsave-black-300">-</span>;
+
+          const packageName = medicationPackage.name;
+          const minAmount = medicationPackage.minAmount;
+          const isCopied = copiedNumber === medicationPackage.id;
+
+          return (
+            <div className="group flex items-center justify-between gap-2">
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-medsave-black-400">
+                  {packageName}
+                </span>
+                <span className="text-xs text-medsave-black-300">
+                  Min: GH₵ {minAmount}
+                </span>
+              </div>
+              <button
+                onClick={() => handleCopyNumber(medicationPackage.id)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck
+                    size={16}
+                    className="text-medsave-success-500"
+                  />
+                ) : (
+                  <LucideCopy size={16} className="text-medsave-black-400" />
+                )}
+              </button>
+            </div>
+          );
+        },
       },
 
       {
-        accessorKey: "claimDate",
+        accessorKey: "createdAt",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Claim Date" />
         ),
         cell: ({ row }) => {
-          const dateStr = row.original.claimDate;
+          const dateStr = row.original.createdAt;
           if (!dateStr)
             return <span className="text-sm text-medsave-black-300">N/A</span>;
 
           try {
             const date = new Date(dateStr);
             const formattedDate = date.toLocaleDateString("en-US", {
-              month: "2-digit",
-              day: "2-digit",
+              month: "short",
+              day: "numeric",
               year: "numeric",
             });
+            const formattedTime = date.toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
             return (
-              <span className="text-sm text-medsave-black-300">
-                {formattedDate}
-              </span>
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-medsave-black-400">
+                  {formattedDate}
+                </span>
+                <span className="text-xs text-medsave-black-200">
+                  {formattedTime}
+                </span>
+              </div>
             );
           } catch {
             return <span className="text-sm text-medsave-black-300">N/A</span>;
@@ -176,27 +297,68 @@ export const useClaimsTableColumns = () => {
       },
 
       {
-        accessorKey: "claimAmount",
+        accessorKey: "amount",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Claim Amount" />
+          <DataTableColumnHeader column={column} title="Amount" />
         ),
-        cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300 font-semibold">
-            {row.original.claimAmount}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const amount = row.original.amount;
+          const formattedAmount = `GH₵ ${parseFloat(amount).toLocaleString(
+            "en-US",
+            {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }
+          )}`;
+          return (
+            <span className="text-sm text-medsave-black-500 font-semibold">
+              {formattedAmount}
+            </span>
+          );
+        },
       },
 
       {
-        accessorKey: "approvedAmount",
+        accessorKey: "approvedAt",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Approved Amount" />
+          <DataTableColumnHeader column={column} title="Approved Date" />
         ),
-        cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300 font-semibold">
-            {row.original.approvedAmount}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const approvedAt = row.original.approvedAt;
+
+          if (!approvedAt) {
+            return (
+              <span className="text-sm text-medsave-black-200 italic">-</span>
+            );
+          }
+
+          try {
+            const date = new Date(approvedAt);
+            const formattedDate = date.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            });
+            const formattedTime = date.toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+            return (
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-medsave-black-400">
+                  {formattedDate}
+                </span>
+                <span className="text-xs text-medsave-black-200">
+                  {formattedTime}
+                </span>
+              </div>
+            );
+          } catch {
+            return (
+              <span className="text-sm text-medsave-black-200 italic">-</span>
+            );
+          }
+        },
       },
 
       {
@@ -206,25 +368,32 @@ export const useClaimsTableColumns = () => {
         ),
         cell: ({ row }) => {
           const status = row.original.status;
+          const statusDisplay =
+            status.charAt(0).toUpperCase() + status.slice(1);
           return (
             <Badge
-              variant={status === "Approved" ? "default" : "secondary"}
+              variant={status === "approved" ? "default" : "secondary"}
               className={cn(
                 "px-4 py-0.5 min-w-24 text-sm rounded-sm",
-                status === "Approved"
+                status === "approved"
                   ? "bg-medsave-success-50 text-medsave-success-500 border-medsave-success-100 hover:bg-green-50"
-                  : status === "Processing"
-                    ? "bg-blue-50 text-blue-600 border-blue-200"
-                    : status === "Pending"
-                      ? "bg-medsave-pending-50 text-medsave-pending-600 border-medsave-pending-100"
-                      : "bg-red-50 text-red-600 border-red-200"
+                  : status === "pending"
+                    ? "bg-medsave-pending-50 text-medsave-pending-600 border-medsave-pending-100"
+                    : status === "rejected"
+                      ? "bg-red-50 text-red-600 border-red-200"
+                      : status === "expired"
+                        ? "bg-orange-50 text-orange-600 border-orange-200"
+                        : status === "cancelled"
+                          ? "bg-gray-50 text-gray-600 border-gray-200"
+                          : "bg-gray-50 text-gray-600 border-gray-200"
               )}
             >
-              {status}
+              {statusDisplay}
             </Badge>
           );
         },
       },
+
       {
         id: "actions",
         enableSorting: false,

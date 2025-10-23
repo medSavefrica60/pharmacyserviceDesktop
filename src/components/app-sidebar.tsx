@@ -12,18 +12,15 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { routesConfig } from "./common/navbar/routes.config";
+import { useSession } from "@/hooks/auth";
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: routesConfig.navMain,
   navSecondary: routesConfig.navSecondary,
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { session } = useSession();
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -35,7 +32,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <a href="#">
                 <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <span className="text-base font-semibold">MedSave Africa</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -46,7 +43,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser
+          user={{
+            fullName: session?.user.fullName ?? null,
+            email: session?.user.email ?? null,
+            avatar: null,
+          }}
+        />
       </SidebarFooter>
     </Sidebar>
   );

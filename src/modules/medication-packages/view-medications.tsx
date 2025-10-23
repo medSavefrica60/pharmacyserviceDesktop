@@ -1,5 +1,3 @@
-"use client";
-
 import { DataTable } from "@/components/common/data-table/data-table";
 import { useGetMedications } from "@/hooks/api/use-medications";
 import { useMedicationsTableColumns } from "@/hooks/common/table/columns/use-medications-table-columns";
@@ -17,7 +15,7 @@ export const ViewMedications = () => {
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
-            Loading medication packages...
+            Loading medications...
           </p>
         </div>
       </div>
@@ -25,15 +23,14 @@ export const ViewMedications = () => {
   }
 
   const medications = medicationsData?.medications || [];
-  const totalCount = medicationsData?.total || 0;
 
   return (
     <div className="flex-1 flex flex-col">
       <div className="flex items-center justify-between px-6 py-4">
         <div>
-          <h1 className="text-2xl font-bold">Medication Packages</h1>
+          <h1 className="text-2xl font-bold">Medications</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manage medication coverage packages and plans
+            Manage medication inventory and catalog
           </p>
         </div>
         <Button
@@ -49,7 +46,7 @@ export const ViewMedications = () => {
           }
         >
           <PlusIcon className="mr-2 h-4 w-4" />
-          Create Package
+          Add Medication
         </Button>
       </div>
 
@@ -57,7 +54,7 @@ export const ViewMedications = () => {
         <DataTable
           data={medications}
           className=""
-          count={totalCount}
+          count={medications.length}
           limit={100}
           pageSizeOptions={[5, 10, 20, 50, 100]}
           columns={columns}
@@ -85,11 +82,11 @@ export const ViewMedications = () => {
               </svg>
             </div>
             <p className="text-center text-sm text-gray-900 font-semibold">
-              No Packages Yet
+              No Medications Yet
             </p>
             <p className="text-center text-sm text-gray-700">
-              No medication packages have been created yet. Create your first
-              package to get started.
+              No medications have been added yet. Add your first medication to
+              get started.
             </p>
             <Button
               onClick={() =>
@@ -104,7 +101,7 @@ export const ViewMedications = () => {
               }
             >
               <PlusIcon className="mr-2 h-4 w-4" />
-              Create Package
+              Add Medication
             </Button>
           </span>
         </div>

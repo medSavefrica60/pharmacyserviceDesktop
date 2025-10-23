@@ -1,10 +1,15 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { DataTableColumnHeader } from "@/components/common/data-table/data-table-column-header";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { LucideCopy, LucideCopyCheck } from "lucide-react";
+import {
+  LucideCopy,
+  LucideCopyCheck,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,25 +17,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "@tanstack/react-router";
-
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  dateJoined: string;
-  medsaveId: string;
-  avatar?: string;
-  status: "Active" | "Inactive";
-};
+import { User } from "@/types";
 
 export const useUsersTableColumns = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleCopyID = async (medsaveId: string) => {
-    setCopiedId(medsaveId);
-    await navigator.clipboard.writeText(medsaveId);
+  const handleCopyID = async (id: string) => {
+    setCopiedId(id);
+    await navigator.clipboard.writeText(id);
     setTimeout(() => {
       setCopiedId(null);
     }, 2000);
@@ -39,39 +34,28 @@ export const useUsersTableColumns = () => {
   const columns: ColumnDef<User>[] = useMemo(
     () => [
       {
-        id: "index",
-        header: "",
-        cell: ({ row }) => (
-          <div className="text-sm text-medsave-black-300 font-medium">
-            {row.index + 1}
-          </div>
-        ),
-      },
-      {
-        accessorKey: "medsaveId",
+        accessorKey: "id",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="MedSave ID" />
+          <DataTableColumnHeader column={column} title="User ID" />
         ),
         cell: ({ row }) => {
-          const medsaveId = row.original.medsaveId;
-          const isCopied = copiedId === medsaveId;
+          const id = row.original.id;
+          const shortId = id.slice(0, 8);
+          const isCopied = copiedId === id;
 
           return (
             <div className="group flex items-center justify-between">
-              <span className="text-sm text-medsave-black-300">
-                {medsaveId}
+              <span className="text-sm font-mono text-gray-700">
+                {shortId}...
               </span>
               <button
-                onClick={() => handleCopyID(medsaveId)}
+                onClick={() => handleCopyID(id)}
                 className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
               >
                 {isCopied ? (
-                  <LucideCopyCheck
-                    size={20}
-                    className="text-medsave-success-500"
-                  />
+                  <LucideCopyCheck size={16} className="text-green-600" />
                 ) : (
-                  <LucideCopy size={20} className="text-medsave-black-400" />
+                  <LucideCopy size={16} className="text-gray-600" />
                 )}
               </button>
             </div>
@@ -80,44 +64,80 @@ export const useUsersTableColumns = () => {
       },
 
       {
-        accessorKey: "name",
+        accessorKey: "ghanaCardNumber",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Name" />
+          <DataTableColumnHeader column={column} title="Ghana Card" />
         ),
         cell: ({ row }) => {
-          const name = row.original.name;
-          const avatar =
-            row.original.avatar || `https://github.com/shadcn.png?size=80`;
-          const initials = name
-            .split(" ")
-            .map((n: string) => n[0])
-            .join("")
-            .toUpperCase()
-            .slice(0, 2);
+          const ghanaCard = row.original.ghanaCardNumber;
+          const isCopied = copiedId === ghanaCard;
 
           return (
-            <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8 bg-medsave-black-50">
-                <AvatarImage alt={name} src={avatar} />
-                <AvatarFallback className="text-sm font-medium text-medsave-black-300">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              <span className="text-sm text-medsave-black-300">{name}</span>
+            <div className="group flex items-center justify-between">
+              <span className="text-sm text-gray-700 font-mono">
+                {ghanaCard}
+              </span>
+              <button
+                onClick={() => handleCopyID(ghanaCard)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck size={20} className="text-green-600" />
+                ) : (
+                  <LucideCopy size={20} className="text-gray-600" />
+                )}
+              </button>
             </div>
           );
         },
       },
 
       {
-        accessorKey: "email",
+        accessorKey: "firstName",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Email" />
+          <DataTableColumnHeader column={column} title="Name" />
+        ),
+        cell: ({ row }) => {
+          const firstName = row.original.firstName;
+          const lastName = row.original.lastName;
+          const fullName = `${firstName} ${lastName}`.trim();
+          const initials =
+            `${firstName[0] || ""}${lastName[0] || ""}`.toUpperCase();
+
+          return (
+            <div className="flex items-center gap-2">
+              <Avatar className="h-8 w-8 bg-gray-100">
+                <AvatarFallback className="text-sm font-medium text-gray-700">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm text-gray-700">{fullName}</span>
+            </div>
+          );
+        },
+      },
+
+      {
+        accessorKey: "phoneNumber",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Phone" />
         ),
         cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300">
-            {row.original.email}
+          <span className="text-sm text-gray-700">
+            {row.original.phoneNumber || "N/A"}
           </span>
+        ),
+      },
+
+      {
+        accessorKey: "channel",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Channel" />
+        ),
+        cell: ({ row }) => (
+          <Badge variant="outline" className="text-xs">
+            {row.original.channel}
+          </Badge>
         ),
       },
 
@@ -127,21 +147,51 @@ export const useUsersTableColumns = () => {
           <DataTableColumnHeader column={column} title="Role" />
         ),
         cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300">
-            {row.original.role}
+          <span className="text-sm text-gray-700">
+            {row.original.role.replace(/_/g, " ")}
           </span>
         ),
       },
 
       {
-        accessorKey: "dateJoined",
+        accessorKey: "isPhoneVerified",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Verified" />
+        ),
+        cell: ({ row }) => {
+          const isPhoneVerified = row.original.isPhoneVerified;
+          const isEmailVerified = row.original.isEmailVerified;
+
+          return (
+            <div className="flex items-center gap-1">
+              {isPhoneVerified ? (
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+              ) : (
+                <XCircle className="h-4 w-4 text-gray-400" />
+              )}
+              <span className="text-xs text-gray-600">
+                {isPhoneVerified && isEmailVerified
+                  ? "Both"
+                  : isPhoneVerified
+                    ? "Phone"
+                    : isEmailVerified
+                      ? "Email"
+                      : "None"}
+              </span>
+            </div>
+          );
+        },
+      },
+
+      {
+        accessorKey: "createdAt",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Date Joined" />
         ),
         cell: ({ row }) => {
-          const dateStr = row.original.dateJoined;
+          const dateStr = row.original.createdAt;
           if (!dateStr)
-            return <span className="text-sm text-medsave-black-300">N/A</span>;
+            return <span className="text-sm text-gray-700">N/A</span>;
 
           try {
             const date = new Date(dateStr);
@@ -151,12 +201,10 @@ export const useUsersTableColumns = () => {
               year: "numeric",
             });
             return (
-              <span className="text-sm text-medsave-black-300">
-                {formattedDate}
-              </span>
+              <span className="text-sm text-gray-700">{formattedDate}</span>
             );
           } catch {
-            return <span className="text-sm text-medsave-black-300">N/A</span>;
+            return <span className="text-sm text-gray-700">N/A</span>;
           }
         },
       },
@@ -168,14 +216,18 @@ export const useUsersTableColumns = () => {
         ),
         cell: ({ row }) => {
           const status = row.original.status;
+          const isActive = status === "ACTIVE";
+
           return (
             <Badge
-              variant={status === "Active" ? "default" : "secondary"}
+              variant={isActive ? "default" : "secondary"}
               className={cn(
-                "px-6 py-0.5 min-w-30 text-base rounded-sm",
-                status === "Active"
-                  ? "bg-medsave-success-50 text-medsave-success-500 border-medsave-success-100 hover:bg-green-50"
-                  : "bg-gray-50 text-gray-500 border-gray-200"
+                "px-4 py-0.5 min-w-20 text-sm rounded-sm",
+                isActive
+                  ? "bg-green-50 text-green-600 border-green-200 hover:bg-green-50"
+                  : status === "INACTIVE"
+                    ? "bg-gray-50 text-gray-500 border-gray-200"
+                    : "bg-red-50 text-red-600 border-red-200"
               )}
             >
               {status}
@@ -251,6 +303,21 @@ export const useUsersTableColumns = () => {
                   className="text-destructive focus:text-destructive"
                 >
                   Delete User
+                </DropdownMenuItem>
+                {/* lets add user mini statement   */}
+                <DropdownMenuItem
+                  onClick={() =>
+                    navigate({
+                      to: "/users",
+                      search: {
+                        sheet: "mini-statement",
+                        dialog: undefined,
+                        userId: row.original.id,
+                      },
+                    })
+                  }
+                >
+                  View Mini Statement
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

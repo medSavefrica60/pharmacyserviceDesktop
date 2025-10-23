@@ -1,5 +1,3 @@
-"use client";
-
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -34,7 +32,7 @@ export function DataTableColumnHeader<TData, TValue>({
       <div
         className={cn(
           className,
-          "font-medium text-base font-montserrat py-4 text-nowrap"
+          "font-medium text-sm font-montserrat py-4 text-nowrap"
         )}
       >
         {title}
@@ -54,16 +52,14 @@ export function DataTableColumnHeader<TData, TValue>({
               column.getIsSorted() === "desc"
                 ? "Sorted descending. Click to sort ascending."
                 : column.getIsSorted() === "asc"
-                ? "Sorted ascending. Click to sort descending."
-                : "Not sorted. Click to sort ascending."
+                  ? "Sorted ascending. Click to sort descending."
+                  : "Not sorted. Click to sort ascending."
             }
             variant="ghost"
             size="sm"
             className="-ml-3 h-8 data-[state=open]:bg-accent"
           >
-            <span className="text-base font-medium font-montserrat">
-              {title}
-            </span>
+            <span className="text-sm font-medium font-montserrat">{title}</span>
             {column.getCanSort() && column.getIsSorted() === "desc" ? (
               <ArrowDownIcon className="ml-2 size-4" aria-hidden="true" />
             ) : column.getIsSorted() === "asc" ? (

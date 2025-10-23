@@ -1,4 +1,3 @@
-"use client";
 import { FieldValues, useFormContext } from "react-hook-form";
 import {
   FormControl,

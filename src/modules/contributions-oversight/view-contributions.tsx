@@ -1,5 +1,3 @@
-"use client";
-
 import { DataTable } from "@/components/common/data-table/data-table";
 import { useGetContributions } from "@/hooks/api/use-contributions";
 import { useContributionsTableColumns } from "@/hooks/common/table/columns/use-contributions-table-columns";

@@ -1,5 +1,3 @@
-"use client";
-
 import { DataTable } from "@/components/common/data-table/data-table";
 import { useGetProviders } from "@/hooks/api/use-providers";
 import { useProvidersTableColumns } from "@/hooks/common/table/columns/use-providers-table-columns";

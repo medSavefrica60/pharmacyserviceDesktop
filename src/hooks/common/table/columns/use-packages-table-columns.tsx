@@ -11,19 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "@tanstack/react-router";
-
-export type Package = {
-  id: string;
-  packageId: string;
-  name: string;
-  description: string;
-  price: string;
-  duration: string;
-  coverage: string;
-  status: "Active" | "Inactive" | "Suspended";
-  memberCount: number;
-  createdAt: string;
-};
+import { Package } from "@/types";
 
 export const usePackagesTableColumns = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -49,96 +37,123 @@ export const usePackagesTableColumns = () => {
         ),
       },
       {
-        accessorKey: "packageId",
+        accessorKey: "id",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Package ID" />
         ),
         cell: ({ row }) => {
-          const packageId = row.original.packageId;
-          const isCopied = copiedId === packageId;
+          const id = row.original.id;
+          const shortId = id.slice(0, 8);
+          const isCopied = copiedId === id;
 
           return (
-            <div className="group flex items-center justify-between">
-              <span className="text-sm text-medsave-black-300 font-medium">
-                {packageId}
+            <div className="group flex items-center justify-between gap-2">
+              <span className="text-sm font-mono text-medsave-black-300">
+                {shortId}...
               </span>
               <button
-                onClick={() => handleCopyID(packageId)}
+                onClick={() => handleCopyID(id)}
                 className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
               >
                 {isCopied ? (
                   <LucideCopyCheck
-                    size={20}
+                    size={16}
                     className="text-medsave-success-500"
                   />
                 ) : (
-                  <LucideCopy size={20} className="text-medsave-black-400" />
+                  <LucideCopy size={16} className="text-medsave-black-400" />
                 )}
               </button>
             </div>
           );
         },
       },
+
       {
         accessorKey: "name",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Package Name" />
         ),
         cell: ({ row }) => (
-          <div className="flex flex-col">
-            <span className="text-sm text-medsave-black-300 font-medium">
-              {row.original.name}
-            </span>
-            <span className="text-xs text-medsave-black-200">
-              {row.original.description}
-            </span>
-          </div>
+          <span className="text-sm text-medsave-black-300 font-medium">
+            {row.original.name}
+          </span>
         ),
       },
+
       {
-        accessorKey: "price",
+        accessorKey: "minAmount",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Price" />
+          <DataTableColumnHeader column={column} title="Minimum Amount" />
         ),
         cell: ({ row }) => (
           <span className="text-sm text-medsave-black-300 font-semibold">
-            {row.original.price}
+            GH₵ {row.original.minAmount.toLocaleString()}
           </span>
         ),
       },
+
       {
-        accessorKey: "duration",
+        accessorKey: "createdBy",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Duration" />
+          <DataTableColumnHeader column={column} title="Created By" />
         ),
-        cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300">
-            {row.original.duration}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const createdBy = row.original.createdBy;
+          const shortId = createdBy.slice(0, 8);
+          const isCopied = copiedId === createdBy;
+
+          return (
+            <div className="group flex items-center justify-between gap-2">
+              <span className="text-sm font-mono text-medsave-black-300">
+                {shortId}...
+              </span>
+              <button
+                onClick={() => handleCopyID(createdBy)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck
+                    size={16}
+                    className="text-medsave-success-500"
+                  />
+                ) : (
+                  <LucideCopy size={16} className="text-medsave-black-400" />
+                )}
+              </button>
+            </div>
+          );
+        },
       },
+
       {
-        accessorKey: "coverage",
+        accessorKey: "createdAt",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Coverage" />
+          <DataTableColumnHeader column={column} title="Date Created" />
         ),
-        cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300">
-            {row.original.coverage}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const dateStr = row.original.createdAt;
+          if (!dateStr)
+            return <span className="text-sm text-medsave-black-300">N/A</span>;
+
+          try {
+            const date = new Date(dateStr);
+            const formattedDate = date.toLocaleDateString("en-US", {
+              month: "2-digit",
+              day: "2-digit",
+              year: "numeric",
+            });
+            return (
+              <span className="text-sm text-medsave-black-300">
+                {formattedDate}
+              </span>
+            );
+          } catch {
+            return <span className="text-sm text-medsave-black-300">N/A</span>;
+          }
+        },
       },
-      {
-        accessorKey: "memberCount",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Members" />
-        ),
-        cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300">
-            {row.original.memberCount}
-          </span>
-        ),
-      },
+
       {
         accessorKey: "status",
         header: ({ column }) => (
@@ -146,14 +161,16 @@ export const usePackagesTableColumns = () => {
         ),
         cell: ({ row }) => {
           const status = row.original.status;
+          const isActive = status === "ACTIVE";
+
           return (
             <Badge
-              variant={status === "Active" ? "default" : "secondary"}
+              variant={isActive ? "default" : "secondary"}
               className={cn(
                 "px-4 py-0.5 min-w-24 text-sm rounded-sm",
-                status === "Active"
+                isActive
                   ? "bg-medsave-success-50 text-medsave-success-500 border-medsave-success-100 hover:bg-green-50"
-                  : status === "Inactive"
+                  : status === "INACTIVE"
                     ? "bg-gray-50 text-gray-600 border-gray-200"
                     : "bg-red-50 text-red-600 border-red-200"
               )}

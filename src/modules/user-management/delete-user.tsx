@@ -61,9 +61,13 @@ export const DeleteUser = () => {
         {user && (
           <div className="rounded-md bg-muted p-4 my-2">
             <div className="space-y-1">
-              <p className="text-sm font-medium">{user.name}</p>
+              <p className="text-sm font-medium">
+                {user.firstName} {user.lastName || ""}
+              </p>
               <p className="text-sm text-muted-foreground">{user.email}</p>
-              <p className="text-xs text-muted-foreground">{user.medsaveId}</p>
+              <p className="text-xs text-muted-foreground">
+                {user.ghanaCardNumber}
+              </p>
             </div>
           </div>
         )}

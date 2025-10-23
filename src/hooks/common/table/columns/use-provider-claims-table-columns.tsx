@@ -1,23 +1,23 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { DataTableColumnHeader } from "@/components/common/data-table/data-table-column-header";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-
-export type ProviderClaim = {
-  id: string;
-  claimId: string;
-  patientName: string;
-  patientId: string;
-  service: string;
-  claimDate: string;
-  amount: string;
-  status: "Approved" | "Pending" | "Rejected";
-  avatar?: string;
-};
+import { LucideCopy, LucideCopyCheck } from "lucide-react";
+import { ProviderClaim } from "@/types";
 
 export const useProviderClaimsTableColumns = () => {
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleCopyID = async (id: string) => {
+    setCopiedId(id);
+    await navigator.clipboard.writeText(id);
+    setTimeout(() => {
+      setCopiedId(null);
+    }, 2000);
+  };
+
   const columns: ColumnDef<ProviderClaim>[] = useMemo(
     () => [
       {
@@ -30,25 +30,108 @@ export const useProviderClaimsTableColumns = () => {
         ),
       },
       {
-        accessorKey: "claimId",
+        accessorKey: "id",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Claim ID" />
+          <DataTableColumnHeader column={column} title="ID" />
         ),
-        cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300 font-medium">
-            {row.original.claimId}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const id = row.original.id;
+          const shortId = id.slice(0, 8);
+          const isCopied = copiedId === id;
+
+          return (
+            <div className="group flex items-center justify-between gap-2">
+              <span className="text-sm font-mono text-medsave-black-300">
+                {shortId}...
+              </span>
+              <button
+                onClick={() => handleCopyID(id)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck
+                    size={16}
+                    className="text-medsave-success-500"
+                  />
+                ) : (
+                  <LucideCopy size={16} className="text-medsave-black-400" />
+                )}
+              </button>
+            </div>
+          );
+        },
       },
+
+      {
+        accessorKey: "reference",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Reference" />
+        ),
+        cell: ({ row }) => {
+          const reference = row.original.reference;
+          const isCopied = copiedId === reference;
+
+          return (
+            <div className="group flex items-center justify-between gap-2">
+              <span className="text-sm text-medsave-black-300 font-medium">
+                {reference}
+              </span>
+              <button
+                onClick={() => handleCopyID(reference)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck
+                    size={16}
+                    className="text-medsave-success-500"
+                  />
+                ) : (
+                  <LucideCopy size={16} className="text-medsave-black-400" />
+                )}
+              </button>
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "patientId",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Patient ID" />
+        ),
+        cell: ({ row }) => {
+          const patientId = row.original.user.medsaveId;
+          const isCopied = copiedId === patientId;
+
+          return (
+            <div className="group flex items-center justify-between gap-2">
+              <span className="text-sm font-mono text-medsave-black-300">
+                {patientId}
+              </span>
+              <button
+                onClick={() => handleCopyID(patientId)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck
+                    size={16}
+                    className="text-medsave-success-500"
+                  />
+                ) : (
+                  <LucideCopy size={16} className="text-medsave-black-400" />
+                )}
+              </button>
+            </div>
+          );
+        },
+      },
+
       {
         accessorKey: "patientName",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Patient" />
+          <DataTableColumnHeader column={column} title="Patient Name" />
         ),
         cell: ({ row }) => {
-          const name = row.original.patientName;
-          const avatar =
-            row.original.avatar || `https://github.com/shadcn.png?size=80`;
+          const name = `${row.original.user.firstName} ${row.original.user.lastName}`;
           const initials = name
             .split(" ")
             .map((n: string) => n[0])
@@ -59,15 +142,16 @@ export const useProviderClaimsTableColumns = () => {
           return (
             <div className="flex items-center gap-2">
               <Avatar className="h-8 w-8 bg-medsave-black-50">
-                <AvatarImage alt={name} src={avatar} />
                 <AvatarFallback className="text-sm font-medium text-medsave-black-300">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
-                <span className="text-sm text-medsave-black-300">{name}</span>
-                <span className="text-xs text-medsave-black-200">
-                  {row.original.patientId}
+                <span className="text-sm text-medsave-black-300 font-medium">
+                  {name}
+                </span>
+                <span className="text-xs text-medsave-black-400">
+                  {row.original.user.medsaveId}
                 </span>
               </div>
             </div>
@@ -75,23 +159,44 @@ export const useProviderClaimsTableColumns = () => {
         },
       },
       {
-        accessorKey: "service",
+        accessorKey: "packageId",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Service" />
+          <DataTableColumnHeader column={column} title="Package ID" />
         ),
-        cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300">
-            {row.original.service}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const packageId = row.original.packageId;
+          const shortId = packageId.slice(0, 8);
+          const isCopied = copiedId === packageId;
+
+          return (
+            <div className="group flex items-center justify-between gap-2">
+              <span className="text-sm font-mono text-medsave-black-300">
+                {shortId}...
+              </span>
+              <button
+                onClick={() => handleCopyID(packageId)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck
+                    size={16}
+                    className="text-medsave-success-500"
+                  />
+                ) : (
+                  <LucideCopy size={16} className="text-medsave-black-400" />
+                )}
+              </button>
+            </div>
+          );
+        },
       },
       {
-        accessorKey: "claimDate",
+        accessorKey: "createdAt",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Claim Date" />
         ),
         cell: ({ row }) => {
-          const dateStr = row.original.claimDate;
+          const dateStr = row.original.createdAt;
           if (!dateStr)
             return <span className="text-sm text-medsave-black-300">N/A</span>;
 
@@ -102,10 +207,19 @@ export const useProviderClaimsTableColumns = () => {
               day: "2-digit",
               year: "numeric",
             });
+            const formattedTime = date.toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
             return (
-              <span className="text-sm text-medsave-black-300">
-                {formattedDate}
-              </span>
+              <div className="flex flex-col">
+                <span className="text-sm text-medsave-black-300">
+                  {formattedDate}
+                </span>
+                <span className="text-xs text-medsave-black-400">
+                  {formattedTime}
+                </span>
+              </div>
             );
           } catch {
             return <span className="text-sm text-medsave-black-300">N/A</span>;
@@ -117,11 +231,19 @@ export const useProviderClaimsTableColumns = () => {
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Amount" />
         ),
-        cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300 font-semibold">
-            {row.original.amount}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const amount = parseFloat(row.original.amount);
+          const formattedAmount = new Intl.NumberFormat("en-GH", {
+            style: "currency",
+            currency: "GHS",
+          }).format(amount);
+
+          return (
+            <span className="text-sm text-medsave-black-300 font-semibold">
+              {formattedAmount}
+            </span>
+          );
+        },
       },
       {
         accessorKey: "status",
@@ -132,14 +254,20 @@ export const useProviderClaimsTableColumns = () => {
           const status = row.original.status;
           return (
             <Badge
-              variant={status === "Approved" ? "default" : "secondary"}
+              variant={status === "approved" ? "default" : "secondary"}
               className={cn(
-                "px-4 py-0.5 min-w-24 text-sm rounded-sm",
-                status === "Approved"
+                "px-4 py-0.5 min-w-24 text-sm rounded-sm capitalize",
+                status === "approved"
                   ? "bg-medsave-success-50 text-medsave-success-500 border-medsave-success-100 hover:bg-green-50"
-                  : status === "Pending"
+                  : status === "pending"
                     ? "bg-medsave-pending-50 text-medsave-pending-600 border-medsave-pending-100"
-                    : "bg-red-50 text-red-600 border-red-200"
+                    : status === "rejected"
+                      ? "bg-red-50 text-red-600 border-red-200"
+                      : status === "expired"
+                        ? "bg-orange-50 text-orange-600 border-orange-200"
+                        : status === "cancelled"
+                          ? "bg-gray-50 text-gray-600 border-gray-200"
+                          : "bg-gray-50 text-gray-600 border-gray-200"
               )}
             >
               {status}
@@ -148,7 +276,7 @@ export const useProviderClaimsTableColumns = () => {
         },
       },
     ],
-    []
+    [copiedId]
   );
 
   return columns;

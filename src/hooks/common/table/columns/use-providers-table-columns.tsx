@@ -34,15 +34,36 @@ export const useProvidersTableColumns = () => {
 
   const columns: ColumnDef<Provider>[] = useMemo(
     () => [
-      // {
-      //   id: "index",
-      //   header: "",
-      //   cell: ({ row }) => (
-      //     <div className="text-sm text-gray-700 font-medium">
-      //       {row.index + 1}
-      //     </div>
-      //   ),
-      // },
+      {
+        accessorKey: "id",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Provider ID" />
+        ),
+        cell: ({ row }) => {
+          const id = row.original.id;
+          const shortId = id.slice(0, 8);
+          const isCopied = copiedId === id;
+
+          return (
+            <div className="group flex items-center justify-between">
+              <span className="text-sm font-mono text-gray-700">
+                {shortId}...
+              </span>
+              <button
+                onClick={() => handleCopyID(id)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck size={16} className="text-green-600" />
+                ) : (
+                  <LucideCopy size={16} className="text-gray-600" />
+                )}
+              </button>
+            </div>
+          );
+        },
+      },
+
       {
         accessorKey: "licenseNumber",
         header: ({ column }) => (

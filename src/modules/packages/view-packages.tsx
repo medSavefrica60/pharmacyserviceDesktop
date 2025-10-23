@@ -1,12 +1,14 @@
-"use client";
-
 import { DataTable } from "@/components/common/data-table/data-table";
 import { useGetPackages } from "@/hooks/api/use-packages";
 import { usePackagesTableColumns } from "@/hooks/common/table/columns/use-packages-table-columns";
+import { Button } from "@/components/ui/button";
+import { PlusIcon } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 
 export const ViewPackages = () => {
   const columns = usePackagesTableColumns();
   const { data: packages, isLoading } = useGetPackages();
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -18,7 +20,8 @@ export const ViewPackages = () => {
     );
   }
 
-  const packageData = packages || [];
+  const packageData = packages?.packages || [];
+  const totalCount = packages?.pagination?.total || 0;
 
   return (
     <div className="flex-1 flex flex-col">
@@ -29,13 +32,28 @@ export const ViewPackages = () => {
             Manage and monitor medication packages
           </p>
         </div>
+        <Button
+          onClick={() =>
+            navigate({
+              to: "/packages",
+              search: {
+                sheet: "create",
+                dialog: undefined,
+                packageId: undefined,
+              },
+            })
+          }
+        >
+          <PlusIcon className="mr-2 h-4 w-4" />
+          Create Package
+        </Button>
       </div>
 
       {packageData.length > 0 ? (
         <DataTable
           data={packageData}
           className=""
-          count={packageData.length}
+          count={totalCount}
           limit={100}
           pageSizeOptions={[5, 10, 20, 50, 100]}
           columns={columns}
@@ -68,6 +86,21 @@ export const ViewPackages = () => {
               No medication packages have been created yet. Packages will appear
               here once they are configured.
             </p>
+            <Button
+              onClick={() =>
+                navigate({
+                  to: "/packages",
+                  search: {
+                    sheet: "create",
+                    dialog: undefined,
+                    packageId: undefined,
+                  },
+                })
+              }
+            >
+              <PlusIcon className="mr-2 h-4 w-4" />
+              Create Package
+            </Button>
           </span>
         </div>
       )}

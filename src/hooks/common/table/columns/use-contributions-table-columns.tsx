@@ -50,6 +50,39 @@ export const useContributionsTableColumns = () => {
         ),
       },
       {
+        accessorKey: "id",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="ID" />
+        ),
+        cell: ({ row }) => {
+          const id = row.original.id;
+          const shortId = id.slice(0, 8);
+          const isCopied = copiedId === id;
+
+          return (
+            <div className="group flex items-center justify-between gap-2">
+              <span className="text-sm font-mono text-medsave-black-300">
+                {shortId}...
+              </span>
+              <button
+                onClick={() => handleCopyID(id)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck
+                    size={16}
+                    className="text-medsave-success-500"
+                  />
+                ) : (
+                  <LucideCopy size={16} className="text-medsave-black-400" />
+                )}
+              </button>
+            </div>
+          );
+        },
+      },
+
+      {
         accessorKey: "contributionId",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Contribution ID" />
@@ -82,9 +115,41 @@ export const useContributionsTableColumns = () => {
       },
 
       {
+        accessorKey: "memberId",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Member ID" />
+        ),
+        cell: ({ row }) => {
+          const memberId = row.original.memberId;
+          const isCopied = copiedId === memberId;
+
+          return (
+            <div className="group flex items-center justify-between gap-2">
+              <span className="text-sm font-mono text-medsave-black-300">
+                {memberId}
+              </span>
+              <button
+                onClick={() => handleCopyID(memberId)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck
+                    size={16}
+                    className="text-medsave-success-500"
+                  />
+                ) : (
+                  <LucideCopy size={16} className="text-medsave-black-400" />
+                )}
+              </button>
+            </div>
+          );
+        },
+      },
+
+      {
         accessorKey: "memberName",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Member" />
+          <DataTableColumnHeader column={column} title="Member Name" />
         ),
         cell: ({ row }) => {
           const name = row.original.memberName;
@@ -105,12 +170,7 @@ export const useContributionsTableColumns = () => {
                   {initials}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex flex-col">
-                <span className="text-sm text-medsave-black-300">{name}</span>
-                <span className="text-xs text-medsave-black-200">
-                  {row.original.memberId}
-                </span>
-              </div>
+              <span className="text-sm text-medsave-black-300">{name}</span>
             </div>
           );
         },

@@ -50,6 +50,39 @@ export const useStatementsTableColumns = () => {
         ),
       },
       {
+        accessorKey: "id",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="ID" />
+        ),
+        cell: ({ row }) => {
+          const id = row.original.id;
+          const shortId = id.slice(0, 8);
+          const isCopied = copiedId === id;
+
+          return (
+            <div className="group flex items-center justify-between gap-2">
+              <span className="text-sm font-mono text-medsave-black-300">
+                {shortId}...
+              </span>
+              <button
+                onClick={() => handleCopyID(id)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck
+                    size={16}
+                    className="text-medsave-success-500"
+                  />
+                ) : (
+                  <LucideCopy size={16} className="text-medsave-black-400" />
+                )}
+              </button>
+            </div>
+          );
+        },
+      },
+
+      {
         accessorKey: "statementId",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Statement ID" />
@@ -81,19 +114,46 @@ export const useStatementsTableColumns = () => {
         },
       },
       {
+        accessorKey: "userId",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="User ID" />
+        ),
+        cell: ({ row }) => {
+          const userId = row.original.userId;
+          const isCopied = copiedId === userId;
+
+          return (
+            <div className="group flex items-center justify-between gap-2">
+              <span className="text-sm font-mono text-medsave-black-300">
+                {userId}
+              </span>
+              <button
+                onClick={() => handleCopyID(userId)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck
+                    size={16}
+                    className="text-medsave-success-500"
+                  />
+                ) : (
+                  <LucideCopy size={16} className="text-medsave-black-400" />
+                )}
+              </button>
+            </div>
+          );
+        },
+      },
+
+      {
         accessorKey: "userName",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="User" />
+          <DataTableColumnHeader column={column} title="User Name" />
         ),
         cell: ({ row }) => (
-          <div className="flex flex-col">
-            <span className="text-sm text-medsave-black-300 font-medium">
-              {row.original.userName}
-            </span>
-            <span className="text-xs text-medsave-black-200">
-              {row.original.userId}
-            </span>
-          </div>
+          <span className="text-sm text-medsave-black-300 font-medium">
+            {row.original.userName}
+          </span>
         ),
       },
       {

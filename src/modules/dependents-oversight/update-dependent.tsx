@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/sheet";
 import {
   useGetDependent,
-  useUpsertDependent,
+  useUpdateDependent,
 } from "@/hooks/api/use-dependents";
 import { Button } from "@/components/ui/button";
 import { useForm, FormProvider } from "react-hook-form";
@@ -25,17 +25,13 @@ import {
 import { Label } from "@/components/ui/label";
 import { Controller } from "react-hook-form";
 import { toast } from "sonner";
-
-type DependentFormData = {
-  name: string;
-  relationship: string;
-  dateOfBirth: string;
-  gender: string;
-  primaryMember: string;
-  primaryMemberId: string;
-  status: "Active" | "Inactive";
-  dependentId: string;
-};
+import { zodResolver } from "@hookform/resolvers/zod";
+import { dependentSchema, type DependentFormData } from "@/lib/zod/dependents";
+import {
+  StatementsSearch,
+  type SearchOption,
+} from "@/modules/statements-management/statements-search";
+import { useGetUsers } from "@/hooks/api/use-users";
 
 export const UpdateDependent = () => {
   const navigate = useNavigate();
@@ -51,18 +47,20 @@ export const UpdateDependent = () => {
   const { data: dependent, isLoading } = useGetDependent(
     isEdit ? search.dependentId : undefined
   );
-  const upsertMutation = useUpsertDependent();
+  const updateMutation = useUpdateDependent();
+  const { data: users } = useGetUsers();
 
   const methods = useForm<DependentFormData>({
+    resolver: zodResolver(dependentSchema),
     defaultValues: {
-      name: "",
-      relationship: "Child",
+      userId: "",
+      firstName: "",
+      lastName: "",
       dateOfBirth: "",
-      gender: "Male",
-      primaryMember: "",
-      primaryMemberId: "",
-      status: "Active",
-      dependentId: "",
+      gender: "male",
+      relationship: "child",
+      ghanaCardNumber: "",
+      phoneNumber: "",
     },
   });
 
@@ -70,25 +68,29 @@ export const UpdateDependent = () => {
   useEffect(() => {
     if (dependent && isEdit) {
       methods.reset({
-        name: dependent.name,
-        relationship: dependent.relationship,
+        userId: (dependent as any).userId || "",
+        firstName:
+          (dependent as any).firstName || dependent.name?.split(" ")[0] || "",
+        lastName:
+          (dependent as any).lastName ||
+          dependent.name?.split(" ").slice(1).join(" ") ||
+          "",
         dateOfBirth: dependent.dateOfBirth,
-        gender: dependent.gender,
-        primaryMember: dependent.primaryMember,
-        primaryMemberId: dependent.primaryMemberId,
-        status: dependent.status,
-        dependentId: dependent.dependentId,
+        gender: (dependent as any).gender || "male",
+        relationship: (dependent as any).relationship || "child",
+        ghanaCardNumber: (dependent as any).ghanaCardNumber || "",
+        phoneNumber: (dependent as any).phoneNumber || "",
       });
     } else if (isCreate) {
       methods.reset({
-        name: "",
-        relationship: "Child",
+        userId: "",
+        firstName: "",
+        lastName: "",
         dateOfBirth: "",
-        gender: "Male",
-        primaryMember: "",
-        primaryMemberId: "",
-        status: "Active",
-        dependentId: `DEP${Date.now().toString().slice(-6)}`,
+        gender: "male",
+        relationship: "child",
+        ghanaCardNumber: "",
+        phoneNumber: "",
       });
     }
   }, [dependent, isEdit, isCreate, methods]);
@@ -103,11 +105,12 @@ export const UpdateDependent = () => {
 
   const onSubmit = async (data: DependentFormData) => {
     try {
-      await upsertMutation.mutateAsync({
-        ...(isEdit && { id: search.dependentId }),
-        ...data,
-        dateAdded: dependent?.dateAdded || new Date().toISOString(),
-      });
+      if (isEdit && search.dependentId) {
+        await updateMutation.mutateAsync({
+          id: search.dependentId,
+          data,
+        });
+      }
 
       toast.success(
         isEdit
@@ -120,6 +123,23 @@ export const UpdateDependent = () => {
         isEdit ? "Failed to update dependent" : "Failed to add dependent"
       );
     }
+  };
+
+  // Convert users to search options
+  const userSearchOptions: SearchOption[] =
+    users?.map((user) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      memberId: user.medsaveId,
+    })) || [];
+
+  const handleUserSelect = (option: SearchOption) => {
+    methods.setValue("userId", option.id);
+  };
+
+  const handleUserClear = () => {
+    methods.setValue("userId", "");
   };
 
   return (
@@ -146,36 +166,32 @@ export const UpdateDependent = () => {
               onSubmit={methods.handleSubmit(onSubmit)}
               className="flex flex-col gap-4 py-4 px-6"
             >
+              <div className="space-y-2">
+                <Label htmlFor="userSearch">Select Primary Member</Label>
+                <StatementsSearch
+                  options={userSearchOptions}
+                  placeholder="Search for primary member..."
+                  emptyText="No members found."
+                  onSelect={handleUserSelect}
+                  onClear={handleUserClear}
+                />
+              </div>
+
               <FormInput
-                name="name"
-                label="Full Name"
-                placeholder="Enter dependent's full name"
+                name="firstName"
+                label="First Name"
+                placeholder="Enter first name"
                 required
                 wrapperClassName="space-y-2"
               />
 
-              <div className="space-y-2">
-                <Label htmlFor="relationship">Relationship</Label>
-                <Controller
-                  name="relationship"
-                  control={methods.control}
-                  rules={{ required: "Relationship is required" }}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select relationship" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Spouse">Spouse</SelectItem>
-                        <SelectItem value="Child">Child</SelectItem>
-                        <SelectItem value="Parent">Parent</SelectItem>
-                        <SelectItem value="Sibling">Sibling</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
+              <FormInput
+                name="lastName"
+                label="Last Name"
+                placeholder="Enter last name"
+                required
+                wrapperClassName="space-y-2"
+              />
 
               <FormInput
                 name="dateOfBirth"
@@ -197,59 +213,54 @@ export const UpdateDependent = () => {
                         <SelectValue placeholder="Select gender" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Male">Male</SelectItem>
-                        <SelectItem value="Female">Female</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
                 />
               </div>
 
-              <FormInput
-                name="primaryMember"
-                label="Primary Member Name"
-                placeholder="Enter primary member name"
-                required
-                wrapperClassName="space-y-2"
-              />
-
-              <FormInput
-                name="primaryMemberId"
-                label="Primary Member ID"
-                placeholder="MS123456"
-                required
-                wrapperClassName="space-y-2"
-              />
-
-              <FormInput
-                name="dependentId"
-                label="Dependent ID"
-                placeholder="DEP123456"
-                required
-                disabled={isEdit}
-                wrapperClassName="space-y-2"
-              />
-
               <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
+                <Label htmlFor="relationship">Relationship</Label>
                 <Controller
-                  name="status"
+                  name="relationship"
                   control={methods.control}
-                  rules={{ required: "Status is required" }}
+                  rules={{ required: "Relationship is required" }}
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select status" />
+                        <SelectValue placeholder="Select relationship" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Active">Active</SelectItem>
-                        <SelectItem value="Inactive">Inactive</SelectItem>
+                        <SelectItem value="spouse">Spouse</SelectItem>
+                        <SelectItem value="child">Child</SelectItem>
+                        <SelectItem value="parent">Parent</SelectItem>
+                        <SelectItem value="sibling">Sibling</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
                 />
               </div>
+
+              <FormInput
+                name="ghanaCardNumber"
+                label="Ghana Card Number"
+                placeholder="GHA-123456789-0"
+                required
+                wrapperClassName="space-y-2"
+              />
+
+              <FormInput
+                name="phoneNumber"
+                label="Phone Number"
+                type="tel"
+                placeholder="+233240000000"
+                required
+                wrapperClassName="space-y-2"
+              />
 
               <SheetFooter className="mt-4 px-0">
                 <div className="flex gap-2 w-full">
@@ -263,10 +274,10 @@ export const UpdateDependent = () => {
                   </Button>
                   <Button
                     type="submit"
-                    disabled={upsertMutation.isPending}
+                    disabled={updateMutation.isPending}
                     className="flex-1"
                   >
-                    {upsertMutation.isPending
+                    {updateMutation.isPending
                       ? "Saving..."
                       : isEdit
                         ? "Update Dependent"
