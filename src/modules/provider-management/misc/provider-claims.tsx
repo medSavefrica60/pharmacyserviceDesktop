@@ -9,6 +9,7 @@ import {
 import { DataTable } from "@/components/common/data-table/data-table";
 import { useProviderClaimsTableColumns } from "@/hooks/common/table/columns/use-provider-claims-table-columns";
 import { useProviderClaimsToolbar } from "@/hooks/common/table/toolbars/use-provider-claims-toolbar";
+import { ProviderClaimsTableSkeleton } from "../skeletons/provider-claims-table-skeleton";
 import {
   useGetProvider,
   useGetProviderClaims,
@@ -53,14 +54,7 @@ export const ViewProviderClaims = () => {
 
         <div className="flex-1 overflow-hidden">
           {isLoading ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="flex flex-col items-center gap-3">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                <p className="text-sm text-muted-foreground">
-                  Loading claims...
-                </p>
-              </div>
-            </div>
+            <ProviderClaimsTableSkeleton />
           ) : (
             <DataTable
               data={claims}

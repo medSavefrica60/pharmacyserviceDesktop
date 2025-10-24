@@ -1,6 +1,7 @@
 import { DataTable } from "@/components/common/data-table/data-table";
 import { useGetProviders } from "@/hooks/api/use-providers";
 import { useProvidersTableColumns } from "@/hooks/common/table/columns/use-providers-table-columns";
+import { ProvidersTableSkeleton } from "./skeletons/providers-table-skeleton";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
@@ -39,9 +40,10 @@ export const ViewProviders = () => {
         </Button>
       </div>
 
-      {providers.length > 0 ? (
+      {isLoading ? (
+        <ProvidersTableSkeleton />
+      ) : providers.length > 0 ? (
         <DataTable
-          skeleton={isLoading}
           data={providers}
           className=""
           count={totalCount}

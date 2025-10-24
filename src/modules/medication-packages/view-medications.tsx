@@ -1,6 +1,7 @@
 import { DataTable } from "@/components/common/data-table/data-table";
 import { useGetMedications } from "@/hooks/api/use-medications";
 import { useMedicationsTableColumns } from "@/hooks/common/table/columns/use-medications-table-columns";
+import { MedicationsTableSkeleton } from "./skeletons/medications-table-skeleton";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
@@ -12,12 +13,31 @@ export const ViewMedications = () => {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">
-            Loading medications...
-          </p>
+      <div className="flex-1 flex flex-col">
+        <div className="flex items-center justify-between px-6 py-4">
+          <div>
+            <h1 className="text-2xl font-bold">Medication Management</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Manage and monitor medications
+            </p>
+          </div>
+          <Button
+            onClick={() =>
+              navigate({
+                to: "/medications",
+                search: {
+                  sheet: "create",
+                  dialog: undefined,
+                  medicationId: undefined,
+                },
+              })
+            }
+          >
+            <PlusIcon className="mr-2 h-4 w-4" />
+            Add Medication
+          </Button>
         </div>
+        <MedicationsTableSkeleton />
       </div>
     );
   }

@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetUserMiniStatement } from "@/hooks/api/use-statements";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
   CalendarIcon,

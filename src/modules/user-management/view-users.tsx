@@ -1,6 +1,7 @@
 import { DataTable } from "@/components/common/data-table/data-table";
 import { useGetUsers } from "@/hooks/api/use-users";
 import { useUsersTableColumns } from "@/hooks/common/table/columns/use-users-table-columns";
+import { UsersTableSkeleton } from "./skeletons/users-table-skeleton";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
@@ -35,9 +36,10 @@ export const ViewUsers = () => {
         </Button>
       </div>
 
-      {users.length > 0 ? (
+      {isLoading ? (
+        <UsersTableSkeleton />
+      ) : users.length > 0 ? (
         <DataTable
-          skeleton={isLoading}
           data={users}
           className=""
           count={totalCount}

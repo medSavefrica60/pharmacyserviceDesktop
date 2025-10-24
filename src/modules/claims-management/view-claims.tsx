@@ -5,6 +5,7 @@ import { useGetProviders } from "@/hooks/api/use-providers";
 import { useClaimsTableColumns } from "@/hooks/common/table/columns/use-claims-table-columns";
 import { ClaimsSearchOption } from "./claims-search";
 import { ClaimFilters, ClaimStatus } from "./claim-filters";
+import { ClaimsTableSkeleton } from "./skeletons/claims-table-skeleton";
 import { FileTextIcon } from "lucide-react";
 import { logger } from "@/lib/logger";
 import { Claim } from "@/types";
@@ -127,9 +128,7 @@ export const ViewClaims = () => {
       {/* Claims Table */}
       <div className="px-6">
         {isLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <p className="text-sm text-muted-foreground">Loading claims...</p>
-          </div>
+          <ClaimsTableSkeleton />
         ) : claims && Array.isArray(claims) && claims.length > 0 ? (
           <DataTable
             data={claims}

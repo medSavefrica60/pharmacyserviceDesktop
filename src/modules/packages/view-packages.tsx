@@ -1,6 +1,7 @@
 import { DataTable } from "@/components/common/data-table/data-table";
 import { useGetPackages } from "@/hooks/api/use-packages";
 import { usePackagesTableColumns } from "@/hooks/common/table/columns/use-packages-table-columns";
+import { PackagesTableSkeleton } from "./skeletons/packages-table-skeleton";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
@@ -39,13 +40,14 @@ export const ViewPackages = () => {
         </Button>
       </div>
 
-      {packageData.length > 0 ? (
+      {isLoading ? (
+        <PackagesTableSkeleton />
+      ) : packageData.length > 0 ? (
         <DataTable
           data={packageData}
           className=""
           count={totalCount}
           limit={100}
-          skeleton={isLoading}
           pageSizeOptions={[5, 10, 20, 50, 100]}
           columns={columns}
         />

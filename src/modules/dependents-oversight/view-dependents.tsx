@@ -1,6 +1,7 @@
 import { DataTable } from "@/components/common/data-table/data-table";
 import { useGetDependents } from "@/hooks/api/use-dependents";
 import { useDependentsTableColumns } from "@/hooks/common/table/columns/use-dependents-table-columns";
+import { DependentsTableSkeleton } from "./skeletons/dependents-table-skeleton";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
@@ -12,10 +13,31 @@ export const ViewDependents = () => {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">Loading dependents...</p>
+      <div className="flex-1 flex flex-col">
+        <div className="flex items-center justify-between px-6 py-4">
+          <div>
+            <h1 className="text-2xl font-bold">Dependents Oversight</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Manage and monitor dependent information
+            </p>
+          </div>
+          <Button
+            onClick={() =>
+              navigate({
+                to: "/dependents",
+                search: {
+                  sheet: "create",
+                  dialog: undefined,
+                  dependentId: undefined,
+                },
+              })
+            }
+          >
+            <PlusIcon className="mr-2 h-4 w-4" />
+            Add Dependent
+          </Button>
         </div>
+        <DependentsTableSkeleton />
       </div>
     );
   }

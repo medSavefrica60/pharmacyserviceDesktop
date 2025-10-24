@@ -1,6 +1,7 @@
 import { DataTable } from "@/components/common/data-table/data-table";
 import { useGetContributions } from "@/hooks/api/use-contributions";
 import { useContributionsTableColumns } from "@/hooks/common/table/columns/use-contributions-table-columns";
+import { ContributionsTableSkeleton } from "./skeletons/contributions-table-skeleton";
 
 export const ViewContributions = () => {
   const columns = useContributionsTableColumns();
@@ -8,12 +9,16 @@ export const ViewContributions = () => {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">
-            Loading contributions...
-          </p>
+      <div className="flex-1 flex flex-col">
+        <div className="flex items-center justify-between px-6 py-4">
+          <div>
+            <h1 className="text-2xl font-bold">Contributions Oversight</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Monitor and track all member contributions
+            </p>
+          </div>
         </div>
+        <ContributionsTableSkeleton />
       </div>
     );
   }
