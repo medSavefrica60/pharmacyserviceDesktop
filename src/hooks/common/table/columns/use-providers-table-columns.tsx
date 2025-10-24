@@ -247,8 +247,8 @@ export const useProvidersTableColumns = () => {
                     navigate({
                       to: "/providers",
                       search: {
-                        sheet: "details",
-                        dialog: undefined,
+                        sheet: undefined,
+                        dialog: "details",
                         providerId: row.original.id,
                       },
                     })

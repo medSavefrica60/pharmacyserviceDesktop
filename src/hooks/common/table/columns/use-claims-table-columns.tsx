@@ -425,8 +425,8 @@ export const useClaimsTableColumns = () => {
                     navigate({
                       to: "/claims",
                       search: {
-                        sheet: "details",
-                        dialog: undefined,
+                        sheet: undefined,
+                        dialog: "details",
                         claimId: row.original.id,
                       },
                     })

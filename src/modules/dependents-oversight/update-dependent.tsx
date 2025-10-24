@@ -29,7 +29,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { dependentSchema, type DependentFormData } from "@/lib/zod/dependents";
 import {
   StatementsSearch,
-  type SearchOption,
+  type UserSearchOption,
 } from "@/modules/statements-management/statements-search";
 import { useGetUsers } from "@/hooks/api/use-users";
 
@@ -126,15 +126,36 @@ export const UpdateDependent = () => {
   };
 
   // Convert users to search options
-  const userSearchOptions: SearchOption[] =
-    users?.map((user) => ({
+  const userSearchOptions: UserSearchOption[] =
+    users?.users?.map((user) => ({
       id: user.id,
-      name: user.name,
+      name: `${user.firstName} ${user.lastName}`,
       email: user.email,
-      memberId: user.medsaveId,
+      memberId: user.id,
+      ghanaCardNumber: user.ghanaCardNumber,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phoneNumber: user.phoneNumber,
+      dateOfBirth: user.dateOfBirth,
+      gender: user.gender,
+      channel: user.channel,
+      status: user.status,
+      failedLoginAttempts: user.failedLoginAttempts,
+      lastLoginAt: user.lastLoginAt,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      role: user.role,
+      isPinSet: user.isPinSet,
+      isPhoneVerified: user.isPhoneVerified,
+      isEmailVerified: user.isEmailVerified,
+      ghanaCardVerified: user.ghanaCardVerified,
+      isMomoNumber: user.isMomoNumber,
+      momoNumber: user.momoNumber,
+      termsAccepted: user.termsAccepted,
+      trustScore: user.trustScore,
     })) || [];
 
-  const handleUserSelect = (option: SearchOption) => {
+  const handleUserSelect = (option: UserSearchOption) => {
     methods.setValue("userId", option.id);
   };
 

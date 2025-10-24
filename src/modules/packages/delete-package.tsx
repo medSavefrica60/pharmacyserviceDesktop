@@ -9,6 +9,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import { useDeletePackage } from "@/hooks/api/use-packages";
 
 export const DeletePackage = () => {
   const navigate = useNavigate();
@@ -16,6 +18,8 @@ export const DeletePackage = () => {
     dialog?: string;
     packageId?: string;
   };
+
+  const deleteMutation = useDeletePackage();
 
   const isOpen = search.dialog === "delete" && !!search.packageId;
 
@@ -26,9 +30,16 @@ export const DeletePackage = () => {
     });
   };
 
-  const handleDelete = () => {
-    // TODO: Implement delete functionality
-    console.log("Delete package:", search.packageId);
+  const handleDelete = async () => {
+    if (!search.packageId) return;
+
+    try {
+      await deleteMutation.mutateAsync(search.packageId);
+      toast.success("Package deleted successfully");
+      handleClose();
+    } catch (error) {
+      toast.error("Failed to delete package");
+    }
     handleClose();
   };
 
@@ -46,7 +57,7 @@ export const DeletePackage = () => {
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="bg-destructive text-white hover:bg-destructive/90"
           >
             Delete
           </AlertDialogAction>

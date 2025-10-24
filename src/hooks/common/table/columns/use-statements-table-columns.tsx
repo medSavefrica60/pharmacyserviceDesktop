@@ -287,8 +287,7 @@ export const useStatementsTableColumns = () => {
                     navigate({
                       to: "/statements",
                       search: {
-                        sheet: "details",
-                        dialog: undefined,
+                        dialog: "details",
                         statementId: row.original.id,
                       },
                     })

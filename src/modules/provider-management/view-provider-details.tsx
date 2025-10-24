@@ -1,11 +1,11 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetProvider } from "@/hooks/api/use-providers";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,6 +25,7 @@ import {
   ClockIcon,
   DownloadIcon,
 } from "lucide-react";
+import { Scroller } from "@/components/ui/scroller";
 
 // Utility function to format file size
 const formatBytes = (bytes: number, decimals = 2) => {
@@ -39,11 +40,11 @@ const formatBytes = (bytes: number, decimals = 2) => {
 export const ViewProviderDetails = () => {
   const navigate = useNavigate();
   const search = useSearch({ from: "/providers" }) as {
-    sheet?: string;
+    dialog?: string;
     providerId?: string;
   };
 
-  const isOpen = search.sheet === "details" && !!search.providerId;
+  const isOpen = search.dialog === "details" && !!search.providerId;
   const { data: provider, isLoading } = useGetProvider(search.providerId);
 
   const handleClose = () => {
@@ -57,22 +58,22 @@ export const ViewProviderDetails = () => {
     navigate({
       to: "/providers",
       search: {
-        sheet: "edit",
-        dialog: undefined,
+        sheet: undefined,
+        dialog: "edit",
         providerId: search.providerId,
       },
     });
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={handleClose}>
-      <SheetContent className="sm:max-w-md overflow-hidden flex flex-col p-0">
-        <SheetHeader className="px-6 pt-6">
-          <SheetTitle>Provider Details</SheetTitle>
-          <SheetDescription>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="!max-w-4xl w-full max-h-[85vh] flex flex-col p-2">
+        <DialogHeader className="px-6 pt-6">
+          <DialogTitle>Provider Details</DialogTitle>
+          <DialogDescription>
             View detailed information about this provider
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
 
         {isLoading ? (
           <ProviderDetailsSkeleton />
@@ -273,7 +274,7 @@ export const ViewProviderDetails = () => {
                     <p className="font-semibold text-lg leading-[140%]">
                       Verification Documents
                     </p>
-                    <ScrollArea className="h-[calc(100vh-400px)]">
+                    <Scroller className="h-[calc(100vh-400px)]">
                       <div className="flex flex-col gap-2.5 pr-4">
                         {provider.verificationDocuments &&
                         provider.verificationDocuments.length > 0 ? (
@@ -346,7 +347,7 @@ export const ViewProviderDetails = () => {
                           </div>
                         )}
                       </div>
-                    </ScrollArea>
+                    </Scroller>
                   </div>
                 </div>
               </TabsContent>
@@ -357,7 +358,7 @@ export const ViewProviderDetails = () => {
             <p className="text-sm text-muted-foreground">Provider not found</p>
           </div>
         )}
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 };

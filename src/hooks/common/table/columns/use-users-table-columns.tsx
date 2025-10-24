@@ -266,8 +266,8 @@ export const useUsersTableColumns = () => {
                     navigate({
                       to: "/users",
                       search: {
-                        sheet: "details",
-                        dialog: undefined,
+                        sheet: undefined,
+                        dialog: "details",
                         userId: row.original.id,
                       },
                     })
@@ -280,8 +280,8 @@ export const useUsersTableColumns = () => {
                     navigate({
                       to: "/users",
                       search: {
-                        sheet: "edit",
                         dialog: undefined,
+                        sheet: "edit",
                         userId: row.original.id,
                       },
                     })
@@ -310,8 +310,8 @@ export const useUsersTableColumns = () => {
                     navigate({
                       to: "/users",
                       search: {
-                        sheet: "mini-statement",
-                        dialog: undefined,
+                        sheet: undefined,
+                        dialog: "mini-statement",
                         userId: row.original.id,
                       },
                     })

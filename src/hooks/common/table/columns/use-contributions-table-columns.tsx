@@ -295,8 +295,8 @@ export const useContributionsTableColumns = () => {
                     navigate({
                       to: "/contributions",
                       search: {
-                        sheet: "details",
-                        dialog: undefined,
+                        sheet: undefined,
+                        dialog: "details",
                         contributionId: row.original.id,
                       },
                     })

@@ -1,15 +1,14 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetUserMiniStatement } from "@/hooks/api/use-statements";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
   CalendarIcon,
@@ -19,7 +18,6 @@ import {
   TrendingDownIcon,
   CreditCardIcon,
   ReceiptIcon,
-  AlertCircleIcon,
   CheckCircleIcon,
   ClockIcon,
   HashIcon,
@@ -84,13 +82,13 @@ interface MiniStatementResponse {
 export const UserMiniStatement = () => {
   const navigate = useNavigate();
   const search = useSearch({ from: "/users" }) as {
-    sheet?: string;
+    dialog?: string;
     userId?: string;
   };
 
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const isOpen = search.sheet === "mini-statement" && !!search.userId;
+  const isOpen = search.dialog === "mini-statement" && !!search.userId;
   const { data: miniStatementData, isLoading } = useGetUserMiniStatement(
     search.userId
   );
@@ -168,24 +166,18 @@ export const UserMiniStatement = () => {
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={handleClose}>
-      <SheetContent className="sm:max-w-2xl overflow-y-auto">
-        <SheetHeader className="px-6 pb-4">
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="!max-w-4xl w-full max-h-[85vh] flex flex-col p-2">
+        <DialogHeader className="px-6 pb-4">
           <div className="flex items-center justify-between">
             <div>
-              <SheetTitle className="text-xl">Mini Statement</SheetTitle>
-              <SheetDescription>
+              <DialogTitle className="text-xl">Mini Statement</DialogTitle>
+              <DialogDescription>
                 Recent transaction history and account summary
-              </SheetDescription>
+              </DialogDescription>
             </div>
-            <Badge
-              variant="default"
-              className="px-3 py-1 text-sm font-medium bg-primary/10 text-primary border-primary/20"
-            >
-              Mini Statement
-            </Badge>
           </div>
-        </SheetHeader>
+        </DialogHeader>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
@@ -260,72 +252,90 @@ export const UserMiniStatement = () => {
                     {/* Overview Tab */}
                     <TabsContent value="overview" className="mt-6">
                       <div className="space-y-6">
-                        {/* Summary Cards */}
+                        {/* Financial Overview */}
                         <div className="space-y-4">
                           <h4 className="text-lg font-semibold flex items-center gap-2">
-                            <WalletIcon className="h-5 w-5 text-primary" />
-                            Transaction Summary
+                            <BarChart3Icon className="h-5 w-5 text-primary" />
+                            Financial Overview
                           </h4>
-                          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                            <div className="text-center p-4 bg-blue-50 rounded-lg">
+                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                            {/* Current Balance */}
+                            <div className="text-center p-4 bg-primary/5 rounded-lg border border-primary/20">
                               <div className="flex items-center justify-center mb-2">
-                                <ReceiptIcon className="h-6 w-6 text-blue-600" />
+                                <WalletIcon className="h-5 w-5 text-primary" />
                               </div>
-                              <p className="text-2xl font-bold text-blue-600">
-                                {data.summary.totalTransactions}
+                              <p className="text-xl font-bold text-primary">
+                                {formatCurrency(data.wallet.currentBalance)}
                               </p>
-                              <p className="text-sm text-muted-foreground">
-                                Total Transactions
+                              <p className="text-xs text-muted-foreground">
+                                Current Balance
                               </p>
                             </div>
 
-                            <div className="text-center p-4 bg-green-50 rounded-lg">
+                            {/* Total Deposits */}
+                            <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
                               <div className="flex items-center justify-center mb-2">
-                                <TrendingUpIcon className="h-6 w-6 text-green-600" />
+                                <TrendingUpIcon className="h-5 w-5 text-green-600" />
                               </div>
-                              <p className="text-2xl font-bold text-green-600">
+                              <p className="text-xl font-bold text-green-600">
                                 {formatCurrency(data.summary.totalDeposits)}
                               </p>
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-xs text-muted-foreground">
                                 Total Deposits
                               </p>
                             </div>
 
-                            <div className="text-center p-4 bg-red-50 rounded-lg">
+                            {/* Total Claims */}
+                            <div className="text-center p-4 bg-orange-50 rounded-lg border border-orange-200">
                               <div className="flex items-center justify-center mb-2">
-                                <TrendingDownIcon className="h-6 w-6 text-red-600" />
+                                <ReceiptIcon className="h-5 w-5 text-orange-600" />
                               </div>
-                              <p className="text-2xl font-bold text-red-600">
-                                {formatCurrency(data.summary.totalWithdrawals)}
+                              <p className="text-xl font-bold text-orange-600">
+                                {formatCurrency(data.summary.totalClaims)}
                               </p>
-                              <p className="text-sm text-muted-foreground">
-                                Total Withdrawals
+                              <p className="text-xs text-muted-foreground">
+                                Total Claims
                               </p>
                             </div>
 
-                            <div className="text-center p-4 bg-purple-50 rounded-lg">
+                            {/* Total Transactions */}
+                            <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
                               <div className="flex items-center justify-center mb-2">
-                                <CreditCardIcon className="h-6 w-6 text-purple-600" />
+                                <ReceiptIcon className="h-5 w-5 text-blue-600" />
                               </div>
-                              <p className="text-2xl font-bold text-purple-600">
+                              <p className="text-xl font-bold text-blue-600">
+                                {data.summary.totalTransactions}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                Total Transactions
+                              </p>
+                            </div>
+
+                            {/* Total Contributions */}
+                            <div className="text-center p-4 bg-purple-50 rounded-lg border border-purple-200">
+                              <div className="flex items-center justify-center mb-2">
+                                <CreditCardIcon className="h-5 w-5 text-purple-600" />
+                              </div>
+                              <p className="text-xl font-bold text-purple-600">
                                 {formatCurrency(
                                   data.summary.totalContributions
                                 )}
                               </p>
-                              <p className="text-sm text-muted-foreground">
-                                Total Contributions
+                              <p className="text-xs text-muted-foreground">
+                                Contributions
                               </p>
                             </div>
 
-                            <div className="text-center p-4 bg-orange-50 rounded-lg">
+                            {/* Total Withdrawals */}
+                            <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200">
                               <div className="flex items-center justify-center mb-2">
-                                <AlertCircleIcon className="h-6 w-6 text-orange-600" />
+                                <TrendingDownIcon className="h-5 w-5 text-red-600" />
                               </div>
-                              <p className="text-2xl font-bold text-orange-600">
-                                {formatCurrency(data.summary.totalClaims)}
+                              <p className="text-xl font-bold text-red-600">
+                                {formatCurrency(data.summary.totalWithdrawals)}
                               </p>
-                              <p className="text-sm text-muted-foreground">
-                                Total Claims
+                              <p className="text-xs text-muted-foreground">
+                                Withdrawals
                               </p>
                             </div>
                           </div>
@@ -493,32 +503,6 @@ export const UserMiniStatement = () => {
                       </div>
                     </TabsContent>
                   </Tabs>
-
-                  {/* Actions */}
-                  <div className="flex gap-3 pt-6 border-t mt-6">
-                    <Button
-                      onClick={() =>
-                        navigate({
-                          to: "/statements",
-                          search: {
-                            sheet: undefined,
-                            dialog: undefined,
-                            statementId: undefined,
-                          },
-                        })
-                      }
-                      className="flex-1"
-                    >
-                      View Full Statement
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={handleClose}
-                      className="flex-1"
-                    >
-                      Close
-                    </Button>
-                  </div>
                 </>
               );
             })()}
@@ -535,7 +519,7 @@ export const UserMiniStatement = () => {
             </div>
           </div>
         )}
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 };

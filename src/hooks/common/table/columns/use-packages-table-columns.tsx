@@ -211,20 +211,6 @@ export const usePackagesTableColumns = () => {
                     navigate({
                       to: "/packages",
                       search: {
-                        sheet: "details",
-                        dialog: undefined,
-                        packageId: row.original.id,
-                      },
-                    })
-                  }
-                >
-                  View Details
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() =>
-                    navigate({
-                      to: "/packages",
-                      search: {
                         sheet: undefined,
                         dialog: "delete",
                         packageId: row.original.id,

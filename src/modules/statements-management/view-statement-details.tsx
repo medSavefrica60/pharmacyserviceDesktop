@@ -1,11 +1,11 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { useGetStatement } from "@/hooks/api/use-statements";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -23,11 +23,11 @@ import {
 export const ViewStatementDetails = () => {
   const navigate = useNavigate();
   const search = useSearch({ from: "/statements" }) as {
-    sheet?: string;
+    dialog?: string;
     statementId?: string;
   };
 
-  const isOpen = search.sheet === "details" && !!search.statementId;
+  const isOpen = search.dialog === "details" && !!search.statementId;
   const { data: statement, isLoading } = useGetStatement(search.statementId);
 
   const handleClose = () => {
@@ -47,14 +47,14 @@ export const ViewStatementDetails = () => {
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={handleClose}>
-      <SheetContent className="sm:max-w-md">
-        <SheetHeader className="px-6">
-          <SheetTitle>Statement Details</SheetTitle>
-          <SheetDescription>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="!max-w-2xl w-full max-h-[85vh] flex flex-col p-2">
+        <DialogHeader className="px-6">
+          <DialogTitle>Statement Details</DialogTitle>
+          <DialogDescription>
             View detailed information about this statement
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-8 px-6">
@@ -205,7 +205,7 @@ export const ViewStatementDetails = () => {
             <p className="text-sm text-muted-foreground">Statement not found</p>
           </div>
         )}
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 };

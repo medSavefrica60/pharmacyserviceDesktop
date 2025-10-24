@@ -1,11 +1,11 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { useGetUser } from "@/hooks/api/use-users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -17,11 +17,11 @@ import { MailIcon, CalendarIcon, UserIcon, ShieldIcon } from "lucide-react";
 export const ViewUserDetails = () => {
   const navigate = useNavigate();
   const search = useSearch({ from: "/users" }) as {
-    sheet?: string;
+    dialog?: string;
     userId?: string;
   };
 
-  const isOpen = search.sheet === "details" && !!search.userId;
+  const isOpen = search.dialog === "details" && !!search.userId;
   const { data: user, isLoading } = useGetUser(search.userId);
 
   const handleClose = () => {
@@ -39,14 +39,14 @@ export const ViewUserDetails = () => {
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={handleClose}>
-      <SheetContent className="sm:max-w-md">
-        <SheetHeader className="px-6">
-          <SheetTitle>User Details</SheetTitle>
-          <SheetDescription>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="!max-w-2xl w-full max-h-[85vh] flex flex-col p-2">
+        <DialogHeader className="px-6">
+          <DialogTitle>User Details</DialogTitle>
+          <DialogDescription>
             View detailed information about this user
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-8 px-6">
@@ -173,7 +173,7 @@ export const ViewUserDetails = () => {
             <p className="text-sm text-muted-foreground">User not found</p>
           </div>
         )}
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 };

@@ -177,7 +177,7 @@ export const useDeletePackage = () => {
       if (USE_MOCK) {
         return mockDeletePackage(packageId);
       }
-      return queryFn(AppServices.packages.delete_package(packageId));
+      return queryFn(AppServices.medications.delete_medication(packageId));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["packages"] });

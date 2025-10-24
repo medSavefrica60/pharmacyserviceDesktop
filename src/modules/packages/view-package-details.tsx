@@ -1,20 +1,20 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 export const ViewPackageDetails = () => {
   const navigate = useNavigate();
   const search = useSearch({ from: "/packages" }) as {
-    sheet?: string;
+    dialog?: string;
     packageId?: string;
   };
 
-  const isOpen = search.sheet === "details" && !!search.packageId;
+  const isOpen = search.dialog === "details" && !!search.packageId;
 
   const handleClose = () => {
     navigate({
@@ -24,21 +24,21 @@ export const ViewPackageDetails = () => {
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={handleClose}>
-      <SheetContent className="sm:max-w-md">
-        <SheetHeader className="px-6">
-          <SheetTitle>Package Details</SheetTitle>
-          <SheetDescription>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="!max-w-2xl w-full max-h-[85vh] flex flex-col p-2">
+        <DialogHeader className="px-6">
+          <DialogTitle>Package Details</DialogTitle>
+          <DialogDescription>
             View detailed information about this package
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
 
         <div className="flex items-center justify-center py-8 px-6">
           <p className="text-sm text-muted-foreground">
             Package details coming soon...
           </p>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 };
