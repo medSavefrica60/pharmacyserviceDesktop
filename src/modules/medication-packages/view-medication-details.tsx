@@ -33,18 +33,14 @@ export const ViewMedicationDetails = () => {
   const handleClose = () => {
     navigate({
       to: "/medications",
-      search: { sheet: undefined, dialog: undefined, medicationId: undefined },
+      search: { dialog: undefined, medicationId: undefined },
     });
   };
 
   const handleEdit = () => {
     navigate({
-      to: "/medications",
-      search: {
-        sheet: "edit",
-        dialog: undefined,
-        medicationId: search.medicationId,
-      },
+      to: "/medications/create",
+      search: { medicationId: search.medicationId!, dialog: undefined },
     });
   };
 

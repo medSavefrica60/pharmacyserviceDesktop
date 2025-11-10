@@ -1,80 +1,48 @@
 import { DataTable } from "@/components/common/data-table/data-table";
+import { DataTableSkeleton } from "@/components/common/data-table/data-table-skeleton";
 import { useGetContributions } from "@/hooks/api/use-contributions";
 import { useContributionsTableColumns } from "@/hooks/common/table/columns/use-contributions-table-columns";
-import { ContributionsTableSkeleton } from "./skeletons/contributions-table-skeleton";
+import { useContributionsToolbar } from "@/hooks/common/table/toolbars/use-contributions-toolbar";
+import { ContributionMetrics } from "./contribution-metrics";
 
 export const ViewContributions = () => {
   const columns = useContributionsTableColumns();
   const { data: contributions, isLoading } = useGetContributions();
 
+  const contributionData = contributions || [];
+  const totalCount = contributionData.length;
+
   if (isLoading) {
     return (
-      <div className="flex-1 flex flex-col">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div>
-            <h1 className="text-2xl font-bold">Contributions Oversight</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Monitor and track all member contributions
-            </p>
-          </div>
-        </div>
-        <ContributionsTableSkeleton />
+      <div className="flex flex-col gap-4 flex-1">
+        <ContributionMetrics isLoading={true} />
+        <DataTableSkeleton
+          columnCount={6}
+          rowCount={10}
+          searchableColumnCount={1}
+          filterableColumnCount={1}
+          showViewOptions={true}
+          cellWidths={["120px", "200px", "150px", "120px", "100px", "100px"]}
+        />
       </div>
     );
   }
 
-  const contributionData = contributions || [];
-
   return (
-    <div className="flex-1 flex flex-col">
-      <div className="flex items-center justify-between px-6 py-4">
-        <div>
-          <h1 className="text-2xl font-bold">Contributions Oversight</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Monitor and track all member contributions
-          </p>
-        </div>
-      </div>
-
-      {contributionData.length > 0 ? (
-        <DataTable
-          data={contributionData}
-          className=""
-          count={contributionData.length}
-          limit={100}
-          pageSizeOptions={[5, 10, 20, 50, 100]}
-          columns={columns}
-        />
-      ) : (
-        <div className="flex-1 flex items-center justify-center">
-          <span className="flex flex-col items-center rounded-md p-8 gap-4 max-w-96">
-            <div className="rounded-full bg-muted p-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="48"
-                height="48"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-muted-foreground"
-              >
-                <line x1="12" y1="1" x2="12" y2="23" />
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-              </svg>
-            </div>
-            <p className="text-center text-sm text-medsave-black-500 font-semibold">
-              No Contributions Yet
-            </p>
-            <p className="text-center text-sm text-medsave-black-300">
-              No contributions have been recorded yet. Contributions will appear
-              here once members make payments.
-            </p>
-          </span>
-        </div>
-      )}
+    <div className="flex flex-col gap-4 flex-1">
+      <ContributionMetrics
+        contributionsData={contributionData}
+        isLoading={false}
+      />
+      <DataTable
+        data={contributionData}
+        className=""
+        count={totalCount}
+        limit={100}
+        pageSizeOptions={[5, 10, 20, 50, 100]}
+        columns={columns}
+        Toolbar={useContributionsToolbar}
+      />
     </div>
   );
 };

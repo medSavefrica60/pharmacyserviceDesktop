@@ -1,28 +1,35 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   User,
-  UsersResponse,
   BaseSuccessResponse,
   UserPackageEnrollmentsResponse,
 } from "@/types";
 import { queryFn } from "@/api";
 import { AppServices } from "@/lib/services/providers";
+import { toast } from "sonner";
+import { logger } from "@/lib/logger";
+
+// Type for users query response with optional metadata
+export type UsersQueryData = BaseSuccessResponse<{
+  users: User[];
+  metadata: {
+    totalUsers: number;
+    totalActiveUsers: number;
+    totalInactiveUsers: number;
+    totalSuspendedUsers: number;
+    totalVerifiedUsers: number;
+  };
+}> & {};
 
 // Fetch all users
 export const useGetUsers = (params?: Record<string, unknown>) => {
   return useQuery({
     queryKey: ["users", params],
     queryFn: async () => {
-      const response = await queryFn<UsersResponse>(
+      const response = await queryFn<UsersQueryData>(
         AppServices.users.get_all_users(params)
       );
-      return {
-        users: response.data.users,
-        limit: response.limit,
-        totalPages: response.totalPages,
-        currentPage: response.currentPage,
-        total: response.total,
-      };
+      return Promise.resolve(response);
     },
   });
 };
@@ -56,12 +63,25 @@ export const useUpsertUser = () => {
       data: Record<string, unknown>;
     }) => {
       if (!id || typeof id !== "string") {
-        return queryFn(AppServices.users.create_user(data));
+        const response = await queryFn<BaseSuccessResponse<User>>(
+          AppServices.users.create_user(data)
+        );
+        return response.data;
       }
-      return queryFn(AppServices.users.update_user(id, data));
+      const response = await queryFn<BaseSuccessResponse<User>>(
+        AppServices.users.update_user(id, data)
+      );
+      return response.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+    onSuccess: (response, { id }) => {
+      if (id) {
+        queryClient.invalidateQueries({ queryKey: ["user", id] });
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["users"] });
+      }
+    },
+    onError: (error) => {
+      logger.error("Failed to upsert user", error);
     },
   });
 };

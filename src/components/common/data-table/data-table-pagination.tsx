@@ -18,11 +18,15 @@ import {
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
   pageSizeOptions?: number[];
+  pageSize?: number;
+  onPageSizeChange?: (pageSize: number) => void;
 }
 
 export function DataTablePagination<TData>({
   table,
   pageSizeOptions = [],
+  pageSize,
+  onPageSizeChange,
 }: DataTablePaginationProps<TData>) {
   const selectedRowCount = table.getFilteredSelectedRowModel().rows.length;
   const totalRowCount = table.getFilteredRowModel().rows.length;
@@ -54,15 +58,14 @@ export function DataTablePagination<TData>({
               Rows per page
             </p>
             <Select
-              value={`${table.getState().pagination.pageSize}`}
+              value={`${pageSize}`}
               onValueChange={(value) => {
                 table.setPageSize(Number(value));
+                onPageSizeChange?.(Number(value));
               }}
             >
               <SelectTrigger className="h-8 w-[4.5rem]">
-                <SelectValue
-                  placeholder={table.getState().pagination.pageSize}
-                />
+                <SelectValue placeholder={pageSize?.toString()} />
               </SelectTrigger>
               <SelectContent side="top">
                 {pageSizeOptions.map((pageSize) => (

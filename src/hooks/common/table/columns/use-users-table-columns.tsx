@@ -1,15 +1,10 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { DataTableColumnHeader } from "@/components/common/data-table/data-table-column-header";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import {
-  LucideCopy,
-  LucideCopyCheck,
-  CheckCircle2,
-  XCircle,
-} from "lucide-react";
+import { cn, formatDateTime } from "@/lib/utils";
+import { CheckCircle2, XCircle } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,78 +15,19 @@ import { useNavigate } from "@tanstack/react-router";
 import { User } from "@/types";
 
 export const useUsersTableColumns = () => {
-  const [copiedId, setCopiedId] = useState<string | null>(null);
   const navigate = useNavigate();
-
-  const handleCopyID = async (id: string) => {
-    setCopiedId(id);
-    await navigator.clipboard.writeText(id);
-    setTimeout(() => {
-      setCopiedId(null);
-    }, 2000);
-  };
 
   const columns: ColumnDef<User>[] = useMemo(
     () => [
       {
-        accessorKey: "id",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="User ID" />
+        id: "index",
+        header: "",
+        cell: ({ row }) => (
+          <div className="text-sm text-medsave-black-300 font-medium">
+            {row.index + 1}
+          </div>
         ),
-        cell: ({ row }) => {
-          const id = row.original.id;
-          const shortId = id.slice(0, 8);
-          const isCopied = copiedId === id;
-
-          return (
-            <div className="group flex items-center justify-between">
-              <span className="text-sm font-mono text-gray-700">
-                {shortId}...
-              </span>
-              <button
-                onClick={() => handleCopyID(id)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
-              >
-                {isCopied ? (
-                  <LucideCopyCheck size={16} className="text-green-600" />
-                ) : (
-                  <LucideCopy size={16} className="text-gray-600" />
-                )}
-              </button>
-            </div>
-          );
-        },
       },
-
-      {
-        accessorKey: "ghanaCardNumber",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Ghana Card" />
-        ),
-        cell: ({ row }) => {
-          const ghanaCard = row.original.ghanaCardNumber;
-          const isCopied = copiedId === ghanaCard;
-
-          return (
-            <div className="group flex items-center justify-between">
-              <span className="text-sm text-gray-700 font-mono">
-                {ghanaCard}
-              </span>
-              <button
-                onClick={() => handleCopyID(ghanaCard)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
-              >
-                {isCopied ? (
-                  <LucideCopyCheck size={20} className="text-green-600" />
-                ) : (
-                  <LucideCopy size={20} className="text-gray-600" />
-                )}
-              </button>
-            </div>
-          );
-        },
-      },
-
       {
         accessorKey: "firstName",
         header: ({ column }) => (
@@ -118,26 +54,14 @@ export const useUsersTableColumns = () => {
       },
 
       {
-        accessorKey: "phoneNumber",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Phone" />
-        ),
-        cell: ({ row }) => (
-          <span className="text-sm text-gray-700">
-            {row.original.phoneNumber || "N/A"}
-          </span>
-        ),
-      },
-
-      {
         accessorKey: "channel",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Channel" />
         ),
         cell: ({ row }) => (
-          <Badge variant="outline" className="text-xs">
+          <div className="text-sm text-gray-700 truncate block max-w-26">
             {row.original.channel}
-          </Badge>
+          </div>
         ),
       },
 
@@ -165,11 +89,11 @@ export const useUsersTableColumns = () => {
           return (
             <div className="flex items-center gap-1">
               {isPhoneVerified ? (
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                <CheckCircle2 className="h-4 w-4 text-medsave-success-500" />
               ) : (
-                <XCircle className="h-4 w-4 text-gray-400" />
+                <XCircle className="h-4 w-4 text-medsave-error-500" />
               )}
-              <span className="text-xs text-gray-600">
+              <span className="text-sm text-medsave-black-400">
                 {isPhoneVerified && isEmailVerified
                   ? "Both"
                   : isPhoneVerified
@@ -189,23 +113,11 @@ export const useUsersTableColumns = () => {
           <DataTableColumnHeader column={column} title="Date Joined" />
         ),
         cell: ({ row }) => {
-          const dateStr = row.original.createdAt;
-          if (!dateStr)
-            return <span className="text-sm text-gray-700">N/A</span>;
-
-          try {
-            const date = new Date(dateStr);
-            const formattedDate = date.toLocaleDateString("en-US", {
-              month: "2-digit",
-              day: "2-digit",
-              year: "numeric",
-            });
-            return (
-              <span className="text-sm text-gray-700">{formattedDate}</span>
-            );
-          } catch {
-            return <span className="text-sm text-gray-700">N/A</span>;
-          }
+          return (
+            <span className="text-sm text-gray-700">
+              {formatDateTime(row.original.createdAt)}
+            </span>
+          );
         },
       },
 
@@ -264,26 +176,20 @@ export const useUsersTableColumns = () => {
                 <DropdownMenuItem
                   onClick={() =>
                     navigate({
-                      to: "/users",
-                      search: {
-                        sheet: undefined,
-                        dialog: "details",
-                        userId: row.original.id,
-                      },
+                      to: "/users/$userId/edit",
+                      params: { userId: row.original.id },
+                      search: { dialog: undefined, userId: row.original.id },
                     })
                   }
                 >
-                  View Details
+                  See More
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
                     navigate({
-                      to: "/users",
-                      search: {
-                        dialog: undefined,
-                        sheet: "edit",
-                        userId: row.original.id,
-                      },
+                      to: "/users/$userId/edit",
+                      params: { userId: row.original.id },
+                      search: { dialog: undefined, userId: row.original.id },
                     })
                   }
                 >
@@ -294,7 +200,6 @@ export const useUsersTableColumns = () => {
                     navigate({
                       to: "/users",
                       search: {
-                        sheet: undefined,
                         dialog: "delete",
                         userId: row.original.id,
                       },
@@ -310,7 +215,6 @@ export const useUsersTableColumns = () => {
                     navigate({
                       to: "/users",
                       search: {
-                        sheet: undefined,
                         dialog: "mini-statement",
                         userId: row.original.id,
                       },
@@ -324,7 +228,6 @@ export const useUsersTableColumns = () => {
                     navigate({
                       to: "/users",
                       search: {
-                        sheet: undefined,
                         dialog: "packages",
                         userId: row.original.id,
                       },
@@ -339,7 +242,7 @@ export const useUsersTableColumns = () => {
         },
       },
     ],
-    [copiedId, navigate]
+    [navigate]
   );
 
   return columns;

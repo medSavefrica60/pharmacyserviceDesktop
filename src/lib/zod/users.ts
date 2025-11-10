@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const userSchema = z.object({
+export const UserSchema = z.object({
   phoneNumber: z
     .string()
     .min(1, "Phone number is required")
@@ -8,19 +8,18 @@ export const userSchema = z.object({
       /^\+233\d{9}$/,
       "Please enter a valid Ghana phone number (+233XXXXXXXXX)"
     ),
-  fullName: z
+  firstName: z
     .string()
-    .min(1, "Full name is required")
-    .min(2, "Full name must be at least 2 characters"),
+    .min(1, "First name is required")
+    .min(2, "First name must be at least 2 characters"),
+  lastName: z
+    .string()
+    .min(1, "Last name is required")
+    .min(2, "Last name must be at least 2 characters"),
   email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Please enter a valid email address"),
-  pin: z
-    .string()
-    .min(1, "PIN is required")
-    .length(4, "PIN must be exactly 4 digits")
-    .regex(/^\d{4}$/, "PIN must contain only numbers"),
+    .email("Please enter a valid email address")
+    .min(1, "Email is required"),
+
   dateOfBirth: z
     .string()
     .min(1, "Date of birth is required")
@@ -34,4 +33,4 @@ export const userSchema = z.object({
     ),
 });
 
-export type UserFormData = z.infer<typeof userSchema>;
+export type UserFormData = z.infer<typeof UserSchema>;

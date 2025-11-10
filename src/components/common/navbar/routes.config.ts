@@ -1,32 +1,35 @@
 import {
-  IconChartBar,
-  IconDashboard,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFolder,
-  IconListDetails,
-  IconReport,
-  IconUsers,
-  type Icon,
-} from "@tabler/icons-react";
+  LayoutDashboard,
+  Users,
+  Building2,
+  UsersRound,
+  Pill,
+  FileText,
+  TrendingUp,
+  Package,
+  Receipt,
+  Send,
+  Plus,
+  Eye,
+  type LucideIcon,
+} from "lucide-react";
 
 export interface RouteItemWithOptionalIcon {
   title: string;
   url: string;
-  icon?: Icon;
+  icon?: LucideIcon;
 }
 
 export interface RouteItem {
   title: string;
   url: string;
-  icon: Icon;
+  icon: LucideIcon;
 }
 
 export interface DocumentItem {
   name: string;
   url: string;
-  icon: Icon;
+  icon: LucideIcon;
 }
 
 export interface RouteConfig {
@@ -44,52 +47,124 @@ export const routesConfig: RouteConfig = {
     {
       title: "Dashboard",
       url: "/",
-      icon: IconDashboard,
+      icon: LayoutDashboard,
     },
     {
       title: "Users",
       url: "/users",
-      icon: IconUsers,
+      icon: Users,
+      isActive: true,
+      items: [
+        {
+          title: "View Users",
+          url: "/users",
+          icon: Eye,
+        },
+        {
+          title: "Add User",
+          url: "/users/create",
+          icon: Plus,
+        },
+      ],
     },
     {
       title: "Providers",
       url: "/providers",
-      icon: IconDatabase,
+      icon: Building2,
+      isActive: true,
+      items: [
+        {
+          title: "View Providers",
+          url: "/providers",
+          icon: Eye,
+        },
+        {
+          title: "Add Provider",
+          url: "/providers/create",
+          icon: Plus,
+        },
+      ],
     },
     {
       title: "Dependent Oversight",
       url: "/dependents",
-      icon: IconListDetails,
+      icon: UsersRound,
     },
     {
       title: "Medication",
       url: "/medications",
-      icon: IconFileDescription,
+      icon: Pill,
+      isActive: true,
+      items: [
+        {
+          title: "View Medications",
+          url: "/medications",
+          icon: Eye,
+        },
+        {
+          title: "Add Medication",
+          url: "/medications/create",
+          icon: Plus,
+        },
+      ],
     },
     {
       title: "Claims",
       url: "/claims",
-      icon: IconFileAi,
+      icon: FileText,
+      isActive: true,
+      items: [
+        {
+          title: "View Claims",
+          url: "/claims",
+          icon: Eye,
+        },
+        {
+          title: "Add Claim",
+          url: "/claims/create",
+          icon: Plus,
+        },
+      ],
     },
     {
       title: "Contributions",
       url: "/contributions",
-      icon: IconChartBar,
+      icon: TrendingUp,
+      isActive: true,
+      items: [
+        {
+          title: "View Contributions",
+          url: "/contributions",
+          icon: Eye,
+        },
+      ],
     },
-    {
-      title: "Packages",
-      url: "/packages",
-      icon: IconFolder,
-    },
+
     {
       title: "Statements",
       url: "/statements",
-      icon: IconReport,
+      icon: Receipt,
+      isActive: true,
+      items: [
+        {
+          title: "View Statements",
+          url: "/statements",
+          icon: Eye,
+        },
+      ],
     },
     {
       title: "Remittances",
       url: "/remittances",
-      icon: IconFileDescription,
+      icon: Send,
+      isActive: true,
+      items: [
+        {
+          title: "View Remittances",
+          url: "/remittances",
+          icon: Eye,
+        },
+      ],
     },
   ] as RouteItemWithOptionalIcon[],
   navSecondary: [] as RouteItem[],

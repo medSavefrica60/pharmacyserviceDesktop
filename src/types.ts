@@ -85,7 +85,6 @@ export type PaginatedData<T> = {
   medications?: T[];
   packages?: T[];
   statements?: T[];
-  dependents?: T[];
   page: number;
   limit: number;
   total: number;
@@ -351,4 +350,41 @@ export type UserPackageEnrollment = {
 export type UserPackageEnrollmentsResponse = BaseSuccessResponse<{
   packages: UserPackageEnrollment[];
   total: number;
+}>;
+
+/**
+ * Dependent Status Types
+ */
+export type DependentStatus = "active" | "inactive";
+
+/**
+ * Dependent Type
+ */
+export type Dependent = {
+  id: string;
+  dependentPhone: string;
+  dependentName: string;
+  relationship: string;
+  status: DependentStatus;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+  };
+};
+
+/**
+ * Dependents Response Type
+ */
+export type DependentsResponse = BaseSuccessResponse<{
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  dependents: Dependent[];
 }>;

@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Statement } from "@/hooks/common/table/columns/use-statements-table-columns";
 import { queryFn } from "@/api";
 import { AppServices } from "@/lib/services/providers";
+import { MiniStatementData } from "@/modules/user-management/misc/show-mini-statement";
+import { BaseSuccessResponse } from "@/types";
 
 // Enable/disable mock mode
 const USE_MOCK = false;
@@ -370,19 +372,13 @@ export const useSearchUsers = (query: string) => {
 };
 
 // Fetch statements for a specific user
-export const useGetUserStatements = (
-  userId: string | undefined,
-  params?: Record<string, unknown>
-) => {
+export const useGetUserStatements = (userId: string) => {
   return useQuery({
-    queryKey: ["statements", "user", userId, params],
+    queryKey: ["mini-statement", userId],
     queryFn: async () => {
-      if (!userId) return { statements: [], total: 0, page: 1, limit: 20 };
-
-      if (USE_MOCK) {
-        return mockGetUserStatements(userId, params);
-      }
-      return queryFn(AppServices.users.get_user_statements(userId, params));
+      return queryFn<BaseSuccessResponse<MiniStatementData>>(
+        AppServices.users.get_user_mini_statement(userId)
+      );
     },
     enabled: !!userId,
   });
@@ -424,67 +420,13 @@ export const useGetAllStatements = (
 // Fetch mini statement for a user (last 10 transactions)
 export const useGetUserMiniStatement = (userId: string | undefined) => {
   return useQuery({
-    queryKey: ["statements", "mini", userId],
+    queryKey: ["mini-statement", userId],
     queryFn: async () => {
       if (!userId) throw new Error("User ID is required");
 
-      if (USE_MOCK) {
-        // Return mock data matching the new API structure
-        return {
-          status: "success",
-          code: 200,
-          message: "Transaction history retrieved successfully",
-          timestamp: new Date().toISOString(),
-          data: {
-            user: {
-              medsaveId: "MS07648",
-              name: "Daniel Amoako Kodua",
-              phone: "+233543482189",
-            },
-            wallet: {
-              currentBalance: 0,
-            },
-            period: {
-              startDate: "2025-10-22T13:01:47.504Z",
-              endDate: "2025-10-22T13:04:28.342Z",
-            },
-            transactions: [
-              {
-                id: "be32ba6b-619e-4d03-85da-0cc9c37782b3",
-                type: "CLAIM_PAYMENT",
-                amount: 600,
-                status: "completed",
-                description: "Claim approved: CLM-20251022-58FZQ5",
-                referenceNumber: "CLM-20251022-58FZQ5",
-                createdAt: "2025-10-22T13:04:28.342Z",
-                completedAt: null,
-              },
-              {
-                id: "03241382-fc5d-443d-986e-22dec59082dc",
-                type: "DEPOSIT",
-                amount: 1200,
-                status: "completed",
-                description: "USSD deposit to Diabetes Package",
-                referenceNumber: "USSD-DEP-1761138107686-LQRAL4",
-                createdAt: "2025-10-22T13:01:47.504Z",
-                completedAt: null,
-              },
-            ],
-            summary: {
-              totalTransactions: 2,
-              totalDeposits: 1200,
-              totalWithdrawals: 0,
-              totalContributions: 0,
-              totalClaims: 600,
-            },
-          },
-        };
-      }
-      const response = await queryFn(
+      return queryFn<BaseSuccessResponse<MiniStatementData>>(
         AppServices.users.get_user_mini_statement(userId)
       );
-      // Return the full response structure to match the new API format
-      return response;
     },
     enabled: !!userId,
   });

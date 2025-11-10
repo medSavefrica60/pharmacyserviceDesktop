@@ -36,70 +36,38 @@ export const useClaimsTableColumns = () => {
           </div>
         ),
       },
-      {
-        accessorKey: "id",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Claim ID" />
-        ),
-        cell: ({ row }) => {
-          const claimId = row.original.id;
-          const shortId = claimId.slice(0, 8);
-          const isCopied = copiedNumber === claimId;
 
-          return (
-            <div className="group flex items-center justify-between gap-2">
-              <span className="text-sm font-mono text-medsave-black-300">
-                {shortId}...
-              </span>
-              <button
-                onClick={() => handleCopyNumber(claimId)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
-              >
-                {isCopied ? (
-                  <LucideCopyCheck
-                    size={16}
-                    className="text-medsave-success-500"
-                  />
-                ) : (
-                  <LucideCopy size={16} className="text-medsave-black-400" />
-                )}
-              </button>
-            </div>
-          );
-        },
-      },
+      // {
+      //   accessorKey: "claimCode",
+      //   header: ({ column }) => (
+      //     <DataTableColumnHeader column={column} title="Claim Code" />
+      //   ),
+      //   cell: ({ row }) => {
+      //     const claimCode = row.original.claimCode;
+      //     const isCopied = copiedNumber === claimCode;
 
-      {
-        accessorKey: "claimCode",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Claim Code" />
-        ),
-        cell: ({ row }) => {
-          const claimCode = row.original.claimCode;
-          const isCopied = copiedNumber === claimCode;
-
-          return (
-            <div className="group flex items-center justify-between gap-2">
-              <span className="text-sm text-medsave-black-300 font-medium">
-                {claimCode}
-              </span>
-              <button
-                onClick={() => handleCopyNumber(claimCode)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
-              >
-                {isCopied ? (
-                  <LucideCopyCheck
-                    size={20}
-                    className="text-medsave-success-500"
-                  />
-                ) : (
-                  <LucideCopy size={20} className="text-medsave-black-400" />
-                )}
-              </button>
-            </div>
-          );
-        },
-      },
+      //     return (
+      //       <div className="group flex items-center justify-between gap-2">
+      //         <span className="text-sm text-medsave-black-300 font-medium">
+      //           {claimCode}
+      //         </span>
+      //         <button
+      //           onClick={() => handleCopyNumber(claimCode)}
+      //           className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+      //         >
+      //           {isCopied ? (
+      //             <LucideCopyCheck
+      //               size={20}
+      //               className="text-medsave-success-500"
+      //             />
+      //           ) : (
+      //             <LucideCopy size={20} className="text-medsave-black-400" />
+      //           )}
+      //         </button>
+      //       </div>
+      //     );
+      //   },
+      // },
 
       {
         accessorKey: "reference",

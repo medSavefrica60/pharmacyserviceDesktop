@@ -1,7 +1,6 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { Toaster } from "@/components/ui/sonner";
 import { QueryClient } from "@tanstack/react-query";
 import {
   createRootRouteWithContext,
@@ -12,6 +11,7 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { useSession } from "@/hooks/auth";
 import { Session } from "@/hooks/auth/use-auth";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Toaster } from "react-hot-toast";
 // import { useTokenRefresh } from "@/hooks/auth/use-token-refresh";
 
 interface RootRouteContext {
@@ -36,13 +36,13 @@ const RootComponent = () => {
 
   return (
     <>
-      {!!session ? (
+      {true ? (
         <>
           <SidebarProvider
             style={
               {
                 "--sidebar-width": "calc(var(--spacing) * 72)",
-                "--header-height": "calc(var(--spacing) * 12)",
+                "--header-height": "calc(var(--spacing) * 18)",
               } as React.CSSProperties
             }
           >
@@ -55,7 +55,7 @@ const RootComponent = () => {
             </SidebarInset>
           </SidebarProvider>
           <Toaster />
-          <TanStackRouterDevtools />
+          {/* <TanStackRouterDevtools /> */}
           <ReactQueryDevtools />
         </>
       ) : (

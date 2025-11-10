@@ -50,18 +50,14 @@ export const ViewProviderDetails = () => {
   const handleClose = () => {
     navigate({
       to: "/providers",
-      search: { sheet: undefined, dialog: undefined, providerId: undefined },
+      search: { dialog: undefined, providerId: undefined },
     });
   };
 
   const handleEdit = () => {
     navigate({
-      to: "/providers",
-      search: {
-        sheet: undefined,
-        dialog: "edit",
-        providerId: search.providerId,
-      },
+      to: "/providers/create",
+      search: { providerId: search.providerId!, dialog: undefined },
     });
   };
 

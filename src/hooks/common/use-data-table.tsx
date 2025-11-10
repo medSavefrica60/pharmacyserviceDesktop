@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -6,12 +8,14 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  PaginationState,
   SortingState,
   useReactTable,
   type ColumnDef,
   type VisibilityState,
 } from "@tanstack/react-table";
 import { useState, useEffect } from "react";
+import { DEFAULT_PAGE_INDEX, DEFAULT_PAGE_SIZE } from "@/constant";
 
 interface UseDataTableProps<TData, TValue> {
   /**
@@ -29,8 +33,10 @@ interface UseDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
 
   /**
-   * The number of pages in the table.
+   * The total number of pages in the table.
+   * This is calculated as Math.ceil(totalRecords / pageSize).
    * @type number
+   * @example If you have 40 total records and pageSize is 20, pageCount should be 2
    */
   pageCount: number;
 
@@ -94,6 +100,7 @@ export function useDataTable<TData, TValue>({
   columns,
   pageCount,
   enableAdvancedFilter = false,
+  defaultPerPage,
 }: UseDataTableProps<TData, TValue>) {
   // Memoize computation of searchableColumns and filterableColumns
 
@@ -102,8 +109,12 @@ export function useDataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
+  const [globalFilter, setGlobalFilter] = useState<string>("");
   const [mounted, setMounted] = useState(false);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: defaultPerPage ?? DEFAULT_PAGE_SIZE,
+  });
 
   useEffect(() => {
     // Opt out when advanced filter is enabled, because it contains additional params
@@ -126,12 +137,15 @@ export function useDataTable<TData, TValue>({
     data,
     columns,
     pageCount: pageCount ?? -1,
+    // rowCount: rowCount ?? -1,
     state: {
       // pagination,
       sorting,
       columnVisibility,
       rowSelection,
       columnFilters,
+      globalFilter,
+      pagination,
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -145,6 +159,9 @@ export function useDataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    onGlobalFilterChange: setGlobalFilter,
+    onPaginationChange: setPagination,
+
     // will handle pagination, sorting, and filtering manually in the future
     // manualPagination: true,
     // manualSorting: true,

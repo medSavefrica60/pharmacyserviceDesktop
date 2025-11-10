@@ -19,13 +19,13 @@ export const logger = {
 
   error: (message: string, data?: any) => {
     const logMessage = data ? `${message}: ${JSON.stringify(data)}` : message;
-    console.error(`❌ [FRONTEND ERROR] ${logMessage}`);
+    console.error("❌ [FRONTEND ERROR] ", logMessage);
     invoke("log_error", { message: logMessage }).catch(() => {});
   },
 
   warn: (message: string, data?: any) => {
     const logMessage = data ? `${message}: ${JSON.stringify(data)}` : message;
-    console.warn(`⚠️ [FRONTEND WARN] ${logMessage}`);
+    console.warn("⚠️ [FRONTEND WARN] ", logMessage);
     invoke("log_warn", { message: logMessage }).catch(() => {});
   },
 };

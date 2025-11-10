@@ -2,7 +2,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { DataTableColumnHeader } from "@/components/common/data-table/data-table-column-header";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { cn, formatDateTime } from "@/lib/utils";
 import { LucideCopy, LucideCopyCheck } from "lucide-react";
 import {
   DropdownMenu,
@@ -27,36 +27,6 @@ export const useMedicationsTableColumns = () => {
 
   const columns: ColumnDef<Medication>[] = useMemo(
     () => [
-      {
-        accessorKey: "id",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="ID" />
-        ),
-        cell: ({ row }) => {
-          const id = row.original.id;
-          const isCopied = copiedId === id;
-          const shortId = id.split("-")[0];
-
-          return (
-            <div className="group flex items-center justify-between">
-              <span className="text-sm text-gray-700 font-mono">
-                {shortId}...
-              </span>
-              <button
-                onClick={() => handleCopyId(id)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
-              >
-                {isCopied ? (
-                  <LucideCopyCheck size={20} className="text-green-600" />
-                ) : (
-                  <LucideCopy size={20} className="text-gray-600" />
-                )}
-              </button>
-            </div>
-          );
-        },
-      },
-
       {
         accessorKey: "name",
         header: ({ column }) => (
@@ -87,23 +57,11 @@ export const useMedicationsTableColumns = () => {
           <DataTableColumnHeader column={column} title="Date Created" />
         ),
         cell: ({ row }) => {
-          const dateStr = row.original.createdAt;
-          if (!dateStr)
-            return <span className="text-sm text-gray-700">N/A</span>;
-
-          try {
-            const date = new Date(dateStr);
-            const formattedDate = date.toLocaleDateString("en-US", {
-              month: "2-digit",
-              day: "2-digit",
-              year: "numeric",
-            });
-            return (
-              <span className="text-sm text-gray-700">{formattedDate}</span>
-            );
-          } catch {
-            return <span className="text-sm text-gray-700">N/A</span>;
-          }
+          return (
+            <span className="text-sm text-gray-700">
+              {formatDateTime(row.original.createdAt)}
+            </span>
+          );
         },
       },
 
@@ -164,8 +122,7 @@ export const useMedicationsTableColumns = () => {
                     navigate({
                       to: "/medications",
                       search: {
-                        sheet: "details",
-                        dialog: undefined,
+                        dialog: "details",
                         medicationId: row.original.id,
                       },
                     })
@@ -176,11 +133,11 @@ export const useMedicationsTableColumns = () => {
                 <DropdownMenuItem
                   onClick={() =>
                     navigate({
-                      to: "/medications",
+                      to: "/medications/$medicationId/edit",
+                      params: { medicationId: row.original.id },
                       search: {
-                        sheet: "edit",
-                        dialog: undefined,
                         medicationId: row.original.id,
+                        dialog: undefined,
                       },
                     })
                   }
@@ -192,7 +149,6 @@ export const useMedicationsTableColumns = () => {
                     navigate({
                       to: "/medications",
                       search: {
-                        sheet: undefined,
                         dialog: "delete",
                         medicationId: row.original.id,
                       },

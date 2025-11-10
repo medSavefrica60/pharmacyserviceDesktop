@@ -1,8 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Outlet,
+  useRouterState,
+} from "@tanstack/react-router";
 import {
   ViewProviders,
   ViewProviderDetails,
-  UpdateProvider,
   DeleteProvider,
   ViewProviderClaims,
 } from "@/modules/provider-management";
@@ -11,7 +14,6 @@ export const Route = createFileRoute("/providers")({
   component: RouteComponent,
   validateSearch: (search: Record<string, unknown>) => {
     return {
-      sheet: (search.sheet as string) || undefined,
       dialog: (search.dialog as string) || undefined,
       providerId: (search.providerId as string) || undefined,
     };
@@ -19,13 +21,24 @@ export const Route = createFileRoute("/providers")({
 });
 
 function RouteComponent() {
+  const router = useRouterState();
+  const currentPath = router.location.pathname;
+  const isExactProvidersRoute = currentPath === "/providers";
+
   return (
-    <div className="flex-1 ">
-      <ViewProviders />
-      <ViewProviderDetails />
-      <UpdateProvider />
-      <DeleteProvider />
-      <ViewProviderClaims />
-    </div>
+    <>
+      {isExactProvidersRoute ? (
+        <>
+          <ViewProviders />
+          <ViewProviderDetails />
+          <DeleteProvider />
+
+          {/* miscellaneous provider routes */}
+          <ViewProviderClaims />
+        </>
+      ) : (
+        <Outlet />
+      )}
+    </>
   );
 }

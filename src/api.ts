@@ -1,24 +1,29 @@
 import axios, { isAxiosError } from "axios";
 import { ServiceDefinition } from "./types";
-import { invoke } from "@tauri-apps/api/core";
-import { Session } from "@/hooks/auth/use-auth";
+// import { invoke } from "@tauri-apps/api/core";
+// import { Session } from "@/hooks/auth/use-auth";
+// import { logger } from "./lib/logger";
+import { VITE_PUBLIC_BASE_URL } from "./constant";
 import { logger } from "./lib/logger";
 
+const token =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNThiZmM2Zi1hYzZlLTRhOTAtYmNlYy1kOWIyMWQ0MmJlNzkiLCJlbWFpbCI6Im1lZHNhdmUuYWZyaWNhQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIioiXSwidHlwZSI6ImFkbWluIiwiaWF0IjoxNzYyNzkxMDMxLCJleHAiOjE3NjI3OTgyMzF9.ekMxulJ57klUfYC2Duc3MKrqtiNywGreh81Mq0jkasE";
 const index = axios.create({
-  baseURL: import.meta.env.VITE_PUBLIC_BASE_URL,
+  baseURL: VITE_PUBLIC_BASE_URL,
   timeout: 10000,
 });
 
 const axiosClient = async (config: ServiceDefinition) => {
-  const session = (await invoke("get_current_session")) as Session | null;
-  const jwt = session?.tokens?.accessToken;
+  // const session = (await invoke("get_current_session")) as Session | null;
+  // const jwt = session?.tokens?.accessToken;
 
-  logger.info("jwt", jwt);
+  // logger.info("jwt", jwt);
 
   return index({
     ...config,
     headers: {
-      Authorization: jwt ? `Bearer ${jwt}` : undefined,
+      // Authorization: jwt ? `Bearer ${jwt}` : undefined,
+      Authorization: `Bearer ${token}`,
       Accept: "application/json",
       "Content-Type": "application/json",
       ...config?.headers,
@@ -31,7 +36,10 @@ export const queryFn = async <TData, Error = never>(
   config: ServiceDefinition
 ) => {
   try {
+    // logger.info(`queryFn: Starting request for: ${config.url}`);
     const response = await axiosClient(config);
+    // logger.info(`queryFn: Response status: ${response.status}`);
+    // logger.info(`queryFn: Response data: ${response.data}`);
     return response.data as TData;
   } catch (error) {
     if (isAxiosError(error)) {

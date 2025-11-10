@@ -1,0 +1,104 @@
+/**
+ * MedSave Design System Extensions
+ * 
+ * Medical-specific design tokens that extend shadcn's base design system.
+ * Core tokens are already defined in globals.css via shadcn.
+ */
+
+@theme{
+  /* ===========================================
+     MEDSAVE COLOR PALETTE (From Figma Design)
+     =========================================== */
+
+  /* Blue Color Scale */
+  --color-medsave-blue-50: #E8E9EC;
+  --color-medsave-blue-100: #B6BBC5;
+  --color-medsave-blue-200: #939AA9;
+  --color-medsave-blue-300: #626C82;
+  --color-medsave-blue-400: #44506A;
+  --color-medsave-blue-500: #152445;
+  --color-medsave-blue-600: #13213F;
+  --color-medsave-blue-700: #0F1A31;
+  --color-medsave-blue-800: #0C1426;
+  --color-medsave-blue-900: #090F1D;
+
+  /* Black/Neutral Color Scale */
+  --color-medsave-black-50: #E7E7E7;
+  --color-medsave-black-100: #B5B5B5;
+  --color-medsave-black-200: #919191;
+  --color-medsave-black-300: #5E5E5E;
+  --color-medsave-black-400: #3F3F3F;
+  --color-medsave-black-500: #0F0F0F;
+  --color-medsave-black-600: #0E0E0E;
+  --color-medsave-black-700: #0B0B0B;
+  --color-medsave-black-800: #080808;
+  --color-medsave-black-900: #060606;
+
+  /* Success/Green Color Scale */
+  --color-medsave-success-50: #E6F6EA;
+  --color-medsave-success-100: #B3E2BD;
+  --color-medsave-success-200: #8ED49D;
+  --color-medsave-success-300: #5AC070;
+  --color-medsave-success-400: #3AB454;
+  --color-medsave-success-500: #09A129;
+  --color-medsave-success-600: #089325;
+  --color-medsave-success-700: #06721D;
+  --color-medsave-success-800: #055917;
+  --color-medsave-success-900: #044411;
+
+  /* Error/Red Color Scale */
+  --color-medsave-error-50: #FCE6EA;
+  --color-medsave-error-100: #F6B0BE;
+  --color-medsave-error-200: #F18A9E;
+  --color-medsave-error-300: #EB5472;
+  --color-medsave-error-400: #E73357;
+  --color-medsave-error-500: #E1002D;
+  --color-medsave-error-600: #CD0029;
+  --color-medsave-error-700: #A00020;
+  --color-medsave-error-800: #7C0019;
+  --color-medsave-error-900: #5F0013;
+
+  /* Pending/Warning/Yellow Color Scale */
+  --color-medsave-pending-50: #FEF8E9;
+  --color-medsave-pending-100: #FDEABC;
+  --color-medsave-pending-200: #FCE09B;
+  --color-medsave-pending-300: #FAD26E;
+  --color-medsave-pending-400: #F9C951;
+  --color-medsave-pending-500: #F8BC26;
+  --color-medsave-pending-600: #E2AB23;
+  --color-medsave-pending-700: #B0851B;
+  --color-medsave-pending-800: #886715;
+  --color-medsave-pending-900: #684F10;
+
+  /* ===========================================
+     MEDICAL THEME SEMANTIC COLORS
+     =========================================== */
+
+  /* MedSave Brand Colors (using blue as primary) */
+  --color-medsave-primary: var(--color-medsave-blue-500);
+  --color-medsave-primary-foreground: #FFFFFF;
+  --color-medsave-secondary: var(--color-medsave-blue-100);
+  --color-medsave-secondary-foreground: var(--color-medsave-blue-900);
+  
+  /* Medical Semantic Colors */
+  --color-medical-success: var(--color-medsave-success-500);
+  --color-medical-success-foreground: #FFFFFF;
+  --color-medical-error: var(--color-medsave-error-500);
+  --color-medical-error-foreground: #FFFFFF;
+  --color-medical-warning: var(--color-medsave-pending-500);
+  --color-medical-warning-foreground: var(--color-medsave-pending-900);
+  --color-medical-info: var(--color-medsave-blue-500);
+  --color-medical-info-foreground: #FFFFFF;
+
+  /* Legacy Medical Colors (for backward compatibility) */
+  --color-medical-blue: var(--color-medsave-blue-500);
+  --color-medical-green: var(--color-medsave-success-500);
+  --color-healthcare-red: var(--color-medsave-error-500);
+  
+  /* Medical Typography */
+  --font-medical: 'Source Sans Pro', var(--font-sans);
+  --font-inter: 'Inter', var(--font-sans);
+  --font-roboto: 'Roboto', var(--font-sans);
+  --font-open-sans: 'Open Sans', var(--font-sans);
+}
+

@@ -35,35 +35,14 @@ export const useProvidersTableColumns = () => {
   const columns: ColumnDef<Provider>[] = useMemo(
     () => [
       {
-        accessorKey: "id",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Provider ID" />
+        id: "index",
+        header: "",
+        cell: ({ row }) => (
+          <div className="text-sm text-medsave-black-300 font-medium">
+            {row.index + 1}
+          </div>
         ),
-        cell: ({ row }) => {
-          const id = row.original.id;
-          const shortId = id.slice(0, 8);
-          const isCopied = copiedId === id;
-
-          return (
-            <div className="group flex items-center justify-between">
-              <span className="text-sm font-mono text-gray-700">
-                {shortId}...
-              </span>
-              <button
-                onClick={() => handleCopyID(id)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
-              >
-                {isCopied ? (
-                  <LucideCopyCheck size={16} className="text-green-600" />
-                ) : (
-                  <LucideCopy size={16} className="text-gray-600" />
-                )}
-              </button>
-            </div>
-          );
-        },
       },
-
       {
         accessorKey: "licenseNumber",
         header: ({ column }) => (
@@ -75,7 +54,9 @@ export const useProvidersTableColumns = () => {
 
           return (
             <div className="group flex items-center justify-between">
-              <span className="text-sm text-gray-700">{licenseNumber}</span>
+              <span className="text-sm text-gray-700 truncate block max-w-26">
+                {licenseNumber}
+              </span>
               <button
                 onClick={() => handleCopyID(licenseNumber)}
                 className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
@@ -124,7 +105,12 @@ export const useProvidersTableColumns = () => {
           <DataTableColumnHeader column={column} title="Email" />
         ),
         cell: ({ row }) => (
-          <span className="text-sm text-gray-700">{row.original.email}</span>
+          <span
+            className="text-sm text-gray-700 truncate block max-w-26 "
+            title={row.original.email}
+          >
+            {row.original.email}
+          </span>
         ),
       },
 
@@ -247,7 +233,6 @@ export const useProvidersTableColumns = () => {
                     navigate({
                       to: "/providers",
                       search: {
-                        sheet: undefined,
                         dialog: "details",
                         providerId: row.original.id,
                       },
@@ -261,7 +246,6 @@ export const useProvidersTableColumns = () => {
                     navigate({
                       to: "/providers",
                       search: {
-                        sheet: undefined,
                         dialog: "claims",
                         providerId: row.original.id,
                       },
@@ -273,11 +257,10 @@ export const useProvidersTableColumns = () => {
                 <DropdownMenuItem
                   onClick={() =>
                     navigate({
-                      to: "/providers",
+                      to: "/providers/create",
                       search: {
-                        sheet: "edit",
-                        dialog: undefined,
                         providerId: row.original.id,
+                        dialog: undefined,
                       },
                     })
                   }
@@ -289,7 +272,6 @@ export const useProvidersTableColumns = () => {
                     navigate({
                       to: "/providers",
                       search: {
-                        sheet: undefined,
                         dialog: "delete",
                         providerId: row.original.id,
                       },

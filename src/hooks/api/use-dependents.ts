@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Dependent } from "@/hooks/common/table/columns/use-dependents-table-columns";
+import { Dependent, DependentsResponse, BaseSuccessResponse } from "@/types";
 import { queryFn } from "@/api";
 import { AppServices } from "@/lib/services/providers";
 
@@ -10,63 +10,78 @@ const USE_MOCK = true;
 const generateMockDependents = (): Dependent[] => [
   {
     id: "d001",
-    name: "Akosua Mensah",
-    relationship: "Spouse",
-    dateOfBirth: "1990-05-15",
-    gender: "Female",
-    primaryMember: "Kwame Mensah",
-    primaryMemberId: "MS001234",
-    dateAdded: "2024-01-15T10:20:00Z",
-    dependentId: "DEP001234",
-    status: "Active",
+    dependentPhone: "+233241234567",
+    dependentName: "Akosua Mensah",
+    relationship: "spouse",
+    status: "active",
+    createdAt: "2024-01-15T10:20:00Z",
+    updatedAt: "2024-01-15T10:20:00Z",
+    user: {
+      id: "u001",
+      firstName: "Kwame",
+      lastName: "Mensah",
+      phoneNumber: "+233241234567",
+    },
   },
   {
     id: "d002",
-    name: "Kofi Mensah",
-    relationship: "Child",
-    dateOfBirth: "2015-08-20",
-    gender: "Male",
-    primaryMember: "Kwame Mensah",
-    primaryMemberId: "MS001234",
-    dateAdded: "2024-01-15T10:25:00Z",
-    dependentId: "DEP001235",
-    status: "Active",
+    dependentPhone: "+233241234568",
+    dependentName: "Kofi Mensah",
+    relationship: "child",
+    status: "active",
+    createdAt: "2024-01-15T10:25:00Z",
+    updatedAt: "2024-01-15T10:25:00Z",
+    user: {
+      id: "u001",
+      firstName: "Kwame",
+      lastName: "Mensah",
+      phoneNumber: "+233241234567",
+    },
   },
   {
     id: "d003",
-    name: "Abena Osei",
-    relationship: "Child",
-    dateOfBirth: "2018-03-10",
-    gender: "Female",
-    primaryMember: "John Osei",
-    primaryMemberId: "MS001235",
-    dateAdded: "2024-02-20T08:15:00Z",
-    dependentId: "DEP001236",
-    status: "Active",
+    dependentPhone: "+233241234569",
+    dependentName: "Abena Osei",
+    relationship: "child",
+    status: "active",
+    createdAt: "2024-02-20T08:15:00Z",
+    updatedAt: "2024-02-20T08:15:00Z",
+    user: {
+      id: "u002",
+      firstName: "John",
+      lastName: "Osei",
+      phoneNumber: "+233241234570",
+    },
   },
   {
     id: "d004",
-    name: "Samuel Asante",
-    relationship: "Parent",
-    dateOfBirth: "1960-12-05",
-    gender: "Male",
-    primaryMember: "Michael Asante",
-    primaryMemberId: "MS001236",
-    dateAdded: "2024-03-10T14:30:00Z",
-    dependentId: "DEP001237",
-    status: "Inactive",
+    dependentPhone: "+233241234571",
+    dependentName: "Samuel Asante",
+    relationship: "parent",
+    status: "inactive",
+    createdAt: "2024-03-10T14:30:00Z",
+    updatedAt: "2024-03-10T14:30:00Z",
+    user: {
+      id: "u003",
+      firstName: "Michael",
+      lastName: "Asante",
+      phoneNumber: "+233241234571",
+    },
   },
   {
     id: "d005",
-    name: "Grace Boateng",
-    relationship: "Spouse",
-    dateOfBirth: "1988-07-22",
-    gender: "Female",
-    primaryMember: "David Boateng",
-    primaryMemberId: "MS001237",
-    dateAdded: "2024-01-05T09:00:00Z",
-    dependentId: "DEP001238",
-    status: "Active",
+    dependentPhone: "+233241234572",
+    dependentName: "Grace Boateng",
+    relationship: "spouse",
+    status: "active",
+    createdAt: "2024-01-05T09:00:00Z",
+    updatedAt: "2024-01-05T09:00:00Z",
+    user: {
+      id: "u004",
+      firstName: "David",
+      lastName: "Boateng",
+      phoneNumber: "+233241234572",
+    },
   },
 ];
 
@@ -80,13 +95,32 @@ const mockGetAllDependents = async (params?: Record<string, unknown>) => {
 
   // Apply filters if params exist
   if (params?.userId) {
-    dependents = dependents.filter((d) => d.primaryMemberId === params.userId);
+    dependents = dependents.filter((d) => d.user.id === params.userId);
   }
   if (params?.status) {
     dependents = dependents.filter((d) => d.status === params.status);
   }
 
-  return dependents;
+  const page = (params?.page as number) || 1;
+  const limit = (params?.limit as number) || 20;
+  const total = dependents.length;
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    status: "success",
+    code: 200,
+    message: "Operation completed successfully",
+    timestamp: new Date().toISOString(),
+    data: {
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+      },
+      dependents,
+    },
+  };
 };
 
 const mockGetDependent = async (id: string) => {
@@ -120,12 +154,10 @@ export const useGetDependents = (params?: Record<string, unknown>) => {
   return useQuery({
     queryKey: ["dependents", params],
     queryFn: async () => {
-      if (USE_MOCK) {
-        return mockGetAllDependents(params);
-      }
-      return queryFn<Dependent[]>(
+      const response = await queryFn<DependentsResponse>(
         AppServices.dependents.get_all_dependents(params)
       );
+      return response;
     },
   });
 };
@@ -140,9 +172,10 @@ export const useGetDependent = (dependentId: string | undefined) => {
       if (USE_MOCK) {
         return mockGetDependent(dependentId);
       }
-      return queryFn<Dependent>(
+      const response = await queryFn<BaseSuccessResponse<Dependent>>(
         AppServices.dependents.get_id_dependent(dependentId)
       );
+      return response.data;
     },
     enabled: !!dependentId,
   });

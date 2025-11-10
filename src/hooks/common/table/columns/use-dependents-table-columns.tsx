@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { DataTableColumnHeader } from "@/components/common/data-table/data-table-column-header";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { LucideCopy, LucideCopyCheck } from "lucide-react";
@@ -13,19 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "@tanstack/react-router";
 
-export type Dependent = {
-  id: string;
-  name: string;
-  relationship: string;
-  dateOfBirth: string;
-  gender: string;
-  primaryMember: string;
-  primaryMemberId: string;
-  dateAdded: string;
-  dependentId: string;
-  avatar?: string;
-  status: "Active" | "Inactive";
-};
+import { Dependent } from "@/types";
 
 export const useDependentsTableColumns = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -84,46 +72,12 @@ export const useDependentsTableColumns = () => {
       },
 
       {
-        accessorKey: "dependentId",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Dependent ID" />
-        ),
-        cell: ({ row }) => {
-          const dependentId = row.original.dependentId;
-          const isCopied = copiedId === dependentId;
-
-          return (
-            <div className="group flex items-center justify-between">
-              <span className="text-sm text-medsave-black-300">
-                {dependentId}
-              </span>
-              <button
-                onClick={() => handleCopyID(dependentId)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
-              >
-                {isCopied ? (
-                  <LucideCopyCheck
-                    size={20}
-                    className="text-medsave-success-500"
-                  />
-                ) : (
-                  <LucideCopy size={20} className="text-medsave-black-400" />
-                )}
-              </button>
-            </div>
-          );
-        },
-      },
-
-      {
-        accessorKey: "name",
+        accessorKey: "dependentName",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Name" />
         ),
         cell: ({ row }) => {
-          const name = row.original.name;
-          const avatar =
-            row.original.avatar || `https://github.com/shadcn.png?size=80`;
+          const name = row.original.dependentName;
           const initials = name
             .split(" ")
             .map((n: string) => n[0])
@@ -134,7 +88,6 @@ export const useDependentsTableColumns = () => {
           return (
             <div className="flex items-center gap-2">
               <Avatar className="h-8 w-8 bg-medsave-black-50">
-                <AvatarImage alt={name} src={avatar} />
                 <AvatarFallback className="text-sm font-medium text-medsave-black-300">
                   {initials}
                 </AvatarFallback>
@@ -158,68 +111,38 @@ export const useDependentsTableColumns = () => {
       },
 
       {
-        accessorKey: "primaryMemberId",
+        accessorKey: "user",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Primary Member ID" />
+          <DataTableColumnHeader column={column} title="Primary Member" />
         ),
         cell: ({ row }) => {
-          const primaryMemberId = row.original.primaryMemberId;
-          const isCopied = copiedId === primaryMemberId;
-
+          const user = row.original.user;
+          const fullName = `${user.firstName} ${user.lastName}`.trim();
           return (
-            <div className="group flex items-center justify-between gap-2">
-              <span className="text-sm font-mono text-medsave-black-300">
-                {primaryMemberId}
-              </span>
-              <button
-                onClick={() => handleCopyID(primaryMemberId)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
-              >
-                {isCopied ? (
-                  <LucideCopyCheck
-                    size={16}
-                    className="text-medsave-success-500"
-                  />
-                ) : (
-                  <LucideCopy size={16} className="text-medsave-black-400" />
-                )}
-              </button>
-            </div>
+            <span className="text-sm text-medsave-black-300">{fullName}</span>
           );
         },
       },
 
       {
-        accessorKey: "primaryMember",
+        accessorKey: "dependentPhone",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Primary Member Name" />
+          <DataTableColumnHeader column={column} title="Phone" />
         ),
         cell: ({ row }) => (
           <span className="text-sm text-medsave-black-300">
-            {row.original.primaryMember}
+            {row.original.dependentPhone}
           </span>
         ),
       },
 
       {
-        accessorKey: "gender",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Gender" />
-        ),
-        cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300">
-            {row.original.gender}
-          </span>
-        ),
-      },
-
-      {
-        accessorKey: "dateAdded",
+        accessorKey: "createdAt",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Date Added" />
         ),
         cell: ({ row }) => {
-          const dateStr = row.original.dateAdded;
+          const dateStr = row.original.createdAt;
           if (!dateStr)
             return <span className="text-sm text-medsave-black-300">N/A</span>;
 
@@ -248,17 +171,18 @@ export const useDependentsTableColumns = () => {
         ),
         cell: ({ row }) => {
           const status = row.original.status;
+          const isActive = status === "active";
           return (
             <Badge
-              variant={status === "Active" ? "default" : "secondary"}
+              variant={isActive ? "default" : "secondary"}
               className={cn(
                 "px-6 py-0.5 min-w-30 text-base rounded-sm",
-                status === "Active"
+                isActive
                   ? "bg-medsave-success-50 text-medsave-success-500 border-medsave-success-100 hover:bg-green-50"
                   : "bg-gray-50 text-gray-500 border-gray-200"
               )}
             >
-              {status}
+              {status.charAt(0).toUpperCase() + status.slice(1)}
             </Badge>
           );
         },
@@ -294,6 +218,7 @@ export const useDependentsTableColumns = () => {
                     navigate({
                       to: "/dependents",
                       search: {
+                        sheet: undefined,
                         dialog: "details",
                         dependentId: row.original.id,
                       },
@@ -307,7 +232,8 @@ export const useDependentsTableColumns = () => {
                     navigate({
                       to: "/dependents",
                       search: {
-                        dialog: "edit",
+                        dialog: undefined,
+                        sheet: "edit",
                         dependentId: row.original.id,
                       },
                     })
@@ -320,6 +246,7 @@ export const useDependentsTableColumns = () => {
                     navigate({
                       to: "/dependents",
                       search: {
+                        sheet: undefined,
                         dialog: "delete",
                         dependentId: row.original.id,
                       },

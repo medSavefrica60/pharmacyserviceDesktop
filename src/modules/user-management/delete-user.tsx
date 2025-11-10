@@ -9,10 +9,13 @@ import {
 } from "@/components/ui/dialog";
 import { useDeleteUser, useGetUser } from "@/hooks/api/use-users";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { AlertTriangleIcon } from "lucide-react";
+import { logger } from "@/lib/logger";
+import { useState, useTransition } from "react";
 
 export const DeleteUser = () => {
+  const [isDeleting, startDeletingTransition] = useTransition();
   const navigate = useNavigate();
   const search = useSearch({ from: "/users" }) as {
     dialog?: string;
@@ -26,20 +29,29 @@ export const DeleteUser = () => {
   const handleClose = () => {
     navigate({
       to: "/users",
-      search: { sheet: undefined, dialog: undefined, userId: undefined },
+      search: { dialog: undefined, userId: undefined },
     });
   };
 
   const handleDelete = async () => {
     if (!search.userId) return;
 
-    try {
-      await deleteMutation.mutateAsync(search.userId);
-      toast.success("User deleted successfully");
-      handleClose();
-    } catch (error) {
-      toast.error("Failed to delete user");
-    }
+    startDeletingTransition(() => {
+      toast.loading(`Deleting user ${user?.firstName} ${user?.lastName}...`);
+      deleteMutation
+        .mutateAsync(search.userId!)
+        .then((response) => {
+          toast.dismiss();
+          logger.info("User deleted successfully", response);
+          toast.success("User deleted successfully");
+          handleClose();
+        })
+        .catch((error) => {
+          toast.dismiss();
+          logger.error("Failed to delete user", error);
+          toast.error(`Failed to delete user, ${error}`);
+        });
+    });
   };
 
   return (
@@ -77,7 +89,7 @@ export const DeleteUser = () => {
             type="button"
             variant="outline"
             onClick={handleClose}
-            disabled={deleteMutation.isPending}
+            disabled={deleteMutation.isPending || isDeleting}
           >
             Cancel
           </Button>
@@ -85,9 +97,11 @@ export const DeleteUser = () => {
             type="button"
             variant="destructive"
             onClick={handleDelete}
-            disabled={deleteMutation.isPending}
+            disabled={deleteMutation.isPending || isDeleting}
           >
-            {deleteMutation.isPending ? "Deleting..." : "Delete User"}
+            {deleteMutation.isPending || isDeleting
+              ? "Deleting..."
+              : "Delete User"}
           </Button>
         </DialogFooter>
       </DialogContent>

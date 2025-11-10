@@ -26,7 +26,7 @@ export const DeleteProvider = () => {
   const handleClose = () => {
     navigate({
       to: "/providers",
-      search: { sheet: undefined, dialog: undefined, providerId: undefined },
+      search: { dialog: undefined, providerId: undefined },
     });
   };
 
