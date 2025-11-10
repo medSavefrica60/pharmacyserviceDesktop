@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { DataTableColumnHeader } from "@/components/common/data-table/data-table-column-header";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { cn, formatDateTime } from "@/lib/utils";
 import { LucideCopy, LucideCopyCheck } from "lucide-react";
 import {
   DropdownMenu,
@@ -143,7 +143,7 @@ export const useProvidersTableColumns = () => {
           <DataTableColumnHeader column={column} title="Phone" />
         ),
         cell: ({ row }) => (
-          <span className="text-sm text-gray-700">
+          <span className="text-sm text-gray-700 truncate block max-w-22">
             {row.original.contactPhone}
           </span>
         ),
@@ -156,25 +156,13 @@ export const useProvidersTableColumns = () => {
         ),
         cell: ({ row }) => {
           const dateStr = row.original.createdAt;
-          if (!dateStr)
-            return <span className="text-sm text-gray-700">N/A</span>;
-
-          try {
-            const date = new Date(dateStr);
-            const formattedDate = date.toLocaleDateString("en-US", {
-              month: "2-digit",
-              day: "2-digit",
-              year: "numeric",
-            });
-            return (
-              <span className="text-sm text-gray-700">{formattedDate}</span>
-            );
-          } catch {
-            return <span className="text-sm text-gray-700">N/A</span>;
-          }
+          return (
+            <span className="text-sm text-gray-700">
+              {formatDateTime(dateStr)}
+            </span>
+          );
         },
       },
-
       {
         accessorKey: "status",
         header: ({ column }) => (
@@ -257,7 +245,8 @@ export const useProvidersTableColumns = () => {
                 <DropdownMenuItem
                   onClick={() =>
                     navigate({
-                      to: "/providers/create",
+                      to: "/providers/$providerId/edit",
+                      params: { providerId: row.original.id },
                       search: {
                         providerId: row.original.id,
                         dialog: undefined,

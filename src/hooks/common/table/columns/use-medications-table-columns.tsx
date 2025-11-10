@@ -120,10 +120,11 @@ export const useMedicationsTableColumns = () => {
                 <DropdownMenuItem
                   onClick={() =>
                     navigate({
-                      to: "/medications",
+                      to: "/medications/$medicationId/edit",
+                      params: { medicationId: row.original.id },
                       search: {
-                        dialog: "details",
                         medicationId: row.original.id,
+                        dialog: undefined,
                       },
                     })
                   }

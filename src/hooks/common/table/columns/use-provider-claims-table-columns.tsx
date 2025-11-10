@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { LucideCopy, LucideCopyCheck } from "lucide-react";
 import { ProviderClaim } from "@/types";
+import { formatDateTime } from "@/lib/utils";
 
 export const useProviderClaimsTableColumns = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -197,33 +198,11 @@ export const useProviderClaimsTableColumns = () => {
         ),
         cell: ({ row }) => {
           const dateStr = row.original.createdAt;
-          if (!dateStr)
-            return <span className="text-sm text-medsave-black-300">N/A</span>;
-
-          try {
-            const date = new Date(dateStr);
-            const formattedDate = date.toLocaleDateString("en-US", {
-              month: "2-digit",
-              day: "2-digit",
-              year: "numeric",
-            });
-            const formattedTime = date.toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit",
-            });
-            return (
-              <div className="flex flex-col">
-                <span className="text-sm text-medsave-black-300">
-                  {formattedDate}
-                </span>
-                <span className="text-xs text-medsave-black-400">
-                  {formattedTime}
-                </span>
-              </div>
-            );
-          } catch {
-            return <span className="text-sm text-medsave-black-300">N/A</span>;
-          }
+          return (
+            <span className="text-sm text-medsave-black-300">
+              {formatDateTime(dateStr)}
+            </span>
+          );
         },
       },
       {
