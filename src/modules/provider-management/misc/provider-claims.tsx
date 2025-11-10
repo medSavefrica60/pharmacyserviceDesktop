@@ -1,19 +1,20 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { DataTable } from "@/components/common/data-table/data-table";
+import { DataTableSkeleton } from "@/components/common/data-table/data-table-skeleton";
 import { useProviderClaimsTableColumns } from "@/hooks/common/table/columns/use-provider-claims-table-columns";
 import { useProviderClaimsToolbar } from "@/hooks/common/table/toolbars/use-provider-claims-toolbar";
-import { ProviderClaimsTableSkeleton } from "../skeletons/provider-claims-table-skeleton";
 import {
   useGetProvider,
   useGetProviderClaims,
 } from "@/hooks/api/use-providers";
+import { ProviderClaimsMetrics } from "./provider-claims-metrics";
 
 export const ViewProviderClaims = () => {
   const navigate = useNavigate();
@@ -29,11 +30,13 @@ export const ViewProviderClaims = () => {
   );
   const columns = useProviderClaimsTableColumns();
 
-  const handleClose = () => {
-    navigate({
-      to: "/providers",
-      search: { sheet: undefined, dialog: undefined, providerId: undefined },
-    });
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      navigate({
+        to: "/providers",
+        search: { dialog: undefined, providerId: undefined },
+      });
+    }
   };
 
   // Extract claims from API response
@@ -41,33 +44,60 @@ export const ViewProviderClaims = () => {
   const total = claimsData?.data?.total || 0;
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="!max-w-7xl w-full max-h-[85vh] flex flex-col p-2">
-        <DialogHeader className="px-6 pt-6 pb-2">
-          <DialogTitle>Provider Claims</DialogTitle>
-          <DialogDescription>
+    <Sheet open={isOpen as boolean} onOpenChange={handleOpenChange}>
+      <SheetContent
+        side="bottom"
+        className="!max-w-[120rem] w-full max-h-[85vh] flex flex-col p-2"
+      >
+        <SheetHeader className="px-6 pb-4">
+          <SheetTitle className="text-xl">Provider Claims</SheetTitle>
+          <SheetDescription>
             {provider
               ? `View all claims for ${provider.organizationName}`
               : "View all claims for this provider"}
-          </DialogDescription>
-        </DialogHeader>
+          </SheetDescription>
+        </SheetHeader>
 
-        <div className="flex-1 overflow-hidden">
+        <div className="flex flex-col flex-1 overflow-hidden px-6 pb-6 gap-4">
           {isLoading ? (
-            <ProviderClaimsTableSkeleton />
+            <>
+              <ProviderClaimsMetrics isLoading={true} />
+              <DataTableSkeleton
+                columnCount={7}
+                rowCount={10}
+                searchableColumnCount={1}
+                filterableColumnCount={1}
+                showViewOptions={true}
+                cellWidths={[
+                  "120px",
+                  "200px",
+                  "150px",
+                  "120px",
+                  "100px",
+                  "120px",
+                  "100px",
+                ]}
+              />
+            </>
           ) : (
-            <DataTable
-              data={claims}
-              className="border-0 flex-1 w-full"
-              count={total}
-              limit={20}
-              pageSizeOptions={[10, 20, 50, 100]}
-              columns={columns}
-              Toolbar={useProviderClaimsToolbar}
-            />
+            <>
+              <ProviderClaimsMetrics
+                claimsData={claimsData}
+                isLoading={false}
+              />
+              <DataTable
+                data={claims}
+                className="border-0 flex-1 w-full"
+                count={total}
+                limit={20}
+                pageSizeOptions={[10, 20, 50, 100]}
+                columns={columns}
+                Toolbar={useProviderClaimsToolbar}
+              />
+            </>
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };

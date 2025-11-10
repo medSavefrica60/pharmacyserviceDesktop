@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { useDeleteProvider, useGetProvider } from "@/hooks/api/use-providers";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { AlertTriangleIcon } from "lucide-react";
 
 export const DeleteProvider = () => {
@@ -33,13 +33,18 @@ export const DeleteProvider = () => {
   const handleDelete = async () => {
     if (!search.providerId) return;
 
-    try {
-      await deleteMutation.mutateAsync(search.providerId);
-      toast.success("Provider deleted successfully");
-      handleClose();
-    } catch (error) {
-      toast.error("Failed to delete provider");
-    }
+    toast.loading(`Deleting provider ${provider?.organizationName}...`);
+    deleteMutation
+      .mutateAsync(search.providerId!)
+      .then(() => {
+        toast.dismiss();
+        toast.success("Provider deleted successfully");
+        handleClose();
+      })
+      .catch((error) => {
+        toast.dismiss();
+        toast.error(`Failed to delete provider, ${error}`);
+      });
   };
 
   return (

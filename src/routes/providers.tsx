@@ -5,7 +5,6 @@ import {
 } from "@tanstack/react-router";
 import {
   ViewProviders,
-  ViewProviderDetails,
   DeleteProvider,
   ViewProviderClaims,
 } from "@/modules/provider-management";
@@ -30,7 +29,6 @@ function RouteComponent() {
       {isExactProvidersRoute ? (
         <>
           <ViewProviders />
-          <ViewProviderDetails />
           <DeleteProvider />
 
           {/* miscellaneous provider routes */}

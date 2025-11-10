@@ -219,15 +219,17 @@ export const useProvidersTableColumns = () => {
                 <DropdownMenuItem
                   onClick={() =>
                     navigate({
-                      to: "/providers",
+                      to: "/providers/$providerId/edit",
+                      params: { providerId: row.original.id },
                       search: {
-                        dialog: "details",
-                        providerId: row.original.id,
+                        view: "complex",
+                        dialog: undefined,
+                        providerId: undefined,
                       },
                     })
                   }
                 >
-                  View Details
+                  View More
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
@@ -248,8 +250,9 @@ export const useProvidersTableColumns = () => {
                       to: "/providers/$providerId/edit",
                       params: { providerId: row.original.id },
                       search: {
-                        providerId: row.original.id,
+                        view: undefined,
                         dialog: undefined,
+                        providerId: undefined,
                       },
                     })
                   }

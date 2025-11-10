@@ -63,6 +63,14 @@ export const AppServices = {
       url: `/dependents/user/${userId}`,
       params,
     }),
+    get_user_claims: (
+      patientId: string,
+      params?: Record<string, unknown>
+    ): ServiceDefinition => ({
+      method: "GET",
+      url: `/patients/${patientId}/claims`,
+      params: { ...params },
+    }),
   },
   providers: {
     create_provider: (data: Record<string, unknown>): ServiceDefinition => ({
@@ -154,10 +162,12 @@ export const AppServices = {
       url: "/claims",
       params,
     }),
+
     get_id_claim: (id: string): ServiceDefinition => ({
       method: "GET",
       url: `/claims/${id}`,
     }),
+
     update_claim: (
       id: string,
       data: Record<string, unknown>
