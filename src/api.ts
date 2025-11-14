@@ -7,7 +7,7 @@ import { VITE_PUBLIC_BASE_URL } from "./constant";
 import { logger } from "./lib/logger";
 
 const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNThiZmM2Zi1hYzZlLTRhOTAtYmNlYy1kOWIyMWQ0MmJlNzkiLCJlbWFpbCI6Im1lZHNhdmUuYWZyaWNhQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIioiXSwidHlwZSI6ImFkbWluIiwiaWF0IjoxNzYzMDc4MjI2LCJleHAiOjE3NjMwODU0MjZ9.aJdLHoAf64munNWDTomE3wc-pPFAxyD58PYmb5rqgrQ";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNThiZmM2Zi1hYzZlLTRhOTAtYmNlYy1kOWIyMWQ0MmJlNzkiLCJlbWFpbCI6Im1lZHNhdmUuYWZyaWNhQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIioiXSwidHlwZSI6ImFkbWluIiwiaWF0IjoxNzYzMTM1Mjc3LCJleHAiOjE3NjMxNDI0Nzd9.nScEyvGtgxuLu5dnKMgN1Tl_WxlXRpYh4P_RFSmg63g";
 const index = axios.create({
   baseURL: VITE_PUBLIC_BASE_URL,
   timeout: 10000,

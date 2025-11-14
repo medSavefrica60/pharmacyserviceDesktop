@@ -51,7 +51,7 @@ export default function CreateMedication() {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <header className="flex items-center flex-1 justify-between px-4 py-3 border border-b-0">
           <h1 className="font-bold text-xl text-medsave-black-500">
-            Medication Information
+            Package Information
           </h1>
           <CreateActionButtons
             isSaving={isSaving || upsertMutation.isPending}
@@ -61,8 +61,8 @@ export default function CreateMedication() {
         <section className="p-4 border">
           <div className="flex flex-col space-y-6">
             <FormFieldWrapper
-              label="Package Name"
-              description="The name of the medication package"
+              label="Name"
+              description="The name of the pharmacy package"
             >
               <FormInput
                 name="name"
@@ -74,7 +74,7 @@ export default function CreateMedication() {
             </FormFieldWrapper>
             <FormFieldWrapper
               label="Minimum Amount (₵)"
-              description="The minimum amount required for this medication package"
+              description="The minimum amount required for this pharmacy package"
             >
               <FormInput
                 name="minAmount"
@@ -86,7 +86,7 @@ export default function CreateMedication() {
             </FormFieldWrapper>
             <FormFieldWrapper
               label="Status"
-              description="The status of the medication package"
+              description="The status of the pharmacy package"
             >
               <FormSelect
                 name="status"
@@ -105,4 +105,3 @@ export default function CreateMedication() {
     </Form>
   );
 }
-

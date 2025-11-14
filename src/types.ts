@@ -88,6 +88,12 @@ export type PaginatedData<T> = {
   page: number;
   limit: number;
   total: number;
+  metadata?: {
+    totalProviders?: number;
+    activeProviders?: number;
+    pendingVerificationProviders?: number;
+    suspendedProviders?: number;
+  };
 };
 
 /**

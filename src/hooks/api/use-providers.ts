@@ -17,7 +17,7 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 // Fetch all providers
 export const useGetProviders = (params?: Record<string, unknown>) => {
   return useQuery({
-    queryKey: [`providers-${params}`],
+    queryKey: ["providers", params],
     queryFn: async () => {
       const response = await queryFn<ProvidersResponse>(
         AppServices.providers.get_all_providers(params)
@@ -30,7 +30,7 @@ export const useGetProviders = (params?: Record<string, unknown>) => {
 // Fetch single provider
 export const useGetProvider = (providerId: string | undefined) => {
   return useQuery({
-    queryKey: [`provider-${providerId}`],
+    queryKey: ["provider", providerId],
     queryFn: async () => {
       if (!providerId) throw new Error("Provider ID is required");
 
@@ -97,7 +97,7 @@ export const useDeleteProvider = () => {
 // Provider Claims API Hook
 export const useGetProviderClaims = (providerId: string | undefined) => {
   return useQuery({
-    queryKey: [`provider-claims-${providerId}`],
+    queryKey: ["provider-claims", providerId],
     queryFn: async () => {
       if (!providerId) throw new Error("Provider ID is required");
 

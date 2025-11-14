@@ -279,4 +279,12 @@ export const AppServices = {
       url: `/medications/${id}`,
     }),
   },
+
+  settings: {
+    change_password: (data: Record<string, unknown>): ServiceDefinition => ({
+      method: "PATCH",
+      url: "/auth/password",
+      data,
+    }),
+  },
 };

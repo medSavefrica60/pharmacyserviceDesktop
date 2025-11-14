@@ -54,5 +54,5 @@ export const ghanaPhonePrefixes = [
   "053",
 ] as const;
 
-export const DEFAULT_PAGE_SIZE = 10;
+export const DEFAULT_PAGE_SIZE = 5;
 export const DEFAULT_PAGE_INDEX = 1;

@@ -45,6 +45,7 @@ interface TasksTableProps<TData, TValue>
   className?: string;
   toolbarClassName?: string;
   hidePagination?: boolean;
+  displaySize?: string;
 }
 export function DataTable<TData, TValue>({
   data,
@@ -53,12 +54,10 @@ export function DataTable<TData, TValue>({
   pageSizeOptions,
   columns,
   className,
-  toolbarClassName,
-  filterFields,
   Toolbar,
-  children,
   hidePagination,
   onPageSizeChange,
+  displaySize,
 }: TasksTableProps<TData, TValue>) {
   const defaultPerPage = limit;
   // Calculate pageCount from total records (count) and page size (limit)
@@ -155,9 +154,9 @@ export function DataTable<TData, TValue>({
               pageSizeOptions={pageSizeOptions}
               pageSize={defaultPerPage}
               onPageSizeChange={(pageSize) => {
-                // setLimit(pageSize);
                 onPageSizeChange?.(pageSize);
               }}
+              displaySize={displaySize as string}
             />
           </div>
         )}

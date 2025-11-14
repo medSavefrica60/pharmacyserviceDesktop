@@ -35,18 +35,13 @@ export const ProviderMetrics = ({
     return <SkeletonProviderMetrics />;
   }
 
-  const providers = providersData?.providers || [];
-  const totalProviders = providersData?.total || providers.length;
-
-  const activeProviders = providers.filter(
-    (p) => p.status === "ACTIVE"
-  ).length;
-  const pendingVerificationProviders = providers.filter(
-    (p) => p.status === "PENDING_VERIFICATION"
-  ).length;
-  const suspendedProviders = providers.filter(
-    (p) => p.status === "SUSPENDED"
-  ).length;
+  const metadata = providersData?.metadata;
+  // Use metadata if available (calculated from filtered rows), otherwise fallback to total
+  const totalProviders = metadata?.totalProviders ?? providersData?.total ?? 0;
+  const activeProviders = metadata?.activeProviders ?? 0;
+  const pendingVerificationProviders =
+    metadata?.pendingVerificationProviders ?? 0;
+  const suspendedProviders = metadata?.suspendedProviders ?? 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -73,4 +68,3 @@ export const ProviderMetrics = ({
     </div>
   );
 };
-

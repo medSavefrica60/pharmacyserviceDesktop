@@ -51,26 +51,25 @@ export const MedicationMetrics = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
       <ValueIndicator
-        title="Total Medications"
+        title="Total Packages"
         value={totalMedications.toString()}
-        description="All medications in the system."
+        description="All packages in the system."
       />
       <ValueIndicator
-        title="Active Medications"
+        title="Active Packages"
         value={activeMedications.toString()}
-        description="Medications that are currently active."
+        description="Packages that are currently active."
       />
       <ValueIndicator
-        title="Inactive Medications"
+        title="Inactive Packages"
         value={inactiveMedications.toString()}
-        description="Medications that are currently inactive."
+        description="Packages that are currently inactive."
       />
       <ValueIndicator
-        title="Suspended Medications"
+        title="Suspended Packages"
         value={suspendedMedications.toString()}
-        description="Medications that are currently suspended."
+        description="Packages that are currently suspended."
       />
     </div>
   );
 };
-
