@@ -287,4 +287,17 @@ export const AppServices = {
       data,
     }),
   },
+  audit: {
+    get_all_audit_logs: (
+      params?: Record<string, unknown>
+    ): ServiceDefinition => ({
+      method: "GET",
+      url: "/audit-logs",
+      params,
+    }),
+    get_id_audit_log: (id: string): ServiceDefinition => ({
+      method: "GET",
+      url: `/audit-logs/${id}`,
+    }),
+  },
 };

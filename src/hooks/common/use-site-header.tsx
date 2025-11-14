@@ -200,8 +200,6 @@ const getPageInfo = (
 export const useSiteHeader = (): PageInfo => {
   const location = useLocation();
   const navigate = useNavigate();
-  const search = useSearch({ from: location.pathname as any });
-  const params = useParams({ from: location.pathname as any });
 
   return getPageInfo(location.pathname, navigate);
 };

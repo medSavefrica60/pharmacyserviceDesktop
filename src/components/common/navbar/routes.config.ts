@@ -14,8 +14,10 @@ import {
   type LucideIcon,
   Settings,
   FlaskRound,
+  HelpCircle,
+  LogOut,
+  HistoryIcon,
 } from "lucide-react";
-import { HospitalSVG, LaboratorySVG, PharmacySVG } from "../icons";
 import { IconHospital } from "@tabler/icons-react";
 
 export interface RouteItemWithOptionalIcon {
@@ -185,6 +187,16 @@ export const routesConfig: RouteConfig = {
       title: "Settings",
       url: "/settings",
       icon: Settings,
+    },
+    {
+      title: "Audit Log",
+      url: "/audit-log",
+      icon: HistoryIcon,
+    },
+    {
+      title: "Logout",
+      url: "/logout",
+      icon: LogOut,
     },
   ] as RouteItem[],
   documents: [],

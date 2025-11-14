@@ -407,3 +407,30 @@ export type DependentsResponse = BaseSuccessResponse<{
   };
   dependents: Dependent[];
 }>;
+
+/**
+ * Audit Log Types
+ */
+export type AuditLog = {
+  id: string;
+  action: string;
+  adminId: string;
+  targetUserId: string | null;
+  targetResourceId: string | null;
+  targetResourceType: string | null;
+  description: string;
+  oldValues: any | null;
+  newValues: any | null;
+  metadata: any | null;
+  ipAddress: string;
+  userAgent: string;
+  createdAt: string;
+};
+
+export type AuditLogsResponse = BaseSuccessResponse<{
+  auditLogs: AuditLog[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}>;
