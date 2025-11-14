@@ -12,6 +12,7 @@ import {
   Plus,
   Eye,
   type LucideIcon,
+  Settings,
 } from "lucide-react";
 
 export interface RouteItemWithOptionalIcon {
@@ -167,6 +168,12 @@ export const routesConfig: RouteConfig = {
       ],
     },
   ] as RouteItemWithOptionalIcon[],
-  navSecondary: [] as RouteItem[],
+  navSecondary: [
+    {
+      title: "Settings",
+      url: "/settings",
+      icon: Settings,
+    },
+  ] as RouteItem[],
   documents: [],
 };

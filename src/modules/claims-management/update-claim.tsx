@@ -76,7 +76,7 @@ export const UpdateClaim = () => {
         patientId: claim.user.medsaveId,
         providerName: claim.provider.organizationName,
         providerId: claim.provider.id,
-        serviceType: claim.medicationPackage.name,
+        serviceType: claim.package.name,
         claimDate: claim.createdAt.split("T")[0],
         claimAmount: claim.amount,
         approvedAmount: claim.amount,

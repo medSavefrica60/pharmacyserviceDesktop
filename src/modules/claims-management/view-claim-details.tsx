@@ -276,12 +276,12 @@ export const ViewClaimDetails = () => {
                   )}
                 </div>
 
-                {/* Medication Package */}
-                {claim.medicationPackage && (
+                {/* Package */}
+                {claim.package && (
                   <div className="space-y-4">
                     <h4 className="text-lg font-semibold flex items-center gap-2">
                       <FileTextIcon className="h-5 w-5 text-primary" />
-                      Medication Package
+                      Package
                     </h4>
                     <div className="bg-card rounded-lg border p-4">
                       <div className="flex items-center justify-between">
@@ -290,22 +290,22 @@ export const ViewClaimDetails = () => {
                             Package Name
                           </p>
                           <p className="text-lg font-semibold">
-                            {claim.medicationPackage.name}
+                            {claim.package.name}
                           </p>
-                          {claim.medicationPackage.minAmount && (
+                          {claim.package.minAmount && (
                             <p className="text-sm text-muted-foreground">
                               Minimum Amount: GH₵{" "}
-                              {claim.medicationPackage.minAmount}
+                              {claim.package.minAmount}
                             </p>
                           )}
                         </div>
                         <button
                           onClick={() =>
-                            handleCopyId(claim.medicationPackage.id)
+                            handleCopyId(claim.package.id)
                           }
                           className="p-2 hover:bg-muted rounded-md transition-colors"
                         >
-                          {copiedId === claim.medicationPackage.id ? (
+                          {copiedId === claim.package.id ? (
                             <CopyCheckIcon className="h-4 w-4 text-green-600" />
                           ) : (
                             <CopyIcon className="h-4 w-4 text-muted-foreground" />

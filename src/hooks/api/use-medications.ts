@@ -113,7 +113,7 @@ const mockDeleteMedication = async (id: string) => {
 // Fetch all medication packages
 export const useGetMedications = (params?: Record<string, unknown>) => {
   return useQuery({
-    queryKey: ["medications", params],
+    queryKey: [`medications-${params}`],
     queryFn: async () => {
       if (USE_MOCK) {
         return mockGetAllMedications(params);
@@ -129,7 +129,7 @@ export const useGetMedications = (params?: Record<string, unknown>) => {
 // Fetch single medication package
 export const useGetMedication = (medicationId: string | undefined) => {
   return useQuery({
-    queryKey: ["medication", medicationId],
+    queryKey: [`medication-${medicationId}`],
     queryFn: async () => {
       if (!medicationId) throw new Error("Medication ID is required");
 
@@ -166,8 +166,11 @@ export const useUpsertMedication = () => {
       }
       return queryFn(AppServices.medications.update_medication(id, data));
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["medications"] });
+    onSuccess: (response, { id }) => {
+      queryClient.invalidateQueries({ queryKey: [`medications`] });
+      if (id) {
+        queryClient.invalidateQueries({ queryKey: [`medication-${id}`] });
+      }
     },
   });
 };
@@ -184,7 +187,7 @@ export const useDeleteMedication = () => {
       return queryFn(AppServices.medications.delete_medication(medicationId));
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["medications"] });
+      queryClient.invalidateQueries({ queryKey: [`medications`] });
     },
   });
 };

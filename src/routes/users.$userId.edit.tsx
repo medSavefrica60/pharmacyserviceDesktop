@@ -6,6 +6,8 @@ import { ChevronUp, PackageIcon, Trash2 } from "lucide-react";
 import { DeleteUser } from "@/modules/user-management/delete-user";
 import ShowMiniStatement from "@/modules/user-management/misc/show-mini-statement";
 import { UserPackageEnrollment } from "@/modules/user-management/misc/user-package-enrollment";
+import { CaretUpIcon } from "@radix-ui/react-icons";
+import { ViewUserClaims } from "@/modules/user-management/misc/user-claims";
 
 export const Route = createFileRoute("/users/$userId/edit")({
   component: RouteComponent,
@@ -80,12 +82,27 @@ function RouteComponent() {
               <PackageIcon className="w-4 h-4" />
               <span className="text-sm font-medium">Package Enrollments</span>
             </button>
+            <button
+              type="button"
+              onClick={() => {
+                navigate({
+                  to: "/users/$userId/edit",
+                  params: { userId: userId! },
+                  search: { dialog: "claims", userId: userId! },
+                });
+              }}
+              className="flex items-center gap-2 px-2 py-1.5 text-white rounded-xl bg-medsave-blue-100 hover:bg-medsave-blue-200"
+            >
+              <CaretUpIcon className="w-4 h-4" />
+              <span className="text-sm font-medium">View Claims</span>
+            </button>
           </div>
         </span>
       </main>
       <DeleteUser />
       <ShowMiniStatement />
       <UserPackageEnrollment />
+      <ViewUserClaims />
     </>
   );
 }

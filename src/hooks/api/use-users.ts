@@ -3,6 +3,7 @@ import {
   User,
   BaseSuccessResponse,
   UserPackageEnrollmentsResponse,
+  ClaimsResponse,
 } from "@/types";
 import { queryFn } from "@/api";
 import { AppServices } from "@/lib/services/providers";
@@ -24,7 +25,7 @@ export type UsersQueryData = BaseSuccessResponse<{
 // Fetch all users
 export const useGetUsers = (params?: Record<string, unknown>) => {
   return useQuery({
-    queryKey: ["users", params],
+    queryKey: [`users-${params}`],
     queryFn: async () => {
       const response = await queryFn<UsersQueryData>(
         AppServices.users.get_all_users(params)
@@ -37,7 +38,7 @@ export const useGetUsers = (params?: Record<string, unknown>) => {
 // Fetch single user
 export const useGetUser = (userId: string | undefined) => {
   return useQuery({
-    queryKey: ["user", userId],
+    queryKey: [`user-${userId}`],
     queryFn: async () => {
       if (!userId) throw new Error("User ID is required");
 
@@ -75,9 +76,9 @@ export const useUpsertUser = () => {
     },
     onSuccess: (response, { id }) => {
       if (id) {
-        queryClient.invalidateQueries({ queryKey: ["user", id] });
+        queryClient.invalidateQueries({ queryKey: [`user-${id}`] });
       } else {
-        queryClient.invalidateQueries({ queryKey: ["users"] });
+        queryClient.invalidateQueries({ queryKey: [`users`] });
       }
     },
     onError: (error) => {
@@ -95,7 +96,7 @@ export const useDeleteUser = () => {
       return queryFn(AppServices.users.delete_user(userId));
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: [`users`] });
     },
   });
 };
@@ -103,12 +104,28 @@ export const useDeleteUser = () => {
 // Fetch user package enrollments
 export const useGetUserPackageEnrollments = (userId: string | undefined) => {
   return useQuery({
-    queryKey: ["users", "packages", userId],
+    queryKey: [`user-packages-${userId}`],
     queryFn: async () => {
       if (!userId) throw new Error("User ID is required");
 
       const response = await queryFn<UserPackageEnrollmentsResponse>(
         AppServices.users.get_user_package_enrollments(userId)
+      );
+      return response;
+    },
+    enabled: !!userId,
+  });
+};
+
+// Fetch user claims
+export const useGetUserClaims = (userId: string | undefined) => {
+  return useQuery({
+    queryKey: [`user-claims-${userId}`],
+    queryFn: async () => {
+      if (!userId) throw new Error("User ID is required");
+
+      const response = await queryFn<ClaimsResponse>(
+        AppServices.users.get_user_claims(userId)
       );
       return response;
     },

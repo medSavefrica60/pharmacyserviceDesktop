@@ -153,7 +153,7 @@ const mockDeleteContribution = async (id: string) => {
 // Fetch all contributions
 export const useGetContributions = (params?: Record<string, unknown>) => {
   return useQuery({
-    queryKey: ["contributions", params],
+    queryKey: [`contributions-${params}`],
     queryFn: async () => {
       if (USE_MOCK) {
         return mockGetAllContributions(params);
@@ -168,7 +168,7 @@ export const useGetContributions = (params?: Record<string, unknown>) => {
 // Fetch single contribution
 export const useGetContribution = (contributionId: string | undefined) => {
   return useQuery({
-    queryKey: ["contribution", contributionId],
+    queryKey: [`contribution-${contributionId}`],
     queryFn: async () => {
       if (!contributionId) throw new Error("Contribution ID is required");
 
@@ -194,8 +194,11 @@ export const useCreateContribution = () => {
       }
       return queryFn(AppServices.contributions.create_contribution(data));
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["contributions"] });
+    onSuccess: (response, { id }) => {
+      queryClient.invalidateQueries({ queryKey: [`contributions`] });
+      if (id) {
+        queryClient.invalidateQueries({ queryKey: [`contribution-${id}`] });
+      }
     },
   });
 };
@@ -217,8 +220,11 @@ export const useUpdateContribution = () => {
       }
       return queryFn(AppServices.contributions.update_contribution(id, data));
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["contributions"] });
+    onSuccess: (response, { id }) => {
+      queryClient.invalidateQueries({ queryKey: [`contributions`] });
+      if (id) {
+        queryClient.invalidateQueries({ queryKey: [`contribution-${id}`] });
+      }
     },
   });
 };

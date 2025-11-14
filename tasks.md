@@ -28,3 +28,7 @@
 25. Stick to single pages per feature
 26. remove api call on status change
 27.
+
+
+November 11 2025
+1. 

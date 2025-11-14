@@ -6,6 +6,7 @@ import {
 import { ViewUsers, DeleteUser } from "@/modules/user-management";
 import { UserPackageEnrollment } from "@/modules/user-management/misc/user-package-enrollment";
 import ShowMiniStatement from "@/modules/user-management/misc/show-mini-statement";
+import { ViewUserClaims } from "@/modules/user-management/misc/user-claims";
 
 export const Route = createFileRoute("/users")({
   component: RouteComponent,
@@ -31,6 +32,7 @@ function RouteComponent() {
           {/* miscellaneous user routes */}
           <ShowMiniStatement />
           <UserPackageEnrollment />
+          <ViewUserClaims />
         </>
       ) : (
         <Outlet />

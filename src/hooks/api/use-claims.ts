@@ -31,10 +31,11 @@ const generateMockClaims = () => [
       organizationName: "Laud K Pharmacy",
       contactPhone: "+233543482189",
     },
-    medicationPackage: {
+    package: {
       id: "e5f15625-f58f-4f11-aeb3-bfc71df4aed3",
       name: "Diabetes Package",
-      minAmount: 300,
+      minAmount: "300",
+      status: "ACTIVE",
     },
   },
 ];
@@ -94,7 +95,7 @@ const mockDeleteClaim = async (id: string) => {
 // Fetch all claims
 export const useGetClaims = (params?: Record<string, unknown>) => {
   return useQuery({
-    queryKey: ["claims", params],
+    queryKey: [`claims-${params}`],
     queryFn: async () => {
       if (USE_MOCK) {
         return mockGetAllClaims(params);
@@ -113,7 +114,7 @@ export const useGetClaims = (params?: Record<string, unknown>) => {
 // Fetch single claim
 export const useGetClaim = (claimId: string | undefined) => {
   return useQuery({
-    queryKey: ["claim", claimId],
+    queryKey: [`claim-${claimId}`],
     queryFn: async () => {
       if (!claimId) throw new Error("Claim ID is required");
 
@@ -146,8 +147,11 @@ export const useUpdateClaim = () => {
       }
       return queryFn(AppServices.claims.update_claim(id, data));
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["claims"] });
+    onSuccess: (response, { id }) => {
+      queryClient.invalidateQueries({ queryKey: [`claims`] });
+      if (id) {
+        queryClient.invalidateQueries({ queryKey: [`claim-${id}`] });
+      }
     },
   });
 };

@@ -236,6 +236,19 @@ export const useUsersTableColumns = () => {
                 >
                   View Packages
                 </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() =>
+                    navigate({
+                      to: "/users",
+                      search: {
+                        dialog: "claims",
+                        userId: row.original.id,
+                      },
+                    })
+                  }
+                >
+                  View Claims
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           );

@@ -13,7 +13,7 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { Claim } from "@/types";
 
-export const useClaimsTableColumns = () => {
+export const useUserClaimsTableColumns = () => {
   const [copiedNumber, setCopiedNumber] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -36,39 +36,6 @@ export const useClaimsTableColumns = () => {
           </div>
         ),
       },
-
-      // {
-      //   accessorKey: "claimCode",
-      //   header: ({ column }) => (
-      //     <DataTableColumnHeader column={column} title="Claim Code" />
-      //   ),
-      //   cell: ({ row }) => {
-      //     const claimCode = row.original.claimCode;
-      //     const isCopied = copiedNumber === claimCode;
-
-      //     return (
-      //       <div className="group flex items-center justify-between gap-2">
-      //         <span className="text-sm text-medsave-black-300 font-medium">
-      //           {claimCode}
-      //         </span>
-      //         <button
-      //           onClick={() => handleCopyNumber(claimCode)}
-      //           className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
-      //         >
-      //           {isCopied ? (
-      //             <LucideCopyCheck
-      //               size={20}
-      //               className="text-medsave-success-500"
-      //             />
-      //           ) : (
-      //             <LucideCopy size={20} className="text-medsave-black-400" />
-      //           )}
-      //         </button>
-      //       </div>
-      //     );
-      //   },
-      // },
-
       {
         accessorKey: "reference",
         header: ({ column }) => (
@@ -100,49 +67,6 @@ export const useClaimsTableColumns = () => {
           );
         },
       },
-
-      {
-        accessorKey: "user",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="User" />
-        ),
-        cell: ({ row }) => {
-          const user = row.original.user;
-          if (!user)
-            return <span className="text-sm text-medsave-black-300">-</span>;
-
-          const userName = `${user.firstName} ${user.lastName}`;
-          const medsaveId = user.medsaveId;
-          const isCopied = copiedNumber === user.medsaveId;
-
-          return (
-            <div className="group flex items-center justify-between gap-2">
-              <div className="flex flex-col">
-                <span className="text-sm font-medium text-medsave-black-400">
-                  {userName}
-                </span>
-                <span className="text-xs text-medsave-black-300">
-                  {medsaveId}
-                </span>
-              </div>
-              <button
-                onClick={() => handleCopyNumber(user.medsaveId)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
-              >
-                {isCopied ? (
-                  <LucideCopyCheck
-                    size={16}
-                    className="text-medsave-success-500"
-                  />
-                ) : (
-                  <LucideCopy size={16} className="text-medsave-black-400" />
-                )}
-              </button>
-            </div>
-          );
-        },
-      },
-
       {
         accessorKey: "provider",
         header: ({ column }) => (
@@ -184,7 +108,6 @@ export const useClaimsTableColumns = () => {
           );
         },
       },
-
       {
         accessorKey: "package",
         header: ({ column }) => (
@@ -226,7 +149,6 @@ export const useClaimsTableColumns = () => {
           );
         },
       },
-
       {
         accessorKey: "createdAt",
         header: ({ column }) => (
@@ -263,7 +185,6 @@ export const useClaimsTableColumns = () => {
           }
         },
       },
-
       {
         accessorKey: "amount",
         header: ({ column }) => (
@@ -285,7 +206,6 @@ export const useClaimsTableColumns = () => {
           );
         },
       },
-
       {
         accessorKey: "approvedAt",
         header: ({ column }) => (
@@ -328,7 +248,6 @@ export const useClaimsTableColumns = () => {
           }
         },
       },
-
       {
         accessorKey: "status",
         header: ({ column }) => (
@@ -361,7 +280,6 @@ export const useClaimsTableColumns = () => {
           );
         },
       },
-
       {
         id: "actions",
         enableSorting: false,
@@ -402,35 +320,6 @@ export const useClaimsTableColumns = () => {
                 >
                   View Details
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() =>
-                    navigate({
-                      to: "/claims",
-                      search: {
-                        sheet: "edit",
-                        dialog: undefined,
-                        claimId: row.original.id,
-                      },
-                    })
-                  }
-                >
-                  Edit Claim
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() =>
-                    navigate({
-                      to: "/claims",
-                      search: {
-                        sheet: undefined,
-                        dialog: "delete",
-                        claimId: row.original.id,
-                      },
-                    })
-                  }
-                  className="text-destructive focus:text-destructive"
-                >
-                  Delete Claim
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           );
@@ -442,3 +331,4 @@ export const useClaimsTableColumns = () => {
 
   return columns;
 };
+

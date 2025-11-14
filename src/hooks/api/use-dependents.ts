@@ -152,7 +152,7 @@ const mockDeleteDependent = async (id: string) => {
 // Fetch all dependents
 export const useGetDependents = (params?: Record<string, unknown>) => {
   return useQuery({
-    queryKey: ["dependents", params],
+    queryKey: [`dependents-${params}`],
     queryFn: async () => {
       const response = await queryFn<DependentsResponse>(
         AppServices.dependents.get_all_dependents(params)
@@ -165,7 +165,7 @@ export const useGetDependents = (params?: Record<string, unknown>) => {
 // Fetch single dependent
 export const useGetDependent = (dependentId: string | undefined) => {
   return useQuery({
-    queryKey: ["dependent", dependentId],
+    queryKey: [`dependent-${dependentId}`],
     queryFn: async () => {
       if (!dependentId) throw new Error("Dependent ID is required");
 
@@ -192,8 +192,11 @@ export const useCreateDependent = () => {
       }
       return queryFn(AppServices.dependents.create_dependent(data));
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["dependents"] });
+    onSuccess: (response, { id }) => {
+      queryClient.invalidateQueries({ queryKey: [`dependents`] });
+      if (id) {
+        queryClient.invalidateQueries({ queryKey: [`dependent-${id}`] });
+      }
     },
   });
 };
@@ -215,8 +218,11 @@ export const useUpdateDependent = () => {
       }
       return queryFn(AppServices.dependents.update_dependent(id, data));
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["dependents"] });
+    onSuccess: (response, { id }) => {
+      queryClient.invalidateQueries({ queryKey: [`dependents`] });
+      if (id) {
+        queryClient.invalidateQueries({ queryKey: [`dependent-${id}`] });
+      }
     },
   });
 };

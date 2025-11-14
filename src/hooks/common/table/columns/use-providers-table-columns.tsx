@@ -106,7 +106,7 @@ export const useProvidersTableColumns = () => {
         ),
         cell: ({ row }) => (
           <span
-            className="text-sm text-gray-700 truncate block max-w-26 "
+            className="text-sm text-gray-700 truncate block max-w-20"
             title={row.original.email}
           >
             {row.original.email}
@@ -143,7 +143,7 @@ export const useProvidersTableColumns = () => {
           <DataTableColumnHeader column={column} title="Phone" />
         ),
         cell: ({ row }) => (
-          <span className="text-sm text-gray-700 truncate block max-w-22">
+          <span className="text-sm text-gray-700 truncate block max-w-20">
             {row.original.contactPhone}
           </span>
         ),

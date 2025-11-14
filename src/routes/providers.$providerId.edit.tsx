@@ -86,6 +86,16 @@ function RouteComponent() {
             <CaretUpIcon className="w-4 h-4" />
             <span className="text-sm font-medium">View Claims</span>
           </button>
+
+          {/* Claims */}
+          {/* <button
+            type="button"
+            className="flex items-center gap-2 px-2 py-1.5 bg-primary/80 text-primary-foreground rounded-xl hover:bg-primary/90 shadow-xs"
+            onClick={handleViewClaims}
+          >
+            <CaretUpIcon className="w-4 h-4" />
+            <span className="text-sm font-medium">View Claims</span>
+          </button> */}
         </span>
       </main>
       <DeleteProvider />

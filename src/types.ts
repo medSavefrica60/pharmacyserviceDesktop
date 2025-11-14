@@ -205,23 +205,27 @@ export type Claim = {
   approvedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  metadata: any | null;
   user: {
     id: string;
+    medsaveId: string;
     firstName: string;
     lastName: string;
     phoneNumber: string;
-    medsaveId: string;
+    email: string | null;
   };
   provider: {
     id: string;
-    email: string;
     organizationName: string;
+    email: string;
     contactPhone: string;
+    status: string;
   };
-  medicationPackage: {
+  package: {
     id: string;
     name: string;
-    minAmount: number;
+    minAmount: string;
+    status: string;
   };
 };
 

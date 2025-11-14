@@ -96,7 +96,7 @@ const mockDeletePackage = async (id: string) => {
 // Fetch all packages
 export const useGetPackages = (params?: Record<string, unknown>) => {
   return useQuery({
-    queryKey: ["packages", params],
+    queryKey: [`packages-${params}`],
     queryFn: async () => {
       if (USE_MOCK) {
         return mockGetAllPackages(params);
@@ -112,7 +112,7 @@ export const useGetPackages = (params?: Record<string, unknown>) => {
 // Fetch single package
 export const useGetPackage = (packageId: string | undefined) => {
   return useQuery({
-    queryKey: ["package", packageId],
+    queryKey: [`package-${packageId}`],
     queryFn: async () => {
       if (!packageId) throw new Error("Package ID is required");
 

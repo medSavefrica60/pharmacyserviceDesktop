@@ -45,8 +45,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <NavUser
           user={{
-            fullName: session?.user.fullName ?? null,
-            email: session?.user.email ?? null,
+            fullName: session?.user.fullName ?? "Onyinye Ogbuefi",
+            email: session?.user.email ?? "onyinye.ogbuefi@medsave.com",
             avatar: null,
           }}
         />
