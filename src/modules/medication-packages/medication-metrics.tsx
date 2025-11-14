@@ -35,18 +35,14 @@ export const MedicationMetrics = ({
     return <SkeletonMedicationMetrics />;
   }
 
-  const medications = medicationsData?.medications || [];
-  const totalMedications = medicationsData?.total || medications.length;
-
-  const activeMedications = medications.filter(
-    (m) => m.status === "ACTIVE"
-  ).length;
-  const inactiveMedications = medications.filter(
-    (m) => m.status === "INACTIVE"
-  ).length;
-  const suspendedMedications = medications.filter(
-    (m) => m.status === "SUSPENDED"
-  ).length;
+  // Get metrics from metadata (calculated in toolbar)
+  const metadata = medicationsData?.metadata;
+  // Use metadata if available (calculated from filtered rows), otherwise fallback to total
+  const totalMedications =
+    metadata?.totalMedications ?? medicationsData?.total ?? 0;
+  const activeMedications = metadata?.activeMedications ?? 0;
+  const inactiveMedications = metadata?.inactiveMedications ?? 0;
+  const suspendedMedications = metadata?.suspendedMedications ?? 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">

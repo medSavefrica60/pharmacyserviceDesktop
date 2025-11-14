@@ -2,10 +2,18 @@
 
 import { ValueIndicator } from "@/components/common/misc/kpi-indicators";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Contribution } from "@/hooks/common/table/columns/use-contributions-table-columns";
+import { ContributionsResponse } from "@/hooks/api/use-contributions";
 
 interface ContributionMetricsProps {
-  contributionsData?: Contribution[];
+  contributionsData?: ContributionsResponse & {
+    metadata?: {
+      totalContributions?: number;
+      completedContributions?: number;
+      pendingContributions?: number;
+      failedContributions?: number;
+      totalContributionAmount?: number;
+    };
+  };
   isLoading?: boolean;
 }
 
@@ -35,26 +43,27 @@ export const ContributionMetrics = ({
     return <SkeletonContributionMetrics />;
   }
 
-  const contributions = contributionsData || [];
-  const totalContributions = contributions.length;
+  // Get metrics from metadata (calculated in toolbar)
+  const metadata = contributionsData?.metadata;
+  // Use metadata if available (calculated from filtered rows), otherwise fallback to total
+  const totalContributions =
+    metadata?.totalContributions ??
+    contributionsData?.pagination?.total ??
+    contributionsData?.contributions?.length ??
+    0;
+  const completedContributions = metadata?.completedContributions ?? 0;
+  const pendingContributions = metadata?.pendingContributions ?? 0;
+  const failedContributions = metadata?.failedContributions ?? 0;
+  const totalAmount = metadata?.totalContributionAmount ?? 0;
 
-  const completedContributions = contributions.filter(
-    (c) => c.status === "Completed"
-  ).length;
-  const pendingContributions = contributions.filter(
-    (c) => c.status === "Pending"
-  ).length;
-  const failedContributions = contributions.filter(
-    (c) => c.status === "Failed"
-  ).length;
-
-  // Calculate total amount from completed contributions
-  const totalAmount = contributions
-    .filter((c) => c.status === "Completed")
-    .reduce((sum, c) => {
-      const amount = parseFloat(c.amount.replace(/[₵,]/g, "")) || 0;
-      return sum + amount;
-    }, 0);
+  // Format amount as currency
+  const formatAmount = (amount: number) => {
+    return new Intl.NumberFormat("en-GH", {
+      style: "currency",
+      currency: "GHS",
+      minimumFractionDigits: 2,
+    }).format(amount);
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -74,9 +83,9 @@ export const ContributionMetrics = ({
         description="Contributions that are pending."
       />
       <ValueIndicator
-        title="Failed"
-        value={failedContributions.toString()}
-        description="Contributions that have failed."
+        title="Total Amount"
+        value={formatAmount(totalAmount)}
+        description="Total amount of completed contributions."
       />
     </div>
   );

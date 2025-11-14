@@ -4,14 +4,27 @@ import { useGetContributions } from "@/hooks/api/use-contributions";
 import { useContributionsTableColumns } from "@/hooks/common/table/columns/use-contributions-table-columns";
 import { useContributionsToolbar } from "@/hooks/common/table/toolbars/use-contributions-toolbar";
 import { ContributionMetrics } from "./contribution-metrics";
+import { DEFAULT_PAGE_INDEX, DEFAULT_PAGE_SIZE } from "@/constant";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useState } from "react";
 
 export const ViewContributions = () => {
   const columns = useContributionsTableColumns();
-  const { data: contributionsData, isLoading } = useGetContributions();
+  const navigate = useNavigate();
+  const search = useSearch({ from: "/contributions" }) as {
+    limit?: string;
+  };
+
+  const [pageSize, setPageSize] = useState(
+    search.limit ? parseInt(search.limit) : DEFAULT_PAGE_SIZE
+  );
+  const { data: contributionsData, isLoading } = useGetContributions({
+    page: DEFAULT_PAGE_INDEX,
+    limit: pageSize,
+  });
 
   const contributionData = contributionsData?.contributions || [];
-  const totalCount =
-    contributionsData?.pagination?.total || contributionData.length;
+  const totalCount = contributionData.length || 0;
 
   if (isLoading) {
     return (
@@ -32,17 +45,25 @@ export const ViewContributions = () => {
   return (
     <div className="flex flex-col gap-4 flex-1">
       <ContributionMetrics
-        contributionsData={contributionData}
+        contributionsData={contributionsData}
         isLoading={false}
       />
       <DataTable
         data={contributionData}
+        limit={DEFAULT_PAGE_SIZE}
+        displaySize={search?.limit as string}
         className=""
         count={totalCount}
-        limit={100}
         pageSizeOptions={[5, 10, 20, 50, 100]}
         columns={columns}
         Toolbar={useContributionsToolbar}
+        onPageSizeChange={(pageSize) => {
+          setPageSize(pageSize);
+          navigate({
+            to: "/contributions",
+            search: { limit: pageSize },
+          } as any);
+        }}
       />
     </div>
   );

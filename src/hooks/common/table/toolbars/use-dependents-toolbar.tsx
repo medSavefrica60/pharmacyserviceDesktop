@@ -131,17 +131,20 @@ export const useDependentsToolbar = forwardRef<
 
     prevSummaryRef.current = summaryString;
 
-    const currentData = queryClient.getQueryData<DependentsQueryData>(queryKey);
-    if (currentData && currentData.data && currentData.data.dependents) {
-      queryClient.setQueryData<DependentsQueryData>(queryKey, {
-        ...currentData,
-        data: {
-          ...currentData.data,
-          metadata: summary,
-        },
+    const currentData = queryClient.getQueryData(queryKey);
+    if (currentData) {
+      queryClient.setQueryData(queryKey, {
+        ...(currentData as any),
+        metadata: summary,
       });
     }
-  }, [summary, queryKey, queryClient, table]);
+  }, [
+    summary,
+    queryKey,
+    queryClient,
+    table,
+    queryClient.getQueryData(queryKey),
+  ]);
 
   return (
     <DynamicToolbar ref={ref} table={table} config={dependentsToolbarConfig} />

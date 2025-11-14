@@ -2,14 +2,14 @@
 
 import { ValueIndicator } from "@/components/common/misc/kpi-indicators";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DependentsResponse } from "@/types";
 
 interface DependentMetricsProps {
-  dependentsData?: {
-    dependents: Array<{
-      status: string;
-    }>;
-    pagination: {
-      total: number;
+  dependentsData?: DependentsResponse["data"] & {
+    metadata?: {
+      totalDependents?: number;
+      totalActiveDependents?: number;
+      totalInactiveDependents?: number;
     };
   };
   isLoading?: boolean;
@@ -41,15 +41,16 @@ export const DependentMetrics = ({
     return <SkeletonDependentMetrics />;
   }
 
-  const dependents = dependentsData?.dependents || [];
-  const totalDependents = dependentsData?.pagination?.total || dependents.length;
-
-  const activeDependents = dependents.filter(
-    (d) => d.status?.toLowerCase() === "active"
-  ).length;
-  const inactiveDependents = dependents.filter(
-    (d) => d.status?.toLowerCase() === "inactive"
-  ).length;
+  // Get metrics from metadata (calculated in toolbar)
+  const metadata = dependentsData?.metadata;
+  // Use metadata if available (calculated from filtered rows), otherwise fallback to total
+  const totalDependents =
+    metadata?.totalDependents ??
+    dependentsData?.pagination?.total ??
+    dependentsData?.dependents?.length ??
+    0;
+  const activeDependents = metadata?.totalActiveDependents ?? 0;
+  const inactiveDependents = metadata?.totalInactiveDependents ?? 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">

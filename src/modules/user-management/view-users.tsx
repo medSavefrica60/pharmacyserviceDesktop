@@ -5,16 +5,26 @@ import { useUsersTableColumns } from "@/hooks/common/table/columns/use-users-tab
 import { UserMetrics } from "./user-metrics";
 import { useUsersToolbar } from "@/hooks/common/table/toolbars/use-users-toolbar";
 import { DEFAULT_PAGE_INDEX, DEFAULT_PAGE_SIZE } from "@/constant";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useState } from "react";
 
 export const ViewUsers = () => {
   const columns = useUsersTableColumns();
+  const navigate = useNavigate();
+  const search = useSearch({ from: "/users" }) as {
+    limit?: string;
+  };
+
+  const [pageSize, setPageSize] = useState(
+    search.limit ? parseInt(search.limit) : DEFAULT_PAGE_SIZE
+  );
   const { data: usersData, isLoading } = useGetUsers({
     page: DEFAULT_PAGE_INDEX,
-    limit: DEFAULT_PAGE_SIZE,
+    limit: pageSize,
   });
 
   const users = usersData?.data?.users || [];
-  const totalCount = usersData?.data?.users?.length || 0;
+  const totalCount = users.length || 0;
 
   if (isLoading) {
     return (
@@ -45,12 +55,20 @@ export const ViewUsers = () => {
       <UserMetrics usersData={usersData} isLoading={false} />
       <DataTable
         data={users}
+        limit={DEFAULT_PAGE_SIZE}
+        displaySize={search?.limit as string}
         className=""
         count={totalCount}
-        limit={100}
         pageSizeOptions={[5, 10, 20, 50, 100]}
         columns={columns}
         Toolbar={useUsersToolbar}
+        onPageSizeChange={(pageSize) => {
+          setPageSize(pageSize);
+          navigate({
+            to: "/users",
+            search: { limit: pageSize },
+          } as any);
+        }}
       />
     </div>
   );

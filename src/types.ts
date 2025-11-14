@@ -93,6 +93,15 @@ export type PaginatedData<T> = {
     activeProviders?: number;
     pendingVerificationProviders?: number;
     suspendedProviders?: number;
+    totalMedications?: number;
+    activeMedications?: number;
+    inactiveMedications?: number;
+    suspendedMedications?: number;
+    totalContributions?: number;
+    completedContributions?: number;
+    pendingContributions?: number;
+    failedContributions?: number;
+    totalContributionAmount?: number;
   };
 };
 

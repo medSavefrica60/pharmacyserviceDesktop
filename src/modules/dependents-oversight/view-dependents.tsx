@@ -4,13 +4,27 @@ import { useGetDependents } from "@/hooks/api/use-dependents";
 import { useDependentsTableColumns } from "@/hooks/common/table/columns/use-dependents-table-columns";
 import { useDependentsToolbar } from "@/hooks/common/table/toolbars/use-dependents-toolbar";
 import { DependentMetrics } from "./dependent-metrics";
+import { DEFAULT_PAGE_INDEX, DEFAULT_PAGE_SIZE } from "@/constant";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useState } from "react";
 
 export const ViewDependents = () => {
   const columns = useDependentsTableColumns();
-  const { data: dependentsData, isLoading } = useGetDependents();
+  const navigate = useNavigate();
+  const search = useSearch({ from: "/dependents" }) as {
+    limit?: string;
+  };
+
+  const [pageSize, setPageSize] = useState(
+    search.limit ? parseInt(search.limit) : DEFAULT_PAGE_SIZE
+  );
+  const { data: dependentsData, isLoading } = useGetDependents({
+    page: DEFAULT_PAGE_INDEX,
+    limit: pageSize,
+  });
 
   const dependents = dependentsData?.dependents || [];
-  const totalCount = dependentsData?.pagination?.total || dependents.length;
+  const totalCount = dependents.length || 0;
 
   if (isLoading) {
     return (
@@ -41,12 +55,20 @@ export const ViewDependents = () => {
       <DependentMetrics dependentsData={dependentsData} isLoading={false} />
       <DataTable
         data={dependents}
+        limit={DEFAULT_PAGE_SIZE}
+        displaySize={search?.limit as string}
         className=""
         count={totalCount}
-        limit={100}
         pageSizeOptions={[5, 10, 20, 50, 100]}
         columns={columns}
         Toolbar={useDependentsToolbar}
+        onPageSizeChange={(pageSize) => {
+          setPageSize(pageSize);
+          navigate({
+            to: "/dependents",
+            search: { limit: pageSize },
+          } as any);
+        }}
       />
     </div>
   );

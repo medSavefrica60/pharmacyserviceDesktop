@@ -32,63 +32,34 @@ export const UserMetrics = ({ usersData, isLoading }: UserMetricsProps) => {
     return <SkeletonUserMetrics />;
   }
 
-  // Get metrics from metadata if available, otherwise calculate from data
+  // Get metrics from metadata (calculated in toolbar)
   const metadata = usersData?.data?.metadata;
-  const users = usersData?.data?.users || [];
-
-  // Calculate metrics from data if metadata is not available
-  const calculateMetrics = () => {
-    if (metadata) {
-      return {
-        totalUsers: metadata.totalUsers,
-        totalActiveUsers: metadata.totalActiveUsers,
-        totalInactiveUsers: metadata.totalInactiveUsers,
-        totalVerifiedUsers: metadata.totalVerifiedUsers,
-      };
-    }
-
-    // Fallback: calculate from users array
-    const totalUsers = users.length;
-    const totalActiveUsers = users.filter(
-      (u) => u.status?.toUpperCase() === "ACTIVE"
-    ).length;
-    const totalInactiveUsers = users.filter(
-      (u) => u.status?.toUpperCase() === "INACTIVE"
-    ).length;
-    const totalVerifiedUsers = users.filter(
-      (u) => u.isPhoneVerified && u.isEmailVerified && u.ghanaCardVerified
-    ).length;
-
-    return {
-      totalUsers,
-      totalActiveUsers,
-      totalInactiveUsers,
-      totalVerifiedUsers,
-    };
-  };
-
-  const metrics = calculateMetrics();
+  // Use metadata if available (calculated from filtered rows), otherwise fallback to total
+  const totalUsers = metadata?.totalUsers ?? usersData?.data?.users?.length ?? 0;
+  const totalActiveUsers = metadata?.totalActiveUsers ?? 0;
+  const totalInactiveUsers = metadata?.totalInactiveUsers ?? 0;
+  const totalVerifiedUsers = metadata?.totalVerifiedUsers ?? 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
       <ValueIndicator
         title="Total Users"
-        value={metrics.totalUsers.toString()}
+        value={totalUsers.toString()}
         description="All users in the system."
       />
       <ValueIndicator
         title="Active Users"
-        value={metrics.totalActiveUsers.toString()}
+        value={totalActiveUsers.toString()}
         description="Users that are currently active in the system."
       />
       <ValueIndicator
         title="Inactive Users"
-        value={metrics.totalInactiveUsers.toString()}
+        value={totalInactiveUsers.toString()}
         description="Users that are currently inactive in the system."
       />
       <ValueIndicator
         title="Verified Users"
-        value={metrics.totalVerifiedUsers.toString()}
+        value={totalVerifiedUsers.toString()}
         description="Users that have been verified in the system."
       />
     </div>
