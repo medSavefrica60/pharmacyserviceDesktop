@@ -4,6 +4,7 @@ import {
   useSearch,
 } from "@tanstack/react-router";
 import ProviderInformation from "@/modules/provider-management/forms/provider-information";
+import ProviderMetadata from "@/modules/provider-management/forms/provider-metadata";
 import { useGetProvider } from "@/hooks/api/use-providers";
 import { Trash2 } from "lucide-react";
 import { DeleteProvider } from "@/modules/provider-management/delete-provider";
@@ -68,6 +69,9 @@ function RouteComponent() {
               />
             </div>
           )}
+          <div className="mb-6">
+            <ProviderMetadata provider={provider} isLoading={isLoading} />
+          </div>
         </div>
         <span className="fixed bottom-0 left-0 right-0 flex justify-center py-4 border-t self-start bg-background space-x-2">
           <button

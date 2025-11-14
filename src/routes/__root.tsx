@@ -56,7 +56,7 @@ const RootComponent = () => {
           </SidebarProvider>
           <Toaster />
           {/* <TanStackRouterDevtools /> */}
-          <ReactQueryDevtools />
+          <ReactQueryDevtools buttonPosition="bottom-right" initialIsOpen />
         </>
       ) : (
         <>

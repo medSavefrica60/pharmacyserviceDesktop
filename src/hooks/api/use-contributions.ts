@@ -1,130 +1,78 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Contribution } from "@/hooks/common/table/columns/use-contributions-table-columns";
 import { queryFn } from "@/api";
+import { BaseSuccessResponse } from "@/types";
 import { AppServices } from "@/lib/services/providers";
 
 // Enable/disable mock mode
-const USE_MOCK = true;
+const USE_MOCK = false;
 
-// Mock data generator
-const generateMockContributions = (): Contribution[] => [
-  {
-    id: "con001",
-    contributionId: "CONT-2024-001",
-    memberName: "Kwame Mensah",
-    memberId: "MS001234",
-    packageName: "Comprehensive Medication Plan",
-    amount: "₵350.00",
-    paymentDate: "2024-10-15T10:30:00Z",
-    paymentMethod: "Mobile Money",
-    status: "Completed",
-  },
-  {
-    id: "con002",
-    contributionId: "CONT-2024-002",
-    memberName: "Ama Osei",
-    memberId: "MS001235",
-    packageName: "Basic Medication Plan",
-    amount: "₵150.00",
-    paymentDate: "2024-10-14T14:20:00Z",
-    paymentMethod: "Bank Transfer",
-    status: "Completed",
-  },
-  {
-    id: "con003",
-    contributionId: "CONT-2024-003",
-    memberName: "Kofi Asante",
-    memberId: "MS001236",
-    packageName: "Chronic Disease Plan",
-    amount: "₵250.00",
-    paymentDate: "2024-10-13T09:15:00Z",
-    paymentMethod: "Credit Card",
-    status: "Completed",
-  },
-  {
-    id: "con004",
-    contributionId: "CONT-2024-004",
-    memberName: "Akua Boateng",
-    memberId: "MS001237",
-    packageName: "Premium Medication Plan",
-    amount: "₵500.00",
-    paymentDate: "2024-10-12T16:45:00Z",
-    paymentMethod: "Mobile Money",
-    status: "Pending",
-  },
-  {
-    id: "con005",
-    contributionId: "CONT-2024-005",
-    memberName: "Yaw Owusu",
-    memberId: "MS001238",
-    packageName: "Family Medication Plan",
-    amount: "₵450.00",
-    paymentDate: "2024-10-11T11:00:00Z",
-    paymentMethod: "Bank Transfer",
-    status: "Completed",
-  },
-  {
-    id: "con006",
-    contributionId: "CONT-2024-006",
-    memberName: "Abena Appiah",
-    memberId: "MS001239",
-    packageName: "Student Medication Plan",
-    amount: "₵100.00",
-    paymentDate: "2024-10-10T13:30:00Z",
-    paymentMethod: "Mobile Money",
-    status: "Failed",
-  },
-  {
-    id: "con007",
-    contributionId: "CONT-2024-007",
-    memberName: "Kojo Amoah",
-    memberId: "MS001240",
-    packageName: "Basic Medication Plan",
-    amount: "₵150.00",
-    paymentDate: "2024-10-09T10:00:00Z",
-    paymentMethod: "Credit Card",
-    status: "Completed",
-  },
-  {
-    id: "con008",
-    contributionId: "CONT-2024-008",
-    memberName: "Efua Darko",
-    memberId: "MS001241",
-    packageName: "Comprehensive Medication Plan",
-    amount: "₵350.00",
-    paymentDate: "2024-10-08T15:20:00Z",
-    paymentMethod: "Bank Transfer",
-    status: "Completed",
-  },
-];
+export type ContributionsResponse = {
+  contributions: Contribution[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+};
 
 // Mock API delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Mock data generator
+const generateMockContributions = (): Contribution[] => [
+  {
+    id: "2382ef72-f381-49d8-83de-2d32190291d0",
+    contributorId: "d57fcb03-bc16-4728-9e99-6b5d3822d126",
+    recipientId: "d57fcb03-bc16-4728-9e99-6b5d3822d126",
+    contributorPhone: "+233543482189",
+    recipientMedsaveId: "MS07648",
+    amount: "350.00",
+    status: "completed",
+    description: "USSD contribution to Diabetes Package",
+    reference: "CONT-1761138317803-5GQSM2",
+    createdAt: "2025-10-22T13:05:17.789Z",
+    updatedAt: "2025-10-22T13:05:17.789Z",
+  },
+];
+
 // Mock implementation
-const mockGetAllContributions = async (params?: Record<string, unknown>) => {
+const mockGetAllContributions = async (
+  params?: Record<string, unknown>
+): Promise<ContributionsResponse> => {
   await delay(500);
   let contributions = generateMockContributions();
 
   // Apply filters if params exist
-  if (params?.userId) {
-    contributions = contributions.filter((c) => c.memberId === params.userId);
+  if (params?.recipientId) {
+    contributions = contributions.filter(
+      (c) => c.recipientId === params.recipientId
+    );
   }
   if (params?.startDate) {
     contributions = contributions.filter(
-      (c) => new Date(c.paymentDate) >= new Date(params.startDate as string)
+      (c) => new Date(c.createdAt) >= new Date(params.startDate as string)
     );
   }
   if (params?.endDate) {
     contributions = contributions.filter(
-      (c) => new Date(c.paymentDate) <= new Date(params.endDate as string)
+      (c) => new Date(c.createdAt) <= new Date(params.endDate as string)
     );
   }
 
-  return contributions;
+  return {
+    contributions,
+    pagination: {
+      page: 1,
+      limit: 20,
+      total: contributions.length,
+      totalPages: 1,
+    },
+  };
 };
 
-const mockGetContribution = async (id: string) => {
+const mockGetContribution = async (id: string): Promise<Contribution> => {
   await delay(300);
   const contributions = generateMockContributions();
   const contribution = contributions.find((c) => c.id === id);
@@ -153,14 +101,15 @@ const mockDeleteContribution = async (id: string) => {
 // Fetch all contributions
 export const useGetContributions = (params?: Record<string, unknown>) => {
   return useQuery({
-    queryKey: [`contributions-${params}`],
+    queryKey: [`contributions`, params],
     queryFn: async () => {
       if (USE_MOCK) {
         return mockGetAllContributions(params);
       }
-      return queryFn<Contribution[]>(
-        AppServices.contributions.get_all_contributions(params)
-      );
+      const response = await queryFn<
+        BaseSuccessResponse<ContributionsResponse>
+      >(AppServices.contributions.get_all_contributions(params));
+      return response.data;
     },
   });
 };
@@ -172,12 +121,10 @@ export const useGetContribution = (contributionId: string | undefined) => {
     queryFn: async () => {
       if (!contributionId) throw new Error("Contribution ID is required");
 
-      if (USE_MOCK) {
-        return mockGetContribution(contributionId);
-      }
-      return queryFn<Contribution>(
+      const response = await queryFn<BaseSuccessResponse<Contribution>>(
         AppServices.contributions.get_id_contribution(contributionId)
       );
+      return Promise.resolve(response);
     },
     enabled: !!contributionId,
   });
@@ -194,11 +141,8 @@ export const useCreateContribution = () => {
       }
       return queryFn(AppServices.contributions.create_contribution(data));
     },
-    onSuccess: (response, { id }) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`contributions`] });
-      if (id) {
-        queryClient.invalidateQueries({ queryKey: [`contribution-${id}`] });
-      }
     },
   });
 };
@@ -220,7 +164,7 @@ export const useUpdateContribution = () => {
       }
       return queryFn(AppServices.contributions.update_contribution(id, data));
     },
-    onSuccess: (response, { id }) => {
+    onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: [`contributions`] });
       if (id) {
         queryClient.invalidateQueries({ queryKey: [`contribution-${id}`] });

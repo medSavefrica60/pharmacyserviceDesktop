@@ -16,17 +16,17 @@ const contributionsToolbarConfig: ToolbarConfig = {
     },
     {
       label: "Completed",
-      value: "Completed",
+      value: "completed",
       filterKey: "status",
     },
     {
       label: "Pending",
-      value: "Pending",
+      value: "pending",
       filterKey: "status",
     },
     {
       label: "Failed",
-      value: "Failed",
+      value: "failed",
       filterKey: "status",
     },
   ],
@@ -36,7 +36,7 @@ const contributionsToolbarConfig: ToolbarConfig = {
   },
   dateRange: {
     enabled: true,
-    filterKey: "paymentDate",
+    filterKey: "createdAt",
   },
 };
 

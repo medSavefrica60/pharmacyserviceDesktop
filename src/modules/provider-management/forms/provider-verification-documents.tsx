@@ -13,7 +13,8 @@ import { cn, formatBytes } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DownloadIcon } from "lucide-react";
-import { MedEmptyBoxIcon, MedSearchIcon } from "@/components/common/icons";
+import { MedEmptyBoxIcon } from "@/components/common/icons";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type ProviderVerificationDocumentsProps = {
   provider: Provider | undefined;
@@ -123,10 +124,30 @@ export default function ProviderVerificationDocuments({
           />
         </header>
         <section className="p-4 border">
-          <Scroller className="h-[calc(100vh-400px)]">
+          <Scroller className="h-[calc(100vh-600px)]">
             <div className="flex flex-col gap-2.5 pr-4">
-              {provider?.verificationDocuments &&
-              provider?.verificationDocuments.length > 0 ? (
+              {isLoading ? (
+                Array.from({ length: 4 }).map((_, idx) => (
+                  <div
+                    key={`skeleton-${idx}`}
+                    className="rounded-md border bg-accent"
+                  >
+                    <div className="p-2 flex items-center gap-3">
+                      <Skeleton className="h-12 w-12 rounded-md" />
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <Skeleton className="h-4 w-3/4" />
+                        <div className="flex items-center gap-2">
+                          <Skeleton className="h-3 w-16" />
+                          <Skeleton className="h-4 w-20 rounded-full" />
+                        </div>
+                        <Skeleton className="h-3 w-1/2" />
+                      </div>
+                      <Skeleton className="h-8 w-8 rounded-md" />
+                    </div>
+                  </div>
+                ))
+              ) : provider?.verificationDocuments &&
+                provider?.verificationDocuments.length > 0 ? (
                 provider?.verificationDocuments.map((file, idx) => (
                   <div
                     key={`${file.fileName}-${idx}`}

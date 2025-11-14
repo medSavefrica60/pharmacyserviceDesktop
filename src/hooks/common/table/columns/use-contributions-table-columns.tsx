@@ -1,7 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { DataTableColumnHeader } from "@/components/common/data-table/data-table-column-header";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { LucideCopy, LucideCopyCheck } from "lucide-react";
@@ -15,15 +14,16 @@ import { useNavigate } from "@tanstack/react-router";
 
 export type Contribution = {
   id: string;
-  contributionId: string;
-  memberName: string;
-  memberId: string;
-  packageName: string;
+  contributorId: string;
+  recipientId: string;
+  contributorPhone: string;
+  recipientMedsaveId: string;
   amount: string;
-  paymentDate: string;
-  paymentMethod: string;
-  status: "Completed" | "Pending" | "Failed";
-  avatar?: string;
+  status: "completed" | "pending" | "failed";
+  description: string;
+  reference: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export const useContributionsTableColumns = () => {
@@ -51,53 +51,21 @@ export const useContributionsTableColumns = () => {
       },
 
       {
-        accessorKey: "contributionId",
+        accessorKey: "reference",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Contribution ID" />
+          <DataTableColumnHeader column={column} title="Reference" />
         ),
         cell: ({ row }) => {
-          const contributionId = row.original.contributionId;
-          const isCopied = copiedId === contributionId;
+          const reference = row.original.reference;
+          const isCopied = copiedId === reference;
 
           return (
             <div className="group flex items-center justify-between">
-              <span className="text-sm text-medsave-black-300 font-medium">
-                {contributionId}
+              <span className="text-sm font-mono text-medsave-black-400 bg-medsave-black-25 px-2 py-1 rounded">
+                {reference}
               </span>
               <button
-                onClick={() => handleCopyID(contributionId)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
-              >
-                {isCopied ? (
-                  <LucideCopyCheck
-                    size={20}
-                    className="text-medsave-success-500"
-                  />
-                ) : (
-                  <LucideCopy size={20} className="text-medsave-black-400" />
-                )}
-              </button>
-            </div>
-          );
-        },
-      },
-
-      {
-        accessorKey: "memberId",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Member ID" />
-        ),
-        cell: ({ row }) => {
-          const memberId = row.original.memberId;
-          const isCopied = copiedId === memberId;
-
-          return (
-            <div className="group flex items-center justify-between gap-2">
-              <span className="text-sm font-mono text-medsave-black-300">
-                {memberId}
-              </span>
-              <button
-                onClick={() => handleCopyID(memberId)}
+                onClick={() => handleCopyID(reference)}
                 className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
               >
                 {isCopied ? (
@@ -115,43 +83,75 @@ export const useContributionsTableColumns = () => {
       },
 
       {
-        accessorKey: "memberName",
+        accessorKey: "recipientMedsaveId",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Member Name" />
+          <DataTableColumnHeader column={column} title="Recipient ID" />
         ),
         cell: ({ row }) => {
-          const name = row.original.memberName;
-          const avatar =
-            row.original.avatar || `https://github.com/shadcn.png?size=80`;
-          const initials = name
-            .split(" ")
-            .map((n: string) => n[0])
-            .join("")
-            .toUpperCase()
-            .slice(0, 2);
+          const medsaveId = row.original.recipientMedsaveId;
+          const isCopied = copiedId === medsaveId;
 
           return (
-            <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8 bg-medsave-black-50">
-                <AvatarImage alt={name} src={avatar} />
-                <AvatarFallback className="text-sm font-medium text-medsave-black-300">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              <span className="text-sm text-medsave-black-300">{name}</span>
+            <div className="group flex items-center justify-between gap-2">
+              <span className="text-sm font-mono text-medsave-black-300">
+                {medsaveId}
+              </span>
+              <button
+                onClick={() => handleCopyID(medsaveId)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck
+                    size={16}
+                    className="text-medsave-success-500"
+                  />
+                ) : (
+                  <LucideCopy size={16} className="text-medsave-black-400" />
+                )}
+              </button>
             </div>
           );
         },
       },
 
       {
-        accessorKey: "packageName",
+        accessorKey: "contributorPhone",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Package" />
+          <DataTableColumnHeader column={column} title="Contributor Phone" />
+        ),
+        cell: ({ row }) => {
+          const phone = row.original.contributorPhone;
+          const isCopied = copiedId === phone;
+
+          return (
+            <div className="group flex items-center justify-between gap-2">
+              <span className="text-sm text-medsave-black-300">{phone}</span>
+              <button
+                onClick={() => handleCopyID(phone)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
+              >
+                {isCopied ? (
+                  <LucideCopyCheck
+                    size={16}
+                    className="text-medsave-success-500"
+                  />
+                ) : (
+                  <LucideCopy size={16} className="text-medsave-black-400" />
+                )}
+              </button>
+            </div>
+          );
+        },
+      },
+
+      {
+        accessorKey: "description",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Description" />
         ),
         cell: ({ row }) => (
           <span className="text-sm text-medsave-black-300">
-            {row.original.packageName}
+            {row.original.description}
           </span>
         ),
       },
@@ -161,46 +161,53 @@ export const useContributionsTableColumns = () => {
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Amount" />
         ),
-        cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300 font-semibold">
-            {row.original.amount}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const amount = row.original.amount;
+          const formattedAmount = `GH₵ ${parseFloat(amount).toLocaleString(
+            "en-US",
+            {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }
+          )}`;
+          return (
+            <span className="text-sm text-medsave-black-500 font-semibold">
+              {formattedAmount}
+            </span>
+          );
+        },
       },
 
       {
-        accessorKey: "paymentMethod",
+        accessorKey: "createdAt",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Payment Method" />
-        ),
-        cell: ({ row }) => (
-          <span className="text-sm text-medsave-black-300">
-            {row.original.paymentMethod}
-          </span>
-        ),
-      },
-
-      {
-        accessorKey: "paymentDate",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Payment Date" />
+          <DataTableColumnHeader column={column} title="Created Date" />
         ),
         cell: ({ row }) => {
-          const dateStr = row.original.paymentDate;
+          const dateStr = row.original.createdAt;
           if (!dateStr)
             return <span className="text-sm text-medsave-black-300">N/A</span>;
 
           try {
             const date = new Date(dateStr);
             const formattedDate = date.toLocaleDateString("en-US", {
-              month: "2-digit",
-              day: "2-digit",
+              month: "short",
+              day: "numeric",
               year: "numeric",
             });
+            const formattedTime = date.toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
             return (
-              <span className="text-sm text-medsave-black-300">
-                {formattedDate}
-              </span>
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-medsave-black-400">
+                  {formattedDate}
+                </span>
+                <span className="text-xs text-medsave-black-200">
+                  {formattedTime}
+                </span>
+              </div>
             );
           } catch {
             return <span className="text-sm text-medsave-black-300">N/A</span>;
@@ -215,19 +222,21 @@ export const useContributionsTableColumns = () => {
         ),
         cell: ({ row }) => {
           const status = row.original.status;
+          const statusDisplay =
+            status.charAt(0).toUpperCase() + status.slice(1);
           return (
             <Badge
-              variant={status === "Completed" ? "default" : "secondary"}
+              variant={status === "completed" ? "default" : "secondary"}
               className={cn(
                 "px-4 py-0.5 min-w-24 text-sm rounded-sm",
-                status === "Completed"
+                status === "completed"
                   ? "bg-medsave-success-50 text-medsave-success-500 border-medsave-success-100 hover:bg-green-50"
-                  : status === "Pending"
+                  : status === "pending"
                     ? "bg-medsave-pending-50 text-medsave-pending-600 border-medsave-pending-100"
                     : "bg-red-50 text-red-600 border-red-200"
               )}
             >
-              {status}
+              {statusDisplay}
             </Badge>
           );
         },

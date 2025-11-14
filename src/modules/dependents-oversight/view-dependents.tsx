@@ -4,34 +4,13 @@ import { useGetDependents } from "@/hooks/api/use-dependents";
 import { useDependentsTableColumns } from "@/hooks/common/table/columns/use-dependents-table-columns";
 import { useDependentsToolbar } from "@/hooks/common/table/toolbars/use-dependents-toolbar";
 import { DependentMetrics } from "./dependent-metrics";
-import { DEFAULT_PAGE_INDEX, DEFAULT_PAGE_SIZE } from "@/constant";
-import { DependentsQueryData } from "@/hooks/common/table/toolbars/use-dependents-toolbar";
 
 export const ViewDependents = () => {
   const columns = useDependentsTableColumns();
-  const { data: dependentsData, isLoading } = useGetDependents({
-    page: DEFAULT_PAGE_INDEX,
-    limit: DEFAULT_PAGE_SIZE,
-  });
+  const { data: dependentsData, isLoading } = useGetDependents();
 
-  // Transform the response to match DependentsQueryData structure
-  const transformedData: DependentsQueryData | undefined = dependentsData
-    ? {
-        data: {
-          dependents: dependentsData.data?.dependents || [],
-          pagination: dependentsData.data?.pagination || {
-            page: DEFAULT_PAGE_INDEX,
-            limit: DEFAULT_PAGE_SIZE,
-            total: 0,
-            totalPages: 0,
-          },
-        },
-      }
-    : undefined;
-
-  const dependents = dependentsData?.data?.dependents || [];
-  const totalCount =
-    dependentsData?.data?.pagination?.total || dependents.length;
+  const dependents = dependentsData?.dependents || [];
+  const totalCount = dependentsData?.pagination?.total || dependents.length;
 
   if (isLoading) {
     return (
@@ -59,7 +38,7 @@ export const ViewDependents = () => {
 
   return (
     <div className="flex flex-col gap-4 flex-1">
-      <DependentMetrics dependentsData={transformedData} isLoading={false} />
+      <DependentMetrics dependentsData={dependentsData} isLoading={false} />
       <DataTable
         data={dependents}
         className=""

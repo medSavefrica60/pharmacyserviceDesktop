@@ -13,7 +13,10 @@ import {
   Eye,
   type LucideIcon,
   Settings,
+  FlaskRound,
 } from "lucide-react";
+import { HospitalSVG, LaboratorySVG, PharmacySVG } from "../icons";
+import { IconHospital } from "@tabler/icons-react";
 
 export interface RouteItemWithOptionalIcon {
   title: string;
@@ -51,7 +54,7 @@ export const routesConfig: RouteConfig = {
       icon: LayoutDashboard,
     },
     {
-      title: "Users",
+      title: "User Management",
       url: "/users",
       icon: Users,
       isActive: true,
@@ -69,7 +72,7 @@ export const routesConfig: RouteConfig = {
       ],
     },
     {
-      title: "Providers",
+      title: "Provider Management",
       url: "/providers",
       icon: Building2,
       isActive: true,
@@ -90,27 +93,41 @@ export const routesConfig: RouteConfig = {
       title: "Dependent Oversight",
       url: "/dependents",
       icon: UsersRound,
-    },
-    {
-      title: "Medication",
-      url: "/medications",
-      icon: Pill,
       isActive: true,
       items: [
         {
-          title: "View Medications",
-          url: "/medications",
+          title: "View Dependents",
+          url: "/dependents",
           icon: Eye,
-        },
-        {
-          title: "Add Medication",
-          url: "/medications/create",
-          icon: Plus,
         },
       ],
     },
     {
-      title: "Claims",
+      title: "Package Management",
+      url: "/packages",
+      icon: Package,
+      isActive: true,
+      items: [
+        {
+          title: "Pharmacy Packages",
+          url: "/medications",
+          icon: Pill,
+          isActive: true,
+        },
+        {
+          title: "Laboratory Packages",
+          url: "/laboratory-packages",
+          icon: FlaskRound,
+        },
+        {
+          title: "Hospital Packages",
+          url: "/hospital-packages",
+          icon: IconHospital,
+        },
+      ],
+    },
+    {
+      title: "Claim Management",
       url: "/claims",
       icon: FileText,
       isActive: true,
@@ -120,15 +137,10 @@ export const routesConfig: RouteConfig = {
           url: "/claims",
           icon: Eye,
         },
-        {
-          title: "Add Claim",
-          url: "/claims/create",
-          icon: Plus,
-        },
       ],
     },
     {
-      title: "Contributions",
+      title: "Contribution Management",
       url: "/contributions",
       icon: TrendingUp,
       isActive: true,
@@ -142,7 +154,7 @@ export const routesConfig: RouteConfig = {
     },
 
     {
-      title: "Statements",
+      title: "Statement Management",
       url: "/statements",
       icon: Receipt,
       isActive: true,

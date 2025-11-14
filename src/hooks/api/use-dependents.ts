@@ -4,7 +4,7 @@ import { queryFn } from "@/api";
 import { AppServices } from "@/lib/services/providers";
 
 // Enable/disable mock mode
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 // Mock data generator
 const generateMockDependents = (): Dependent[] => [
@@ -89,7 +89,17 @@ const generateMockDependents = (): Dependent[] => [
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Mock implementation
-const mockGetAllDependents = async (params?: Record<string, unknown>) => {
+const mockGetAllDependents = async (
+  params?: Record<string, unknown>
+): Promise<{
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  dependents: Dependent[];
+}> => {
   await delay(500);
   let dependents = generateMockDependents();
 
@@ -107,19 +117,13 @@ const mockGetAllDependents = async (params?: Record<string, unknown>) => {
   const totalPages = Math.ceil(total / limit);
 
   return {
-    status: "success",
-    code: 200,
-    message: "Operation completed successfully",
-    timestamp: new Date().toISOString(),
-    data: {
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages,
-      },
-      dependents,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages,
     },
+    dependents,
   };
 };
 
@@ -152,12 +156,12 @@ const mockDeleteDependent = async (id: string) => {
 // Fetch all dependents
 export const useGetDependents = (params?: Record<string, unknown>) => {
   return useQuery({
-    queryKey: [`dependents-${params}`],
+    queryKey: [`dependents`, params],
     queryFn: async () => {
       const response = await queryFn<DependentsResponse>(
         AppServices.dependents.get_all_dependents(params)
       );
-      return response;
+      return response.data;
     },
   });
 };
@@ -169,9 +173,6 @@ export const useGetDependent = (dependentId: string | undefined) => {
     queryFn: async () => {
       if (!dependentId) throw new Error("Dependent ID is required");
 
-      if (USE_MOCK) {
-        return mockGetDependent(dependentId);
-      }
       const response = await queryFn<BaseSuccessResponse<Dependent>>(
         AppServices.dependents.get_id_dependent(dependentId)
       );
@@ -192,11 +193,8 @@ export const useCreateDependent = () => {
       }
       return queryFn(AppServices.dependents.create_dependent(data));
     },
-    onSuccess: (response, { id }) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`dependents`] });
-      if (id) {
-        queryClient.invalidateQueries({ queryKey: [`dependent-${id}`] });
-      }
     },
   });
 };
@@ -218,7 +216,7 @@ export const useUpdateDependent = () => {
       }
       return queryFn(AppServices.dependents.update_dependent(id, data));
     },
-    onSuccess: (response, { id }) => {
+    onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: [`dependents`] });
       if (id) {
         queryClient.invalidateQueries({ queryKey: [`dependent-${id}`] });

@@ -7,10 +7,11 @@ import { ContributionMetrics } from "./contribution-metrics";
 
 export const ViewContributions = () => {
   const columns = useContributionsTableColumns();
-  const { data: contributions, isLoading } = useGetContributions();
+  const { data: contributionsData, isLoading } = useGetContributions();
 
-  const contributionData = contributions || [];
-  const totalCount = contributionData.length;
+  const contributionData = contributionsData?.contributions || [];
+  const totalCount =
+    contributionsData?.pagination?.total || contributionData.length;
 
   if (isLoading) {
     return (

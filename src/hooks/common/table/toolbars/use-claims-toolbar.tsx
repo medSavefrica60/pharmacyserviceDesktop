@@ -54,6 +54,22 @@ const claimsToolbarConfig: ToolbarConfig = {
       value: "rejected",
       filterKey: "status",
     },
+    {
+      label: "Cancelled",
+      value: "cancelled",
+      filterKey: "status",
+    },
+    // disputed and vetted
+    {
+      label: "Disputed",
+      value: "disputed",
+      filterKey: "status",
+    },
+    {
+      label: "Vetted",
+      value: "vetted",
+      filterKey: "status",
+    },
   ],
   search: {
     enabled: true,
@@ -166,4 +182,3 @@ export const useClaimsToolbar = forwardRef<TableMethods, ClaimsToolbar<any>>(
     );
   }
 );
-

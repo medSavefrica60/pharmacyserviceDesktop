@@ -8,6 +8,7 @@ import ShowMiniStatement from "@/modules/user-management/misc/show-mini-statemen
 import { UserPackageEnrollment } from "@/modules/user-management/misc/user-package-enrollment";
 import { CaretUpIcon } from "@radix-ui/react-icons";
 import { ViewUserClaims } from "@/modules/user-management/misc/user-claims";
+import { UserDependents } from "@/modules/user-management/misc/user-dependents";
 
 export const Route = createFileRoute("/users/$userId/edit")({
   component: RouteComponent,
@@ -36,11 +37,9 @@ function RouteComponent() {
           <div className="mb-6">
             <Others user={user} isLoading={isLoading} />
           </div>
+
           <div className="mb-6">
-            <PersonalInformation user={user} isLoading={isLoading} />
-          </div>
-          <div className="mb-6">
-            <Others user={user} isLoading={isLoading} />
+            <UserDependents userId={userId} isLoading={isLoading} />
           </div>
         </div>
         <span className="fixed bottom-0 left-0 right-0 flex justify-center py-4 border-t self-start bg-background">
