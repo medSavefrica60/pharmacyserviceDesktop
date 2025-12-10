@@ -44,6 +44,14 @@ pub async fn handle_refresh_session(
     println!("🔄 [HANDLE_REFRESH] API Base URL: {}", api_config.base_url);
     let api_client = ApiClient::new(api_config);
 
+    // Ensure refresh_token is not missing - use empty string if it is
+    let refresh_token = if refresh_token.is_empty() {
+        println!("⚠️ [HANDLE_REFRESH] Refresh token is empty, using empty string");
+        String::new()
+    } else {
+        refresh_token
+    };
+
     let api_request = TokenRefreshRequest {
         refresh_token: refresh_token.clone(),
     };
@@ -65,7 +73,14 @@ pub async fn handle_refresh_session(
             println!("   - Response status: {}", data.status);
 
             if data.status == "success" {
-                let new_tokens = data.data;
+                let mut new_tokens = data.data;
+
+                // If refreshToken is missing from API response, set it to empty string
+                if new_tokens.refresh_token.is_empty() {
+                    println!("⚠️ [HANDLE_REFRESH] Refresh token missing in API response, setting to empty string");
+                    new_tokens.refresh_token = String::new();
+                }
+
                 println!("✅ [HANDLE_REFRESH] Got new tokens from API");
                 println!(
                     "   - Access token length: {}",

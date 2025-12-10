@@ -64,7 +64,7 @@ pub struct AdminData {
 pub struct Tokens {
     #[serde(rename = "accessToken")]
     pub access_token: String,
-    #[serde(rename = "refreshToken")]
+    #[serde(rename = "refreshToken", default)]
     pub refresh_token: String,
     #[serde(rename = "expiresIn")]
     pub expires_in: u32,

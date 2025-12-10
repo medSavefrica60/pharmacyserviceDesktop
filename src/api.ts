@@ -57,6 +57,7 @@ index.interceptors.request.use(async (config) => {
 
     const accessToken = session?.tokens?.accessToken;
     if (accessToken) {
+      logger.debug("accessToken: ", accessToken);
       logger.debug(
         "🔄 [INTERCEPTOR] Access token found, checking if refresh needed..."
       );

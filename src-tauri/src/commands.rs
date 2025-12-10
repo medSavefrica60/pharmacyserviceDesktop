@@ -42,7 +42,14 @@ pub async fn token_refresh(app: AppHandle) -> Result<crate::types::Tokens, Strin
         }
     };
 
-    let refresh_token = session.tokens.refresh_token.clone();
+    // Extract refresh token, default to empty string if missing
+    let refresh_token = if session.tokens.refresh_token.is_empty() {
+        println!("⚠️ [TOKEN_REFRESH] Refresh token is missing/empty, using empty string");
+        String::new()
+    } else {
+        session.tokens.refresh_token.clone()
+    };
+
     println!(
         "🔄 [TOKEN_REFRESH] Extracted refresh token (length: {})",
         refresh_token.len()
