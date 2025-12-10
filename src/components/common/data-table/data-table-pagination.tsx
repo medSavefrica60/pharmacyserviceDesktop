@@ -27,7 +27,6 @@ export function DataTablePagination<TData>({
   table,
   pageSizeOptions = [],
   onPageSizeChange,
-  pageSize,
   displaySize,
 }: DataTablePaginationProps<TData>) {
   const selectedRowCount = table.getFilteredSelectedRowModel().rows.length;

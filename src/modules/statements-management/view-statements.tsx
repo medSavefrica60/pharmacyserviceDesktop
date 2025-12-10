@@ -21,6 +21,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { formatDateTime } from "@/lib/utils";
 
 // Statement data types based on API response
 interface StatementUser {
@@ -72,6 +73,7 @@ interface StatementResponse {
 }
 
 export const ViewStatements = () => {
+  const { data: usersData } = useGetUsers();
   const [selectedUser, setSelectedUser] = useState<UserSearchOption | null>(
     null
   );
@@ -82,8 +84,7 @@ export const ViewStatements = () => {
   }>({});
 
   // Get users for search options
-  const { data: usersData } = useGetUsers();
-  const users = usersData?.users || [];
+  const users = usersData?.data?.users || [];
   const userOptions: UserSearchOption[] = users.map(
     transformUserToSearchOption
   );
@@ -289,7 +290,7 @@ export const ViewStatements = () => {
                           From:
                         </span>
                         <span className="font-medium">
-                          {formatDate(period.startDate)}
+                          {formatDateTime(period.startDate)}
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -297,7 +298,7 @@ export const ViewStatements = () => {
                           To:
                         </span>
                         <span className="font-medium">
-                          {formatDate(period.endDate)}
+                          {formatDateTime(period.endDate)}
                         </span>
                       </div>
                     </div>
@@ -414,7 +415,7 @@ export const ViewStatements = () => {
                               {transaction.description}
                             </p>
                             <p className="text-sm text-muted-foreground">
-                              {formatDate(transaction.date)}
+                              {formatDateTime(transaction.date)}
                             </p>
                           </div>
                         </div>

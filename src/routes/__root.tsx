@@ -7,11 +7,11 @@ import {
   Navigate,
   Outlet,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { useSession } from "@/hooks/auth";
 import { Session } from "@/hooks/auth/use-auth";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "react-hot-toast";
+import { logger } from "@/lib/logger";
 // import { useTokenRefresh } from "@/hooks/auth/use-token-refresh";
 
 interface RootRouteContext {
@@ -21,10 +21,10 @@ interface RootRouteContext {
 
 // Inner component that uses auth context
 const RootComponent = () => {
-  const { session, isLoading } = useSession();
+  const { isLoading, session } = useSession();
 
-  // Initialize token refresh
-  // useTokenRefresh();
+  logger.info("Inside _root");
+  // logger.info("session: ", session)
 
   if (isLoading) {
     return (
@@ -36,7 +36,7 @@ const RootComponent = () => {
 
   return (
     <>
-      {true ? (
+      {session ? (
         <>
           <SidebarProvider
             style={
@@ -69,7 +69,9 @@ const RootComponent = () => {
 };
 
 export const Route = createRootRouteWithContext<RootRouteContext>()({
-  beforeLoad() {},
+  beforeLoad() {
+    // logger.info("before load triggered in root");
+  },
 
   component: () => {
     return <RootComponent />;

@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import { AlertTriangleIcon } from "lucide-react";
 import { logger } from "@/lib/logger";
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 
 export const DeleteUser = () => {
   const [isDeleting, startDeletingTransition] = useTransition();

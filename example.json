@@ -1,0 +1,38 @@
+{
+    "user": {
+        "id": "358bfc6f-ac6e-4a90-bcec-d9b21d42be79",
+        "email": "medsave.africa@gmail.com",
+        "firstName": "MedSave",
+        "lastName": "Admin",
+        "fullName": "MedSave Admin",
+        "role": "SUPER_ADMIN",
+        "status": "ACTIVE",
+        "permissions": [
+            "*"
+        ],
+        "lastLoginAt": "2025-12-10T12:51:22.577Z",
+        "createdAt": "2025-10-22T12:54:34.088Z",
+        "updatedAt": "2025-12-10T12:51:22.626Z"
+    },
+    "tokens": {
+        "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNThiZmM2Zi1hYzZlLTRhOTAtYmNlYy1kOWIyMWQ0MmJlNzkiLCJlbWFpbCI6Im1lZHNhdmUuYWZyaWNhQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIioiXSwidHlwZSI6ImFkbWluIiwiaWF0IjoxNzY1MzcxMDgyLCJleHAiOjE3NjUzNzgyODJ9.MaYrDyKNP_YEq1XzARhQZHGc8ZcvgkRDG22oZaT4Huc",
+        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNThiZmM2Zi1hYzZlLTRhOTAtYmNlYy1kOWIyMWQ0MmJlNzkiLCJ0eXBlIjoiYWRtaW5fcmVmcmVzaCIsImlhdCI6MTc2NTM3MTA4MiwiZXhwIjoxNzY1OTc1ODgyfQ.hDLVfDYLHH6y-8l5Bl88UiR-LsgGIPgSENfM7ocYq6g",
+        "expiresIn": 1765378282,
+        "accessTokenExpiresIn": "2h",
+        "refreshTokenExpiresIn": "7d"
+    }
+}
+
+
+{
+    "status": "success",
+    "code": 200,
+    "message": "Token refreshed successfully",
+    "timestamp": "2025-12-10T14:33:17.177Z",
+    "data": {
+        "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNThiZmM2Zi1hYzZlLTRhOTAtYmNlYy1kOWIyMWQ0MmJlNzkiLCJlbWFpbCI6Im1lZHNhdmUuYWZyaWNhQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIioiXSwidHlwZSI6ImFkbWluIiwiaWF0IjoxNzY1Mzc3MTk2LCJleHAiOjE3NjUzODQzOTZ9.ZYqMpUaKzM8XgujaPwsz79lM-YuR_tXXhKtD5Zi5D74",
+        "expiresIn": 1765384396,
+        "accessTokenExpiresIn": "2h",
+        "refreshTokenExpiresIn": "7d"
+    }
+}

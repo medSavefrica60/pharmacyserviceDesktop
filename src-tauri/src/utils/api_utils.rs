@@ -45,6 +45,19 @@ where
     T: serde::Serialize + std::fmt::Debug,
     R: serde::de::DeserializeOwned + std::fmt::Debug,
 {
+    // Log the request payload
+    match serde_json::to_string_pretty(request) {
+        Ok(json_payload) => {
+            println!("📤 [API_REQUEST] PUT {}", url);
+            println!("📤 [API_REQUEST] Request Payload:");
+            println!("{}", json_payload);
+        }
+        Err(e) => {
+            println!("⚠️ [API_REQUEST] Failed to serialize request payload: {}", e);
+            println!("📤 [API_REQUEST] PUT {} (payload serialization failed)", url);
+        }
+    }
+
     let response = client
         .client
         .put(url)
@@ -54,8 +67,21 @@ where
         .await
         .map_err(|e| create_network_error(e))?;
 
-    if response.status().is_success() {
+    let status = response.status();
+    println!("📥 [API_RESPONSE] Status: {} {}", status.as_u16(), status.as_str());
+
+    if status.is_success() {
         let response_text = response.text().await.map_err(|e| create_parse_error(e))?;
+        
+        // Log the response payload (truncated if too long)
+        if response_text.len() > 1000 {
+            println!("📥 [API_RESPONSE] Response (truncated, {} chars):\n{}...", 
+                response_text.len(), 
+                &response_text[..1000]
+            );
+        } else {
+            println!("📥 [API_RESPONSE] Response:\n{}", response_text);
+        }
 
         let success_response: BaseSuccessResponse<R> =
             serde_json::from_str(&response_text).map_err(|e| create_json_parse_error(e))?;

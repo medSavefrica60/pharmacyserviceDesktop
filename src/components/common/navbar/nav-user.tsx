@@ -22,6 +22,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { invoke } from "@tauri-apps/api/core";
+import { useSession } from "@/hooks/auth";
 
 export function NavUser({
   user,
@@ -33,6 +35,7 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const { logout } = useSession();
 
   return (
     <SidebarMenu>
@@ -98,7 +101,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={logout}>
               <IconLogout />
               Log out
             </DropdownMenuItem>

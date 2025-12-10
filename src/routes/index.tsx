@@ -5,11 +5,14 @@ import { invoke } from "@tauri-apps/api/core";
 export const Route = createFileRoute("/")({
   component: DashboardPage,
   beforeLoad: async ({ context }) => {
+    logger.info("before load triggered");
     if (!context.session) {
       throw redirect({ to: "/login" });
     }
   },
 });
+
+
 
 function DashboardPage() {
   // const { session } = Route.useRouteContext();

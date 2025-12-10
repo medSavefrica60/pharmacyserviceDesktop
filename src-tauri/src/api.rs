@@ -13,11 +13,11 @@ pub struct ApiConfig {
 impl Default for ApiConfig {
     fn default() -> Self {
         Self {
-            // base_url: "https://medsave-backend.onrender.com/api/v1".to_string(),
-            base_url: "http://localhost:8080/api/v1".to_string(),
+            base_url: "https://medsave-backend.onrender.com/api/v1".to_string(),
+            // base_url: "http://localhost:8080/api/v1".to_string(),
             // base_url: "https://olenor.free.beeceptor.com".to_string(),
             api_key: None,
-            timeout_seconds: 30,
+            timeout_seconds: 3000,
         }
     }
 }
