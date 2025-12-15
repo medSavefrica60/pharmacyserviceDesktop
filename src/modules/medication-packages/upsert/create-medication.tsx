@@ -1,4 +1,5 @@
 import { FormInput } from "@/components/common/form/form-input";
+import { FormTextarea } from "@/components/common/form/form-textarea";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { useTransition } from "react";
@@ -20,6 +21,7 @@ export default function CreateMedication() {
     resolver: zodResolver(medicationSchema) as any,
     defaultValues: {
       name: "",
+      description: "",
       minAmount: 0,
       status: "ACTIVE",
     },
@@ -70,6 +72,19 @@ export default function CreateMedication() {
                 type="text"
                 placeholder="e.g. Basic Package"
                 disabled={isSaving || upsertMutation.isPending}
+              />
+            </FormFieldWrapper>
+            <FormFieldWrapper
+              label="Description"
+              description="A brief description of the pharmacy package"
+            >
+              <FormTextarea
+                name="description"
+                textareaClassName="h-15 w-full"
+                placeholder="e.g. Covers common medications and basic treatments"
+                disabled={isSaving || upsertMutation.isPending}
+                className="items-start!"
+                rows={3}
               />
             </FormFieldWrapper>
             <FormFieldWrapper

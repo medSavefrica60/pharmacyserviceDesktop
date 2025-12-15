@@ -34,3 +34,26 @@ export const UserSchema = z.object({
 });
 
 export type UserFormData = z.infer<typeof UserSchema>;
+
+export const OfficerSchema = z.object({
+  email: z
+    .string()
+    .email("Please enter a valid email address")
+    .min(1, "Email is required"),
+  firstName: z
+    .string()
+    .min(1, "First name is required")
+    .min(2, "First name must be at least 2 characters"),
+  lastName: z
+    .string()
+    .min(1, "Last name is required")
+    .min(2, "Last name must be at least 2 characters"),
+  role: z.enum([
+    "IT_OFFICER",
+    "CLAIMS_OFFICER",
+    "FINANCE_OFFICER",
+    "CUSTOMER_CARE",
+  ] as const),
+});
+
+export type OfficerFormData = z.infer<typeof OfficerSchema>;

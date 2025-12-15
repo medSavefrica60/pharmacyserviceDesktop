@@ -56,7 +56,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
             <SelectTrigger
               id={name}
               className={cn(
-                "h-10",
+                "h-[52px]! tracking-wide leading-loose! ",
                 selectClassName,
                 fieldState.invalid && "border-destructive"
               )}

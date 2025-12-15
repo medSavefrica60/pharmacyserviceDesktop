@@ -49,8 +49,6 @@ export default function ProviderMetadata({
 }: ProviderMetadataProps) {
   const isEmailVerified = !!provider?.emailVerifiedAt;
   const isAccountLocked = !!provider?.lockedUntil;
-  const verificationDocumentsCount =
-    provider?.verificationDocuments?.length || 0;
 
   return (
     <div>

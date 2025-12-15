@@ -1,41 +1,46 @@
+import type { LucideIcon } from "lucide-react";
 import {
-  LayoutDashboard,
-  Users,
-  Building2,
-  UsersRound,
-  Pill,
-  FileText,
-  TrendingUp,
-  Package,
-  Receipt,
-  Send,
-  Plus,
-  Eye,
-  type LucideIcon,
-  Settings,
-  FlaskRound,
-  HelpCircle,
-  LogOut,
-  HistoryIcon,
-} from "lucide-react";
-import { IconHospital } from "@tabler/icons-react";
+  IconDashboard,
+  IconUsersGroup,
+  IconUser,
+  IconBuildingHospital,
+  IconShield,
+  IconPlus,
+  IconEye,
+  IconWallet,
+  IconArrowsExchange,
+  IconUserHeart,
+  IconPackage,
+  IconPill,
+  IconFlask,
+  IconFileText,
+  IconCoins,
+  IconReceipt,
+  IconSend,
+  IconSettings,
+  IconHistory,
+  IconLogout,
+} from "@tabler/icons-react";
+
+// Support both Lucide and Tabler icons (both are React components)
+type IconType = LucideIcon | React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
 export interface RouteItemWithOptionalIcon {
   title: string;
   url: string;
-  icon?: LucideIcon;
+  icon?: IconType;
 }
 
 export interface RouteItem {
   title: string;
   url: string;
-  icon: LucideIcon;
+  icon: IconType;
 }
 
 export interface DocumentItem {
   name: string;
   url: string;
-  icon: LucideIcon;
+  icon: IconType;
 }
 
 export interface RouteConfig {
@@ -53,104 +58,126 @@ export const routesConfig: RouteConfig = {
     {
       title: "Dashboard",
       url: "/",
-      icon: LayoutDashboard,
+      icon: IconDashboard,
     },
     {
       title: "User Management",
       url: "/users",
-      icon: Users,
+      icon: IconUsersGroup,
       isActive: true,
       items: [
         {
-          title: "View Users",
+          title: "MedSave Users",
           url: "/users",
-          icon: Eye,
+          icon: IconUser,
         },
         {
-          title: "Add User",
+          title: "MedSave Providers",
+          url: "/providers",
+          icon: IconBuildingHospital,
+        },
+        {
+          title: "MedSave Admins",
+          url: "/admins",
+          icon: IconShield,
+        },
+        {
+          title: "New User",
           url: "/users/create",
-          icon: Plus,
+          icon: IconPlus,
         },
       ],
     },
+    // {
+    //   title: "Provider Management",
+    //   url: "/providers",
+    //   icon: Building2,
+    //   isActive: true,
+    //   items: [
+    //     {
+    //       title: "View Providers",
+    //       url: "/providers",
+    //       icon: Eye,
+    //     },
+    //     {
+    //       title: "Add Provider",
+    //       url: "/providers/create",
+    //       icon: Plus,
+    //     },
+    //   ],
+    // },
     {
-      title: "Provider Management",
-      url: "/providers",
-      icon: Building2,
+      title: "Wallet Management",
+      url: "/wallets",
+      icon: IconWallet,
       isActive: true,
-      items: [
-        {
-          title: "View Providers",
-          url: "/providers",
-          icon: Eye,
-        },
-        {
-          title: "Add Provider",
-          url: "/providers/create",
-          icon: Plus,
-        },
-      ],
+    },
+    {
+      title: "Transaction Management",
+      url: "/transactions",
+      icon: IconArrowsExchange,
+      isActive: true,
     },
     {
       title: "Dependent Oversight",
       url: "/dependents",
-      icon: UsersRound,
+      icon: IconUserHeart,
       isActive: true,
       items: [
         {
           title: "View Dependents",
           url: "/dependents",
-          icon: Eye,
+          icon: IconEye,
         },
       ],
     },
     {
       title: "Package Management",
       url: "/packages",
-      icon: Package,
+      icon: IconPackage,
       isActive: true,
       items: [
         {
           title: "Pharmacy Packages",
           url: "/medications",
-          icon: Pill,
+          icon: IconPill,
           isActive: true,
         },
         {
           title: "Laboratory Packages",
           url: "/laboratory-packages",
-          icon: FlaskRound,
+          icon: IconFlask,
         },
         {
           title: "Hospital Packages",
           url: "/hospital-packages",
-          icon: IconHospital,
+          icon: IconBuildingHospital,
         },
       ],
     },
     {
       title: "Claim Management",
       url: "/claims",
-      icon: FileText,
+      icon: IconFileText,
       isActive: true,
       items: [
         {
           title: "View Claims",
           url: "/claims",
-          icon: Eye,
+          icon: IconEye,
         },
       ],
     },
     {
       title: "Contribution Management",
       url: "/contributions",
-      icon: TrendingUp,
+      icon: IconCoins,
       isActive: true,
       items: [
         {
           title: "View Contributions",
           url: "/contributions",
-          icon: Eye,
+          icon: IconEye,
         },
       ],
     },
@@ -158,26 +185,26 @@ export const routesConfig: RouteConfig = {
     {
       title: "Statement Management",
       url: "/statements",
-      icon: Receipt,
+      icon: IconReceipt,
       isActive: true,
       items: [
         {
           title: "View Statements",
           url: "/statements",
-          icon: Eye,
+          icon: IconEye,
         },
       ],
     },
     {
       title: "Remittances",
       url: "/remittances",
-      icon: Send,
+      icon: IconSend,
       isActive: true,
       items: [
         {
           title: "View Remittances",
           url: "/remittances",
-          icon: Eye,
+          icon: IconEye,
         },
       ],
     },
@@ -186,17 +213,17 @@ export const routesConfig: RouteConfig = {
     {
       title: "Settings",
       url: "/settings",
-      icon: Settings,
+      icon: IconSettings,
     },
     {
       title: "Audit Log",
       url: "/audit-log",
-      icon: HistoryIcon,
+      icon: IconHistory,
     },
     {
       title: "Logout",
       url: "/logout",
-      icon: LogOut,
+      icon: IconLogout,
     },
   ] as RouteItem[],
   documents: [],

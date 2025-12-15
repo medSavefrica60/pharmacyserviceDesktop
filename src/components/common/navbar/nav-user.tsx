@@ -22,7 +22,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { invoke } from "@tauri-apps/api/core";
 import { useSession } from "@/hooks/auth";
 
 export function NavUser({

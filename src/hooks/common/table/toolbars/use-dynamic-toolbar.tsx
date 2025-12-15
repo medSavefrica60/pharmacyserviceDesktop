@@ -32,25 +32,9 @@ export const DynamicToolbar = forwardRef<
   const [search, setSearch] = useState<string>("");
   const debouncedSearch = useDebounce(search, 300); // 300ms delay
 
-  const [dateRange, setDateRange] = useState<{
-    from: Date | null;
-    to: Date | null;
-  }>({
-    from: null,
-    to: null,
-  });
-
-  const handleRangeChange = ({
-    range,
-    rangeCompare,
-  }: {
-    range: DateRange;
-    rangeCompare?: DateRange;
-  }) => {
+  const handleRangeChange = ({ range }: { range: DateRange }) => {
     const startDate = range.from;
     const endDate = range.to;
-    const startDateCompare = rangeCompare?.from;
-    const endDateCompare = rangeCompare?.to;
 
     const filterKey = config.dateRange?.filterKey || "createdAt";
 
@@ -172,12 +156,12 @@ type WithSearchInputProps = {
 export const WithSearchInput = (props: WithSearchInputProps) => {
   return (
     <div className={cn("relative flex items-center w-full max-w-sm")}>
-      <MedSearchIcon className="absolute left-4 h-5 w-5 text-[#919191] pointer-events-none" />
+      <MedSearchIcon className="absolute left-4 h-5 w-5 text-medsave-black-200 pointer-events-none" />
       <Input
         type="search"
         placeholder={props.placeholder || "Search"}
         className={cn(
-          "flex h-12 w-full rounded border  bg-white px-4 pl-12 py-3 text-base text-gray-900 placeholder:text-[#919191] outline-none transition-colors",
+          "flex h-12 w-full rounded border  bg-white px-4 pl-12 py-3 text-base text-gray-900 placeholder:text-medsave-black-200 outline-none transition-colors",
           "focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-200",
           "disabled:cursor-not-allowed disabled:opacity-50",
           props.className

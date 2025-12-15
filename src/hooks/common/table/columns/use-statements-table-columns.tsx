@@ -285,10 +285,10 @@ export const useStatementsTableColumns = () => {
                 <DropdownMenuItem
                   onClick={() =>
                     navigate({
-                      to: "/statements",
+                      to: "/users",
                       search: {
                         dialog: "details",
-                        statementId: row.original.id,
+                        userId: row.original.id,
                       },
                     })
                   }
@@ -298,7 +298,7 @@ export const useStatementsTableColumns = () => {
                 <DropdownMenuItem
                   onClick={() => {
                     // TODO: Implement download PDF functionality
-                    console.log("Download PDF for:", row.original.statementId);
+                    console.log("Download PDF for:", row.original.userId);
                   }}
                 >
                   Download PDF

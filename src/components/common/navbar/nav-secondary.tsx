@@ -1,5 +1,4 @@
 import * as React from "react";
-import { type Icon } from "@tabler/icons-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 
 import {
@@ -10,16 +9,13 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { RouteItem } from "./routes.config";
 
 export function NavSecondary({
   items,
   ...props
 }: {
-  items: {
-    title: string;
-    url: string;
-    icon: Icon;
-  }[];
+  items: RouteItem[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   const router = useRouterState();
   const currentPath = router.location.pathname;
@@ -44,14 +40,14 @@ export function NavSecondary({
                   asChild
                   isActive={active}
                   className={cn(
-                    "transition-colors duration-200",
+                    "transition-all duration-200 relative",
                     active &&
-                      "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+                      "bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/90 font-medium shadow-sm before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-6 before:bg-sidebar-primary before:rounded-r-full"
                   )}
                 >
                   <Link to={item.url}>
                     <item.icon
-                      className={cn(active && "text-primary-foreground")}
+                      className={cn(active && "text-sidebar-accent-foreground")}
                     />
                     <span>{item.title}</span>
                   </Link>

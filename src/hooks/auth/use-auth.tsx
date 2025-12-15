@@ -126,6 +126,8 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
         requestId: request_id,
       });
       setSession(session);
+      localStorage.setItem("accessToken", session.tokens.accessToken);
+      localStorage.setItem("refreshToken", session.tokens.refreshToken);
       return session;
     } catch (error) {
       console.error("OTP verification failed:", error);
@@ -141,15 +143,6 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
       console.error("Logout failed:", error);
     }
   };
-
-  // const refreshSession = async (): Promise<void> => {
-  //   try {
-  //     const session = await invoke<Session>("refresh_session");
-  //     setSession(session);
-  //   } catch (error) {
-  //     console.error("Refresh session failed:", error);
-  //   }
-  // };
 
   const checkAuthentication = async (): Promise<boolean> => {
     try {

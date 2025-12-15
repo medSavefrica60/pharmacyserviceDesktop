@@ -74,6 +74,9 @@ export const Route = createRootRouteWithContext<RootRouteContext>()({
   },
 
   component: () => {
+    const { session } = useSession();
+    logger.info("access token: ", session?.tokens.accessToken);
+    logger.info("refresh token: ", session?.tokens.refreshToken);
     return <RootComponent />;
   },
 });

@@ -7,10 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  useDeleteContribution,
-  useGetContribution,
-} from "@/hooks/api/use-contributions";
+import { useDeleteContribution } from "@/hooks/api/use-contributions";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { AlertTriangleIcon } from "lucide-react";
@@ -23,7 +20,6 @@ export const DeleteContribution = () => {
   };
 
   const isOpen = search.dialog === "delete" && !!search.contributionId;
-  const { data: contribution } = useGetContribution(search.contributionId);
   const deleteMutation = useDeleteContribution();
 
   const handleClose = () => {
@@ -65,21 +61,21 @@ export const DeleteContribution = () => {
           </DialogDescription>
         </DialogHeader>
 
-        {contribution && (
+        {/* {contribution && (
           <div className="rounded-md bg-muted p-4 my-2">
             <div className="space-y-1">
               <p className="text-sm font-medium">
-                {contribution.contributionId}
+                {contribution.data.reference}
               </p>
               <p className="text-sm text-muted-foreground">
-                {contribution.memberName} - {contribution.packageName}
+                {contribution.data.} - {contribution.packageName}
               </p>
               <p className="text-xs text-muted-foreground">
                 Amount: {contribution.amount}
               </p>
             </div>
           </div>
-        )}
+        )} */}
 
         <DialogFooter>
           <Button

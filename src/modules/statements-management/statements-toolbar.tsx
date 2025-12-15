@@ -69,7 +69,7 @@ export const useStatementsToolbar = forwardRef<
     };
 
     const { data: usersData } = useGetUsers();
-    const users = usersData?.users || [];
+    const users = usersData?.data?.users || [];
 
     // Transform users to search options
     const searchOptionsData: UserSearchOption[] = users.map(

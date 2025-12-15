@@ -22,7 +22,6 @@ export const FormDate: React.FC<FormDateProps> = ({
   wrapperClassName,
   labelClassName,
   required,
-  disabled,
 }) => {
   const { control } = useFormContext();
 

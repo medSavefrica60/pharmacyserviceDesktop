@@ -9,8 +9,6 @@ export function UserAvatar() {
   const [avatar, setAvatar] = useState<File>();
   const [avatarUrl, setAvatarUrl] = useState<string>();
 
-  const isAvatarUploaded = Boolean(avatar?.name);
-
   useEffect(() => {
     if (!avatar) return;
 

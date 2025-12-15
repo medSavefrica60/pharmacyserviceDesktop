@@ -14,7 +14,6 @@ type buttonProps = {
   loadingText?: string;
   loadingIcon?: React.ReactNode;
   loadingPosition?: "left" | "right";
-  loadingSide?: "left" | "right";
 };
 
 export const OutlineButton = ({
@@ -51,7 +50,6 @@ export const PrimaryButton = ({
   loadingText = "saving...",
   loadingIcon = <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />,
   loadingPosition = "left",
-  loadingSide = "left",
   disabled = false,
 }: buttonProps) => {
   return (

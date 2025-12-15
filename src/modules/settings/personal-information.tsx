@@ -2,7 +2,6 @@ import { FormInput } from "@/components/common/form/form-input";
 import FormPhoneInput from "@/components/common/form/form-phone";
 import { Form } from "@/components/ui/form";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useTransition } from "react";
 import { EditActionButtons } from "@/components/common/misc/edit-action-buttons";

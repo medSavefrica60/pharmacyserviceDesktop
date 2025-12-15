@@ -29,7 +29,7 @@ export const DeleteDependent = () => {
   const handleClose = () => {
     navigate({
       to: "/dependents",
-      search: { sheet: undefined, dialog: undefined, dependentId: undefined },
+      search: { dialog: undefined, dependentId: undefined },
     });
   };
 
@@ -64,13 +64,12 @@ export const DeleteDependent = () => {
         {dependent && (
           <div className="rounded-md bg-muted p-4 my-2">
             <div className="space-y-1">
-              <p className="text-sm font-medium">{dependent.name}</p>
+              <p className="text-sm font-medium">{dependent.dependentName}</p>
               <p className="text-sm text-muted-foreground">
-                {dependent.relationship} of {dependent.primaryMember}
+                {dependent.relationship} of {dependent.user.firstName}{" "}
+                {dependent.user.lastName}
               </p>
-              <p className="text-xs text-muted-foreground">
-                {dependent.dependentId}
-              </p>
+              <p className="text-xs text-muted-foreground">{dependent.id}</p>
             </div>
           </div>
         )}

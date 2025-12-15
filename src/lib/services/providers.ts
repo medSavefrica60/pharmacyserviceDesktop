@@ -118,6 +118,48 @@ export const AppServices = {
     }),
   },
 
+  wallets: {
+    get_all_wallets: (params?: Record<string, unknown>): ServiceDefinition => ({
+      method: "GET",
+      url: "/wallets",
+      params,
+    }),
+    get_id_wallet: (id: string): ServiceDefinition => ({
+      method: "GET",
+      url: `/wallets/${id}`,
+    }),
+    update_wallet: (
+      id: string,
+      data: Record<string, unknown>
+    ): ServiceDefinition => ({
+      method: "PATCH",
+      url: `/wallets/${id}`,
+      data,
+    }),
+    adjust_wallet_balance: (
+      id: string,
+      data: Record<string, unknown>
+    ): ServiceDefinition => ({
+      method: "POST",
+      url: `/wallets/${id}/adjust-balance`,
+      data,
+    }),
+  },
+
+  transactions: {
+    get_all_transactions: (
+      params?: Record<string, unknown>
+    ): ServiceDefinition => ({
+      method: "GET",
+      url: "/transactions",
+      params,
+    }),
+    get_id_transaction: (id: string): ServiceDefinition => ({
+      method: "GET",
+      url: `/transactions/${id}`,
+    }),
+  },
+
   dependents: {
     create_dependent: (data: Record<string, unknown>): ServiceDefinition => ({
       method: "POST",
@@ -298,6 +340,29 @@ export const AppServices = {
     get_id_audit_log: (id: string): ServiceDefinition => ({
       method: "GET",
       url: `/audit-logs/${id}`,
+    }),
+  },
+  admins: {
+    get_all_admins: (params?: Record<string, unknown>): ServiceDefinition => ({
+      method: "GET",
+      url: "/admins",
+      params,
+    }),
+    get_id_admin: (id: string): ServiceDefinition => ({
+      method: "GET",
+      url: `/admins/${id}`,
+    }),
+    update_admin: (
+      id: string,
+      data: Record<string, unknown>
+    ): ServiceDefinition => ({
+      method: "PATCH",
+      url: `/admins/${id}`,
+      data,
+    }),
+    delete_admin: (id: string): ServiceDefinition => ({
+      method: "DELETE",
+      url: `/admins/${id}`,
     }),
   },
 };

@@ -11,8 +11,7 @@ const index = axios.create({
 });
 
 const axiosClient = async (config: ServiceDefinition) => {
-  const session = (await invoke("get_current_session")) as Session | null;
-  const jwt = session?.tokens?.accessToken;
+  const jwt = await decideToken();
 
   return index({
     ...config,
@@ -39,6 +38,16 @@ export const queryFn = async <TData, Error = never>(
     throw error;
   }
 };
+
+async function decideToken() {
+  const session = (await invoke("get_current_session")) as Session | null;
+  const accessToken = localStorage.getItem("accessToken");
+  if (session) {
+    return session.tokens.accessToken;
+  }
+
+  return accessToken;
+}
 
 index.interceptors.request.use(async (config) => {
   try {

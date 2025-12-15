@@ -121,6 +121,7 @@ export type MedicationStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";
 export type Medication = {
   id: string;
   name: string;
+  description?: string;
   minAmount: number;
   status: MedicationStatus;
   isActive: boolean;
@@ -190,6 +191,20 @@ export type User = {
   updatedAt: string;
 };
 
+export type Admin = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  role: "SUPER_ADMIN" | "ADMIN";
+  status: UserStatus;
+  permissions: string[];
+  lastLoginAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 /**
  * Users Response Type (different structure - pagination at root level)
  */
@@ -199,6 +214,16 @@ export type UsersResponse = BaseSuccessResponse<{ users: User[] }> & {
   currentPage: number;
   total: number;
 };
+
+/**
+ * Admins Response Type
+ */
+export type AdminsResponse = BaseSuccessResponse<{
+  admins: Admin[];
+  total: number;
+  page: number;
+  limit: number;
+}>;
 
 /**
  * Claim Types - Updated for new API structure
@@ -434,3 +459,117 @@ export type AuditLogsResponse = BaseSuccessResponse<{
   limit: number;
   totalPages: number;
 }>;
+
+/**
+ * Wallet Status Types
+ */
+export type WalletStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";
+
+/**
+ * Wallet Type
+ */
+export type Wallet = {
+  id: string;
+  userId: string;
+  balance: string;
+  currency: string;
+  status: WalletStatus;
+  isMomoLinked: boolean;
+  mobileMoneyNumber: string | null;
+  mobileMoneyProvider: string | null;
+  dailyLimit: string;
+  monthlyLimit: string;
+  lastTransactionAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+  };
+};
+
+/**
+ * Wallets Response Type
+ */
+export type WalletsResponse = BaseSuccessResponse<{
+  wallets: Wallet[];
+}> & {
+  limit: number;
+  totalPages: number;
+  currentPage: number;
+  total: number;
+  metadata?: {
+    totalWallets?: number;
+    activeWallets?: number;
+    inactiveWallets?: number;
+    suspendedWallets?: number;
+    momoLinkedWallets?: number;
+    totalBalance?: number;
+  };
+};
+
+/**
+ * Transaction Status Types
+ */
+export type TransactionStatus =
+  | "pending"
+  | "completed"
+  | "failed"
+  | "cancelled";
+
+/**
+ * Transaction Type
+ */
+export type TransactionType = "DEPOSIT" | "WITHDRAWAL" | "TRANSFER";
+
+/**
+ * Transaction Type
+ */
+export type Transaction = {
+  id: string;
+  transactionType: TransactionType;
+  amount: string;
+  status: TransactionStatus | string;
+  description: string;
+  referenceNumber: string;
+  externalReference: string | null;
+  metadata: any | null;
+  failureReason: string | null;
+  processedAt: string | null;
+  failedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string | null;
+    phoneNumber: string;
+  };
+  wallet: {
+    id: string;
+    userId: string;
+  };
+};
+
+/**
+ * Transactions Response Type
+ */
+export type TransactionsResponse = BaseSuccessResponse<{
+  transactions: Transaction[];
+}> & {
+  limit: number;
+  totalPages: number;
+  currentPage: number;
+  total: number;
+  metadata?: {
+    totalTransactions?: number;
+    completedTransactions?: number;
+    pendingTransactions?: number;
+    failedTransactions?: number;
+    totalAmount?: number;
+  };
+};

@@ -1,6 +1,5 @@
 import React from "react";
 import { UserSearchOption } from "./statements-search";
-import { User } from "@/types";
 import {
   Calendar,
   X,
@@ -49,7 +48,6 @@ export interface StatementFiltersProps {
 
 export const StatementFilters: React.FC<StatementFiltersProps> = ({
   userOptions,
-  selectedUser,
   status,
   dateRangeDisplay,
   onUserSelect,

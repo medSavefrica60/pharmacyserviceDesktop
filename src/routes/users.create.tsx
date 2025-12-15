@@ -1,150 +1,104 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useSearch } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import FormFieldWrapper from "@/components/common/form/form-field-wrapper";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { CreateUserForm } from "@/modules/user-management/forms/create-user-form";
+import { CreateProviderForm } from "@/modules/user-management/forms/create-provider-form";
+import { CreateOfficerForm } from "@/modules/user-management/forms/create-officer-form";
 
 export const Route = createFileRoute("/users/create")({
   component: CreateUserPage,
-  validateSearch: () => ({}),
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      userType: (search.userType as UserType | undefined) || undefined,
+      userId: (search.userId as string | undefined) || undefined,
+    };
+  },
 });
 
-import { FormInput } from "@/components/common/form/form-input";
-import { Form } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { useTransition } from "react";
-import FormFieldWrapper from "@/components/common/form/form-field-wrapper";
-import { CreateActionButtons } from "@/components/common/misc/creat-actions";
-import { logger } from "@/lib/logger";
-import { useUpsertUser } from "@/hooks/api/use-users";
-import { toast } from "react-hot-toast";
-import { UserFormData, UserSchema } from "@/lib/zod/users";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { BaseFailedResponse } from "@/types";
+type UserType =
+  | "IT_OFFICER"
+  | "CLAIMS_OFFICER"
+  | "FINANCE_OFFICER"
+  | "CUSTOMER_CARE"
+  | "MEDSAVE_USER"
+  | "MEDSAVE_PROVIDER";
 
-export default function CreateUserPage() {
-  const [isSaving, startSavingTransition] = useTransition();
-  const upsertMutation = useUpsertUser();
+const USER_TYPE_OPTIONS: { label: string; value: UserType }[] = [
+  { label: "IT Officer", value: "IT_OFFICER" },
+  { label: "Claims Officer", value: "CLAIMS_OFFICER" },
+  { label: "Finance Officer", value: "FINANCE_OFFICER" },
+  { label: "Customer Care", value: "CUSTOMER_CARE" },
+  { label: "Medsave User", value: "MEDSAVE_USER" },
+  { label: "Medsave Provider", value: "MEDSAVE_PROVIDER" },
+];
 
-  const form = useForm<UserFormData>({
-    resolver: zodResolver(UserSchema),
-    defaultValues: {
-      phoneNumber: "+233244111222",
-      firstName: "John",
-      lastName: "Doe",
-      email: "john.doe@example.com",
-      dateOfBirth: "",
-      ghanaCardNumber: "GHA-123456789-8",
-    },
-  });
-
-  const onSubmit = (data: UserFormData) => {
-    startSavingTransition(() => {
-      toast.loading("Creating user...");
-      upsertMutation
-        .mutateAsync({
-          id: null,
-          data,
-        })
-        .then((response) => {
-          toast.dismiss();
-          logger.info("User created successfully", response);
-          toast.success("User created successfully");
-        })
-        .catch((error: BaseFailedResponse<{ message: string }>) => {
-          toast.dismiss();
-          logger.error("Failed to create user:", error);
-          toast.error(`Failed to create user, ${error.error.message}`);
-        });
-    });
+function CreateUserPage() {
+  const { userType } = useSearch({ from: "/users/create" }) as {
+    userType: UserType;
   };
+  const [selectedUserType, setSelectedUserType] = useState<UserType>(
+    userType || "MEDSAVE_USER"
+  );
+
+  const memoizeUserForm = useMemo(() => {
+    switch (selectedUserType) {
+      case "MEDSAVE_USER":
+        return <CreateUserForm />;
+      case "MEDSAVE_PROVIDER":
+        return <CreateProviderForm />;
+      case "IT_OFFICER":
+      case "CLAIMS_OFFICER":
+      case "FINANCE_OFFICER":
+      case "CUSTOMER_CARE":
+        return (
+          <CreateOfficerForm
+            defaultRole={
+              selectedUserType as
+                | "IT_OFFICER"
+                | "CLAIMS_OFFICER"
+                | "FINANCE_OFFICER"
+                | "CUSTOMER_CARE"
+            }
+          />
+        );
+      default:
+        return null;
+    }
+  }, [selectedUserType]);
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <header className="flex items-center flex-1 justify-between px-4 py-3 border border-b-0">
-          <h1 className="font-bold text-xl text-medsave-black-500">
-            Personal Information
-          </h1>
-          <CreateActionButtons
-            isSaving={isSaving || upsertMutation.isPending}
-            primaryProps={{ text: "Save", className: "bg-medsave-blue-500 " }}
-          />
-        </header>
-        <section className="p-4 border">
-          <div className="flex flex-col space-y-6">
-            <FormFieldWrapper
-              label="First Name"
-              description="The first name of the user"
-            >
-              <FormInput
-                name="firstName"
-                inputClassName="h-15 w-full"
-                type="text"
-                placeholder="e.g. John"
-                disabled={isSaving || upsertMutation.isPending}
-              />
-            </FormFieldWrapper>
-            <FormFieldWrapper
-              label="Last Name"
-              description="The last name of the user"
-            >
-              <FormInput
-                name="lastName"
-                inputClassName="h-15 w-full"
-                type="text"
-                placeholder="e.g. Doe"
-                disabled={isSaving || upsertMutation.isPending}
-              />
-            </FormFieldWrapper>
-            <FormFieldWrapper
-              label="Email Address"
-              description="The email address for the user's account"
-            >
-              <FormInput
-                name="email"
-                inputClassName="h-15 w-full"
-                type="text"
-                placeholder="e.g. john.doe@example.com"
-                disabled={isSaving || upsertMutation.isPending}
-              />
-            </FormFieldWrapper>
+    <main className="min-h-full flex flex-col space-y-4">
+      <section className="p-4 rounded-xl bg-medsave-blue-50 sticky top-0 z-10">
+        <FormFieldWrapper
+          label="User Type"
+          description="Select the type of user you want to create"
+        >
+          <Select
+            value={selectedUserType}
+            onValueChange={(value) => setSelectedUserType(value as UserType)}
+          >
+            <SelectTrigger className="h-[52px]! tracking-wide leading-loose! w-full bg-zinc-50 font-bold text-sm text-medsave-blue-400">
+              <SelectValue placeholder="Select user type" />
+            </SelectTrigger>
+            <SelectContent>
+              {USER_TYPE_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FormFieldWrapper>
+      </section>
 
-            <FormFieldWrapper
-              label="Phone Number *"
-              description="The contact phone number of the user"
-            >
-              <FormInput
-                name="phoneNumber"
-                inputClassName="h-15 w-full"
-                type="tel"
-                placeholder="e.g. +233240000000"
-                disabled={isSaving || upsertMutation.isPending}
-              />
-            </FormFieldWrapper>
-            <FormFieldWrapper
-              label="Date of Birth"
-              description="The date of birth of the user"
-            >
-              <FormInput
-                name="dateOfBirth"
-                inputClassName="h-15 w-full"
-                type="date"
-                placeholder="e.g. 1990-01-01"
-                disabled={isSaving || upsertMutation.isPending}
-              />
-            </FormFieldWrapper>
-            <FormFieldWrapper
-              label="Ghana Card Number"
-              description="The Ghana Card number of the user"
-            >
-              <FormInput
-                name="ghanaCardNumber"
-                inputClassName="h-15 w-full"
-                type="text"
-                placeholder="e.g. GHA-123456789-0"
-                disabled={isSaving || upsertMutation.isPending}
-              />
-            </FormFieldWrapper>
-          </div>
-        </section>
-      </form>
-    </Form>
+      <section className="flex-1">{memoizeUserForm}</section>
+    </main>
   );
 }

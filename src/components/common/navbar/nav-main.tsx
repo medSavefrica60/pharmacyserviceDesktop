@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/collapsible";
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -57,6 +56,36 @@ export function NavMain({
       <SidebarMenu>
         {items.map((item) => {
           const itemIsActive = isActive(item.url) || hasActiveSubItem(item);
+
+          // If item has no children, render as simple link like navSecondary
+          if (!item.items || item.items.length === 0) {
+            return (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={itemIsActive}
+                  className={cn(
+                    "transition-all duration-200 relative",
+                    itemIsActive &&
+                      "bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/90 font-medium shadow-sm before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-6 before:bg-sidebar-primary before:rounded-r-full"
+                  )}
+                >
+                  <Link to={item.url}>
+                    {item.icon && (
+                      <item.icon
+                        className={cn(
+                          itemIsActive && "text-sidebar-accent-foreground"
+                        )}
+                      />
+                    )}
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          }
+
+          // If item has children, render as collapsible dropdown
           return (
             <Collapsible
               key={item.title}
@@ -70,12 +99,17 @@ export function NavMain({
                     tooltip={item.title}
                     isActive={itemIsActive}
                     className={cn(
+                      "transition-all duration-200 relative",
                       itemIsActive &&
-                        "bg-blue-500 text-white font-medium hover:bg-blue-600"
+                        "bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/90 font-medium shadow-sm before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-6 before:bg-sidebar-primary before:rounded-r-full"
                     )}
                   >
                     {item.icon && (
-                      <item.icon className={cn(itemIsActive && "text-white")} />
+                      <item.icon
+                        className={cn(
+                          itemIsActive && "text-sidebar-accent-foreground"
+                        )}
+                      />
                     )}
                     <span>{item.title}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -83,7 +117,7 @@ export function NavMain({
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    {item.items?.map((subItem) => {
+                    {item.items.map((subItem) => {
                       const subItemIsActive = isActive(subItem.url);
                       return (
                         <SidebarMenuSubItem key={subItem.title}>
@@ -91,15 +125,17 @@ export function NavMain({
                             asChild
                             isActive={subItemIsActive}
                             className={cn(
+                              "transition-all duration-200 relative",
                               subItemIsActive &&
-                                "bg-blue-500 text-white font-medium hover:bg-blue-600"
+                                "bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/90 font-medium shadow-sm before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-5 before:bg-sidebar-primary before:rounded-r-full"
                             )}
                           >
                             <Link to={subItem.url}>
                               {subItem.icon && (
                                 <subItem.icon
                                   className={cn(
-                                    subItemIsActive && "text-white"
+                                    subItemIsActive &&
+                                      "text-sidebar-accent-foreground"
                                   )}
                                 />
                               )}

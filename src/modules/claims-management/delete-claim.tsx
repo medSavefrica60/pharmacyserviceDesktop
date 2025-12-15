@@ -61,12 +61,13 @@ export const DeleteClaim = () => {
         {claim && (
           <div className="rounded-md bg-muted p-4 my-2">
             <div className="space-y-1">
-              <p className="text-sm font-medium">{claim.claimNumber}</p>
+              <p className="text-sm font-medium">{claim.reference}</p>
               <p className="text-sm text-muted-foreground">
-                {claim.patientName} - {claim.serviceType}
+                {claim.user.firstName} {claim.user.lastName} -{" "}
+                {claim.package.name}
               </p>
               <p className="text-xs text-muted-foreground">
-                Amount: {claim.claimAmount}
+                Amount: GH₵ {claim.amount}
               </p>
             </div>
           </div>

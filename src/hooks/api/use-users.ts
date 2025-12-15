@@ -7,7 +7,6 @@ import {
 } from "@/types";
 import { queryFn } from "@/api";
 import { AppServices } from "@/lib/services/providers";
-import { toast } from "sonner";
 import { logger } from "@/lib/logger";
 
 // Type for users query response with optional metadata
@@ -74,7 +73,7 @@ export const useUpsertUser = () => {
       );
       return response.data;
     },
-    onSuccess: (response, { id }) => {
+    onSuccess: (_response, { id }) => {
       if (id) {
         queryClient.invalidateQueries({ queryKey: ["user", id] });
       } else {

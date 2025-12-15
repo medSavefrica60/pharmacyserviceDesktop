@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "@tanstack/react-router";
-import { Claim, Package } from "@/types";
+import { Claim } from "@/types";
 
 export const useClaimsTableColumns = () => {
   const [copiedNumber, setCopiedNumber] = useState<string | null>(null);
@@ -191,8 +191,8 @@ export const useClaimsTableColumns = () => {
           <DataTableColumnHeader column={column} title="Package" />
         ),
         cell: ({ row }) => {
-          // TODO: Type assertion to ensure the medicationPackage is a Package
-          const packageData = row.original["medicationPackage"];
+          // @ts-ignore
+          const packageData = row.original.medicationPackage;
           if (!packageData)
             return <span className="text-sm text-medsave-black-300">-</span>;
 

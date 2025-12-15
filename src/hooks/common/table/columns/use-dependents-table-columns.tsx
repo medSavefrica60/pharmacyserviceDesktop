@@ -218,7 +218,6 @@ export const useDependentsTableColumns = () => {
                     navigate({
                       to: "/dependents",
                       search: {
-                        sheet: undefined,
                         dialog: "details",
                         dependentId: row.original.id,
                       },
@@ -233,7 +232,6 @@ export const useDependentsTableColumns = () => {
                       to: "/dependents",
                       search: {
                         dialog: undefined,
-                        sheet: "edit",
                         dependentId: row.original.id,
                       },
                     })
@@ -246,7 +244,6 @@ export const useDependentsTableColumns = () => {
                     navigate({
                       to: "/dependents",
                       search: {
-                        sheet: undefined,
                         dialog: "delete",
                         dependentId: row.original.id,
                       },

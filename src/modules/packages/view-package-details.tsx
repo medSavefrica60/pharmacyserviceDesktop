@@ -9,23 +9,23 @@ import {
 
 export const ViewPackageDetails = () => {
   const navigate = useNavigate();
-  const search = useSearch({ from: "/packages" }) as {
+  const search = useSearch({ from: "/medications" }) as {
     dialog?: string;
-    packageId?: string;
+    medicationId?: string;
   };
 
-  const isOpen = search.dialog === "details" && !!search.packageId;
+  const isOpen = search.dialog === "details" && !!search.medicationId;
 
   const handleClose = () => {
     navigate({
-      to: "/packages",
-      search: { sheet: undefined, dialog: undefined, packageId: undefined },
+      to: "/medications",
+      search: { dialog: undefined, medicationId: undefined },
     });
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="!max-w-2xl w-full max-h-[85vh] flex flex-col p-2">
+      <DialogContent className="max-w-2xl! w-full max-h-[85vh] flex flex-col p-2">
         <DialogHeader className="px-6">
           <DialogTitle>Package Details</DialogTitle>
           <DialogDescription>

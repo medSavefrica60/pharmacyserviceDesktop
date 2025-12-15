@@ -20,11 +20,14 @@ export default function Others({ user, isLoading }: OthersProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, startSavingTransition] = useTransition();
   const upsertMutation = useUpsertUser();
-  const form = useForm<Pick<UserFormData, "dateOfBirth">>({
-    resolver: zodResolver(UserSchema.pick({ dateOfBirth: true })),
+  const form = useForm<Pick<UserFormData, "dateOfBirth" | "ghanaCardNumber">>({
+    // resolver: zodResolver(UserSchema.pick({ dateOfBirth: true, ghanaCardNumber: true })),
+    resolver: zodResolver(
+      UserSchema.pick({ dateOfBirth: true, ghanaCardNumber: true }) as any
+    ),
     defaultValues: {
       dateOfBirth: "",
-      // ghanaCardNumber: "",
+      ghanaCardNumber: "",
     },
   });
 
@@ -57,7 +60,7 @@ export default function Others({ user, isLoading }: OthersProps) {
     if (user) {
       form.reset({
         dateOfBirth: user?.dateOfBirth || "",
-        // ghanaCardNumber: user?.ghanaCardNumber || "",
+        ghanaCardNumber: user?.ghanaCardNumber || "",
       });
     }
   }, [user, form]);

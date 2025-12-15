@@ -70,12 +70,14 @@ export const UpdateDependent = () => {
       methods.reset({
         userId: (dependent as any).userId || "",
         firstName:
-          (dependent as any).firstName || dependent.name?.split(" ")[0] || "",
+          (dependent as any).firstName ||
+          dependent.dependentName?.split(" ")[0] ||
+          "",
         lastName:
           (dependent as any).lastName ||
-          dependent.name?.split(" ").slice(1).join(" ") ||
+          dependent.dependentName?.split(" ").slice(1).join(" ") ||
           "",
-        dateOfBirth: dependent.dateOfBirth,
+        dateOfBirth: dependent.createdAt,
         gender: (dependent as any).gender || "male",
         relationship: (dependent as any).relationship || "child",
         ghanaCardNumber: (dependent as any).ghanaCardNumber || "",
@@ -98,7 +100,7 @@ export const UpdateDependent = () => {
   const handleClose = () => {
     navigate({
       to: "/dependents",
-      search: { sheet: undefined, dialog: undefined, dependentId: undefined },
+      search: { dialog: undefined, dependentId: undefined },
     });
     methods.reset();
   };
@@ -127,7 +129,7 @@ export const UpdateDependent = () => {
 
   // Convert users to search options
   const userSearchOptions: UserSearchOption[] =
-    users?.users?.map((user) => ({
+    users?.data?.users?.map((user) => ({
       id: user.id,
       name: `${user.firstName} ${user.lastName}`,
       email: user.email,

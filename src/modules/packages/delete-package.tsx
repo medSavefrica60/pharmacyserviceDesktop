@@ -14,7 +14,7 @@ import { useDeletePackage } from "@/hooks/api/use-packages";
 
 export const DeletePackage = () => {
   const navigate = useNavigate();
-  const search = useSearch({ from: "/packages" }) as {
+  const search = useSearch({ from: "/medications" }) as {
     dialog?: string;
     packageId?: string;
   };
@@ -25,8 +25,8 @@ export const DeletePackage = () => {
 
   const handleClose = () => {
     navigate({
-      to: "/packages",
-      search: { sheet: undefined, dialog: undefined, packageId: undefined },
+      to: "/medications",
+      search: { dialog: undefined, medicationId: undefined },
     });
   };
 

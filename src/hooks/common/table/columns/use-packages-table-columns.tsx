@@ -209,17 +209,16 @@ export const usePackagesTableColumns = () => {
                 <DropdownMenuItem
                   onClick={() =>
                     navigate({
-                      to: "/packages",
+                      to: "/medications",
                       search: {
-                        sheet: undefined,
                         dialog: "delete",
-                        packageId: row.original.id,
+                        medicationId: row.original.id as string,
                       },
                     })
                   }
                   className="text-destructive focus:text-destructive"
                 >
-                  Delete Package
+                  Delete Medication
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

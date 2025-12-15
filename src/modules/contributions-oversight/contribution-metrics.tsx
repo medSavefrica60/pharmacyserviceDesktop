@@ -53,7 +53,6 @@ export const ContributionMetrics = ({
     0;
   const completedContributions = metadata?.completedContributions ?? 0;
   const pendingContributions = metadata?.pendingContributions ?? 0;
-  const failedContributions = metadata?.failedContributions ?? 0;
   const totalAmount = metadata?.totalContributionAmount ?? 0;
 
   // Format amount as currency
@@ -90,4 +89,3 @@ export const ContributionMetrics = ({
     </div>
   );
 };
-

@@ -7,19 +7,9 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { useGetContribution } from "@/hooks/api/use-contributions";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import {
-  CalendarIcon,
-  UserIcon,
-  DollarSignIcon,
-  IdCardIcon,
-  CreditCardIcon,
-  PackageIcon,
-} from "lucide-react";
 
 export const ViewContributionDetails = () => {
   const navigate = useNavigate();
@@ -61,7 +51,7 @@ export const ViewContributionDetails = () => {
         ) : contribution ? (
           <div className="flex flex-col gap-6 py-4 px-6">
             {/* Member Avatar and Name */}
-            <div className="flex flex-col items-center gap-3">
+            {/* <div className="flex flex-col items-center gap-3">
               <Avatar className="h-20 w-20">
                 <AvatarImage
                   src={
@@ -102,12 +92,12 @@ export const ViewContributionDetails = () => {
               >
                 {contribution.status}
               </Badge>
-            </div>
+            </div> */}
 
             <Separator />
 
             {/* Contribution Information */}
-            <div className="space-y-4">
+            {/* <div className="space-y-4">
               <div className="flex items-start gap-3">
                 <div className="rounded-md bg-muted p-2">
                   <UserIcon className="h-4 w-4 text-muted-foreground" />
@@ -191,7 +181,7 @@ export const ViewContributionDetails = () => {
                   </p>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <Separator />
 
@@ -205,7 +195,7 @@ export const ViewContributionDetails = () => {
                     search: {
                       sheet: undefined,
                       dialog: "delete",
-                      contributionId: contribution.id,
+                      contributionId: contribution.data.id,
                     },
                   })
                 }

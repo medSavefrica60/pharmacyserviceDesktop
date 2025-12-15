@@ -15,6 +15,8 @@ export function CreateActionButtons({
       isLoading={isSaving}
       type="submit"
       text="Save"
+      className=""
+      size="lg"
       {...primaryProps}
     />
   );

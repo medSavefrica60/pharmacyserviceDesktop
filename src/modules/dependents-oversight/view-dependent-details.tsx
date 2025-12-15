@@ -23,17 +23,17 @@ import {
 export const ViewDependentDetails = () => {
   const navigate = useNavigate();
   const search = useSearch({ from: "/dependents" }) as {
-    sheet?: string;
+    dialog?: string;
     dependentId?: string;
   };
 
-  const isOpen = search.sheet === "details" && !!search.dependentId;
+  const isOpen = search.dialog === "details" && !!search.dependentId;
   const { data: dependent, isLoading } = useGetDependent(search.dependentId);
 
   const handleClose = () => {
     navigate({
       to: "/dependents",
-      search: { sheet: undefined, dialog: undefined, dependentId: undefined },
+      search: { dialog: undefined, dependentId: undefined },
     });
   };
 
@@ -41,25 +41,10 @@ export const ViewDependentDetails = () => {
     navigate({
       to: "/dependents",
       search: {
-        sheet: "edit",
-        dialog: undefined,
+        dialog: "edit",
         dependentId: search.dependentId,
       },
     });
-  };
-
-  const calculateAge = (dateOfBirth: string) => {
-    const today = new Date();
-    const birthDate = new Date(dateOfBirth);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDate.getDate())
-    ) {
-      age--;
-    }
-    return age;
   };
 
   return (
@@ -82,13 +67,11 @@ export const ViewDependentDetails = () => {
             <div className="flex flex-col items-center gap-3">
               <Avatar className="h-20 w-20">
                 <AvatarImage
-                  src={
-                    dependent.avatar || `https://github.com/shadcn.png?size=160`
-                  }
-                  alt={dependent.name}
+                  src={`https://github.com/shadcn.png?size=160`}
+                  alt={dependent.dependentName}
                 />
                 <AvatarFallback className="text-xl font-semibold">
-                  {dependent.name
+                  {dependent.dependentName
                     .split(" ")
                     .map((n) => n[0])
                     .join("")
@@ -97,23 +80,24 @@ export const ViewDependentDetails = () => {
                 </AvatarFallback>
               </Avatar>
               <div className="text-center">
-                <h3 className="text-lg font-semibold">{dependent.name}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {dependent.dependentId}
-                </p>
+                <h3 className="text-lg font-semibold">
+                  {dependent.dependentName}
+                </h3>
+                <p className="text-sm text-muted-foreground">{dependent.id}</p>
               </div>
               <Badge
                 variant={
-                  dependent.status === "Active" ? "default" : "secondary"
+                  dependent.status === "active" ? "default" : "secondary"
                 }
                 className={cn(
                   "px-4 py-1",
-                  dependent.status === "Active"
+                  dependent.status === "active"
                     ? "bg-medsave-success-50 text-medsave-success-500 border-medsave-success-100"
                     : "bg-gray-50 text-gray-500 border-gray-200"
                 )}
               >
-                {dependent.status}
+                {dependent.status.charAt(0).toUpperCase() +
+                  dependent.status.slice(1)}
               </Badge>
             </div>
 
@@ -128,7 +112,8 @@ export const ViewDependentDetails = () => {
                 <div className="flex-1">
                   <p className="text-sm font-medium">Relationship</p>
                   <p className="text-sm text-muted-foreground">
-                    {dependent.relationship}
+                    {dependent.relationship.charAt(0).toUpperCase() +
+                      dependent.relationship.slice(1)}
                   </p>
                 </div>
               </div>
@@ -140,10 +125,10 @@ export const ViewDependentDetails = () => {
                 <div className="flex-1">
                   <p className="text-sm font-medium">Primary Member</p>
                   <p className="text-sm text-muted-foreground">
-                    {dependent.primaryMember}
+                    {dependent.user?.firstName} {dependent.user?.lastName}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {dependent.primaryMemberId}
+                    {dependent.user?.id}
                   </p>
                 </div>
               </div>
@@ -152,10 +137,10 @@ export const ViewDependentDetails = () => {
                 <div className="rounded-md bg-muted p-2">
                   <CakeIcon className="h-4 w-4 text-muted-foreground" />
                 </div>
-                <div className="flex-1">
+                {/* <div className="flex-1">
                   <p className="text-sm font-medium">Date of Birth</p>
                   <p className="text-sm text-muted-foreground">
-                    {dependent.dateOfBirth
+                    {dependent.user?.dateOfBirth
                       ? new Date(dependent.dateOfBirth).toLocaleDateString(
                           "en-US",
                           {
@@ -171,19 +156,19 @@ export const ViewDependentDetails = () => {
                       Age: {calculateAge(dependent.dateOfBirth)} years
                     </p>
                   )}
-                </div>
+                </div> */}
               </div>
 
               <div className="flex items-start gap-3">
                 <div className="rounded-md bg-muted p-2">
                   <UserIcon className="h-4 w-4 text-muted-foreground" />
                 </div>
-                <div className="flex-1">
+                {/* <div className="flex-1">
                   <p className="text-sm font-medium">Gender</p>
                   <p className="text-sm text-muted-foreground">
-                    {dependent.gender}
+                    {dependent.user?.gender}
                   </p>
-                </div>
+                </div> */}
               </div>
 
               <div className="flex items-start gap-3">
@@ -193,8 +178,8 @@ export const ViewDependentDetails = () => {
                 <div className="flex-1">
                   <p className="text-sm font-medium">Date Added</p>
                   <p className="text-sm text-muted-foreground">
-                    {dependent.dateAdded
-                      ? new Date(dependent.dateAdded).toLocaleDateString(
+                    {dependent.createdAt
+                      ? new Date(dependent.createdAt).toLocaleDateString(
                           "en-US",
                           {
                             year: "numeric",
@@ -214,7 +199,7 @@ export const ViewDependentDetails = () => {
                 <div className="flex-1">
                   <p className="text-sm font-medium">Dependent ID</p>
                   <p className="text-sm text-muted-foreground">
-                    {dependent.dependentId}
+                    {dependent.id}
                   </p>
                 </div>
               </div>
@@ -233,7 +218,6 @@ export const ViewDependentDetails = () => {
                   navigate({
                     to: "/dependents",
                     search: {
-                      sheet: undefined,
                       dialog: "delete",
                       dependentId: dependent.id,
                     },

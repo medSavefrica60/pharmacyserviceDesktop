@@ -1,9 +1,8 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { DataTableColumnHeader } from "@/components/common/data-table/data-table-column-header";
 import { Badge } from "@/components/ui/badge";
 import { cn, formatDateTime } from "@/lib/utils";
-import { LucideCopy, LucideCopyCheck } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,16 +13,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Medication } from "@/types";
 
 export const useMedicationsTableColumns = () => {
-  const [copiedId, setCopiedId] = useState<string | null>(null);
   const navigate = useNavigate();
-
-  const handleCopyId = async (id: string) => {
-    setCopiedId(id);
-    await navigator.clipboard.writeText(id);
-    setTimeout(() => {
-      setCopiedId(null);
-    }, 2000);
-  };
 
   const columns: ColumnDef<Medication>[] = useMemo(
     () => [
@@ -38,7 +28,29 @@ export const useMedicationsTableColumns = () => {
           </span>
         ),
       },
+      {
+        accessorKey: "description",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Description" />
+        ),
+        cell: ({ row }) => {
+          const description = row.original.description || "";
+          const maxLength = 60;
+          const truncated =
+            description.length > maxLength
+              ? `${description.substring(0, maxLength)}...`
+              : description;
 
+          return (
+            <span
+              className="text-sm text-gray-600"
+              title={description || undefined}
+            >
+              {truncated || "-"}
+            </span>
+          );
+        },
+      },
       {
         accessorKey: "minAmount",
         header: ({ column }) => (
@@ -165,7 +177,7 @@ export const useMedicationsTableColumns = () => {
         },
       },
     ],
-    [copiedId, navigate]
+    [navigate]
   );
 
   return columns;

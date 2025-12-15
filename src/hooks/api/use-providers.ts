@@ -8,12 +8,6 @@ import {
 import { queryFn } from "@/api";
 import { AppServices } from "@/lib/services/providers";
 
-// Enable/disable mock mode
-const USE_MOCK = false;
-
-// Mock API delay
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 // Fetch all providers
 export const useGetProviders = (params?: Record<string, unknown>) => {
   return useQuery({

@@ -73,7 +73,7 @@ export const UpdateProvider = () => {
   const handleClose = () => {
     navigate({
       to: "/providers",
-      search: { sheet: undefined, dialog: undefined, providerId: undefined },
+      search: { dialog: undefined, providerId: undefined },
     });
     // Reset to test values for next time
     if (isCreate) {

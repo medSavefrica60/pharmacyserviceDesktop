@@ -29,7 +29,7 @@ export const DeleteMedication = () => {
   const handleClose = () => {
     navigate({
       to: "/medications",
-      search: { sheet: undefined, dialog: undefined, medicationId: undefined },
+      search: { dialog: undefined, medicationId: undefined },
     });
   };
 

@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useForm, FormProvider } from "react-hook-form";
 import { FormInput } from "@/components/common/form/form-input";
+import { FormTextarea } from "@/components/common/form/form-textarea";
 import { FormSelect } from "@/components/common/form/form-select";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -40,6 +41,7 @@ export const UpdateMedication = () => {
     resolver: zodResolver(medicationSchema) as any,
     defaultValues: {
       name: "",
+      description: "",
       minAmount: 0,
       status: "ACTIVE",
     },
@@ -50,12 +52,14 @@ export const UpdateMedication = () => {
     if (medication && isEdit) {
       methods.reset({
         name: medication.name || "",
+        description: medication.description || "",
         minAmount: medication.minAmount || 0,
         status: medication.status || "ACTIVE",
       });
     } else if (isCreate) {
       methods.reset({
         name: "",
+        description: "",
         minAmount: 0,
         status: "ACTIVE",
       });
@@ -65,7 +69,7 @@ export const UpdateMedication = () => {
   const handleClose = () => {
     navigate({
       to: "/medications",
-      search: { sheet: undefined, dialog: undefined, medicationId: undefined },
+      search: { dialog: undefined, medicationId: undefined },
     });
     methods.reset();
   };
@@ -118,6 +122,15 @@ export const UpdateMedication = () => {
                 placeholder="Enter package name"
                 required
                 wrapperClassName="space-y-2"
+              />
+
+              <FormTextarea
+                name="description"
+                label="Description"
+                placeholder="Enter package description"
+                required
+                wrapperClassName="space-y-2"
+                rows={3}
               />
 
               <FormInput

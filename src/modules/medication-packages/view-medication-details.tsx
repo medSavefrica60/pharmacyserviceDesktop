@@ -177,7 +177,6 @@ export const ViewMedicationDetails = () => {
                     navigate({
                       to: "/medications",
                       search: {
-                        sheet: undefined,
                         dialog: "delete",
                         medicationId: medication.id,
                       },

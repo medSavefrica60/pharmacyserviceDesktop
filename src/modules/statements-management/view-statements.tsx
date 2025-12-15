@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
 import { formatDateTime } from "@/lib/utils";
 
 // Statement data types based on API response
@@ -173,11 +172,6 @@ export const ViewStatements = () => {
       style: "currency",
       currency: "GHS",
     }).format(amount);
-  };
-
-  // Format date
-  const formatDate = (dateString: string) => {
-    return format(new Date(dateString), "MMM dd, yyyy");
   };
 
   return (

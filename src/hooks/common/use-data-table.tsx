@@ -15,7 +15,7 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table";
 import { useState, useEffect } from "react";
-import { DEFAULT_PAGE_INDEX, DEFAULT_PAGE_SIZE } from "@/constant";
+import { DEFAULT_PAGE_SIZE } from "@/constant";
 
 interface UseDataTableProps<TData, TValue> {
   /**

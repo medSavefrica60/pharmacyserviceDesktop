@@ -147,7 +147,7 @@ export const useUpdateClaim = () => {
       }
       return queryFn(AppServices.claims.update_claim(id, data));
     },
-    onSuccess: (response, { id }) => {
+    onSuccess: (_response, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["claims"] });
       if (id) {
         queryClient.invalidateQueries({ queryKey: ["claim", id] });

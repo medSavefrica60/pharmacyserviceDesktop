@@ -5,6 +5,7 @@ export const medicationSchema = z.object({
     .string()
     .min(1, "Package name is required")
     .min(3, "Package name must be at least 3 characters"),
+  description: z.string().min(1, "Description is required"),
   minAmount: z
     .string()
     .min(1, "Minimum amount is required")

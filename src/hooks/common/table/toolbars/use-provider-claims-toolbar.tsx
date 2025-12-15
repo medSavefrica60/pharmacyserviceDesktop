@@ -4,9 +4,10 @@ import React, { forwardRef } from "react";
 import { ExtendDataTableProps } from "@/components/common/data-table/types";
 import { DynamicToolbar } from "./use-dynamic-toolbar";
 import { ToolbarConfig, TableMethods } from "./types";
-import { ProviderClaim } from "@/types";
 
-export interface ProviderClaimsToolbar<TData> extends ExtendDataTableProps<TData> {}
+export interface ProviderClaimsToolbar<
+  TData,
+> extends ExtendDataTableProps<TData> {}
 
 const providerClaimsToolbarConfig: ToolbarConfig = {
   tabs: [
@@ -52,11 +53,18 @@ const providerClaimsToolbarConfig: ToolbarConfig = {
   },
 };
 
-export const useProviderClaimsToolbar = forwardRef<TableMethods, ProviderClaimsToolbar<any>>(
-  function ProviderClaimsToolbar<TData>(
-    { table }: ProviderClaimsToolbar<TData>,
-    ref: React.ForwardedRef<TableMethods>
-  ) {
-    return <DynamicToolbar table={table} config={providerClaimsToolbarConfig} ref={ref} />;
-  }
-);
+export const useProviderClaimsToolbar = forwardRef<
+  TableMethods,
+  ProviderClaimsToolbar<any>
+>(function ProviderClaimsToolbar<TData>(
+  { table }: ProviderClaimsToolbar<TData>,
+  ref: React.ForwardedRef<TableMethods>
+) {
+  return (
+    <DynamicToolbar
+      table={table}
+      config={providerClaimsToolbarConfig}
+      ref={ref}
+    />
+  );
+});
