@@ -34,7 +34,7 @@ export const useGetWallet = (walletId: string | undefined) => {
 };
 
 // Update wallet
-export const useUpdateWallet = () => {
+export const useUpdateWalletStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -46,7 +46,7 @@ export const useUpdateWallet = () => {
       data: Record<string, unknown>;
     }) => {
       const response = await queryFn<BaseSuccessResponse<Wallet>>(
-        AppServices.wallets.update_wallet(id, data)
+        AppServices.wallets.update_wallet_status(id, data)
       );
       return response.data;
     },

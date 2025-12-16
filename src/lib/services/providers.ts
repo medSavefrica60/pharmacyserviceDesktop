@@ -128,12 +128,12 @@ export const AppServices = {
       method: "GET",
       url: `/wallets/${id}`,
     }),
-    update_wallet: (
+    update_wallet_status: (
       id: string,
       data: Record<string, unknown>
     ): ServiceDefinition => ({
-      method: "PATCH",
-      url: `/wallets/${id}`,
+      method: "PUT",
+      url: `/wallets/${id}/status`,
       data,
     }),
     adjust_wallet_balance: (

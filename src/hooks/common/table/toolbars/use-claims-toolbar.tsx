@@ -71,9 +71,16 @@ const claimsToolbarConfig: ToolbarConfig = {
       filterKey: "status",
     },
   ],
+  // Global search enabled - searches across:
+  // - reference (claim reference number)
+  // - provider.organizationName (provider name)
+  // - package.name (package name)
+  // - amount (claim amount)
+  // - status (claim status)
   search: {
     enabled: true,
     placeholder: "Search claims...",
+    // No filterKey specified = uses global filter
   },
   dateRange: {
     enabled: true,

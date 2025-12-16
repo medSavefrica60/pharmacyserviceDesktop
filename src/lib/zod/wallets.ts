@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const WalletStatusSchema = z.object({
-  status: z.enum(["ACTIVE", "INACTIVE", "SUSPENDED"]),
+  status: z.enum(["ACTIVE", "SUSPENDED"]),
   statusReason: z.string().optional(),
 });
 

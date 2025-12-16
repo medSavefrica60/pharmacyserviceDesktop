@@ -56,6 +56,34 @@ export type ProviderStatus = "ACTIVE" | "PENDING_VERIFICATION" | "SUSPENDED";
 /**
  * Provider Type
  */
+export type SubscribedPackage = {
+  id: string;
+  name: string;
+  minAmount: number;
+  description: string | null;
+  status: string;
+};
+
+export type PaymentBankInfo = {
+  bankName: string;
+  swiftCode: string;
+  accountType: string;
+  accountNumber: string;
+  accountHolderName: string;
+};
+
+export type PaymentMomoInfo = {
+  provider: string;
+  momoNumber: string;
+  accountType: string;
+  accountHolderName: string;
+};
+
+export type PaymentInformation = {
+  bank: PaymentBankInfo | null;
+  momo: PaymentMomoInfo | null;
+};
+
 export type Provider = {
   id: string;
   email: string;
@@ -64,6 +92,7 @@ export type Provider = {
   address: string;
   contactPhone: string;
   status: ProviderStatus;
+  logo?: string | null;
   verificationDocuments: VerificationDocument[];
   emailVerifiedAt: string | null;
   failedLoginAttempts: number;
@@ -72,6 +101,8 @@ export type Provider = {
   lastLoginIp: string | null;
   createdAt: string;
   updatedAt: string;
+  subscribedPackages?: SubscribedPackage[];
+  paymentInformation?: PaymentInformation;
 };
 
 /**
@@ -436,6 +467,28 @@ export type DependentsResponse = BaseSuccessResponse<{
 /**
  * Audit Log Types
  */
+export type AuditLogAdmin = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+};
+
+export type AuditLogMetadata = {
+  page?: number;
+  limit?: number;
+  walletId?: string;
+  userId?: string;
+  newStatus?: string;
+  reason?: string;
+  status?: string;
+  filters?: Record<string, unknown>;
+  resultCount?: number;
+  total?: number;
+  [key: string]: unknown;
+};
+
 export type AuditLog = {
   id: string;
   action: string;
@@ -444,12 +497,13 @@ export type AuditLog = {
   targetResourceId: string | null;
   targetResourceType: string | null;
   description: string;
-  oldValues: any | null;
-  newValues: any | null;
-  metadata: any | null;
+  oldValues: Record<string, unknown> | null;
+  newValues: Record<string, unknown> | null;
+  metadata: AuditLogMetadata | null;
   ipAddress: string;
   userAgent: string;
   createdAt: string;
+  admin: AuditLogAdmin;
 };
 
 export type AuditLogsResponse = BaseSuccessResponse<{
@@ -463,7 +517,7 @@ export type AuditLogsResponse = BaseSuccessResponse<{
 /**
  * Wallet Status Types
  */
-export type WalletStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";
+export type WalletStatus = "ACTIVE" | "SUSPENDED";
 
 /**
  * Wallet Type

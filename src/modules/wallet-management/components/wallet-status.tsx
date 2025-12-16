@@ -7,7 +7,7 @@ import { EditActionButtons } from "@/components/common/misc/edit-action-buttons"
 import FormFieldWrapper from "@/components/common/form/form-field-wrapper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
-import { useUpdateWallet } from "@/hooks/api/use-wallets";
+import { useUpdateWalletStatus } from "@/hooks/api/use-wallets";
 import { Wallet } from "@/types";
 import { logger } from "@/lib/logger";
 import { WalletStatusFormData, WalletStatusSchema } from "@/lib/zod/wallets";
@@ -20,7 +20,7 @@ type WalletStatusProps = {
 export default function WalletStatus({ wallet, isLoading }: WalletStatusProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, startSavingTransition] = useTransition();
-  const updateMutation = useUpdateWallet();
+  const updateMutation = useUpdateWalletStatus();
   const form = useForm<WalletStatusFormData>({
     resolver: zodResolver(WalletStatusSchema),
     defaultValues: {
@@ -93,7 +93,6 @@ export default function WalletStatus({ wallet, isLoading }: WalletStatusProps) {
                 disabled={!isEditing}
                 options={[
                   { label: "Active", value: "ACTIVE" },
-                  { label: "Inactive", value: "INACTIVE" },
                   { label: "Suspended", value: "SUSPENDED" },
                 ]}
                 selectClassName="h-15 w-full"

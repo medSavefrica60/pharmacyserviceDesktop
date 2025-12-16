@@ -21,24 +21,27 @@ export default function Others({ user, isLoading }: OthersProps) {
   const [isSaving, startSavingTransition] = useTransition();
   const upsertMutation = useUpsertUser();
   const form = useForm<Pick<UserFormData, "dateOfBirth" | "ghanaCardNumber">>({
-    // resolver: zodResolver(UserSchema.pick({ dateOfBirth: true, ghanaCardNumber: true })),
     resolver: zodResolver(
-      UserSchema.pick({ dateOfBirth: true, ghanaCardNumber: true }) as any
-    ),
-    defaultValues: {
-      dateOfBirth: "",
-      ghanaCardNumber: "",
-    },
+      UserSchema.pick({ dateOfBirth: true, ghanaCardNumber: true })
+    ) as any,
   });
 
-  const onSubmit = (data: Pick<UserFormData, "dateOfBirth">) => {
-    console.log(data);
+  const onSubmit = (
+    data: Pick<UserFormData, "dateOfBirth" | "ghanaCardNumber">
+  ) => {
+    // Filter out undefined values to only send fields that were actually updated
+    const updateData = Object.fromEntries(
+      Object.entries(data).filter(
+        ([_, value]) => value !== undefined && value !== ""
+      )
+    );
+
     startSavingTransition(async () => {
       toast.loading("Updating others...");
       upsertMutation
         .mutateAsync({
           id: user?.id || null,
-          data,
+          data: updateData,
         })
         .then((response) => {
           toast.dismiss();

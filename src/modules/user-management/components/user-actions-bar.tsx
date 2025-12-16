@@ -1,7 +1,13 @@
 "use client";
 
-import { useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, ChevronUp, PackageIcon, Trash2 } from "lucide-react";
+import { useNavigate, useRouter } from "@tanstack/react-router";
+import {
+  ArrowLeft,
+  ChevronUp,
+  PackageIcon,
+  Trash2,
+  UserPlus,
+} from "lucide-react";
 import { CaretUpIcon } from "@radix-ui/react-icons";
 import {
   CommandBar,
@@ -15,12 +21,11 @@ type UserActionsBarProps = {
 };
 
 export function UserActionsBar({ userId }: UserActionsBarProps) {
+  const router = useRouter();
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate({
-      to: "/users",
-    });
+    router.history.back();
   };
 
   const handleDelete = () => {
@@ -52,6 +57,14 @@ export function UserActionsBar({ userId }: UserActionsBarProps) {
       to: "/users/$userId/edit",
       params: { userId },
       search: { dialog: "claims", userId },
+    });
+  };
+
+  const handleAddDependent = () => {
+    navigate({
+      to: "/users/$userId/edit",
+      params: { userId },
+      search: { dialog: "add-dependent", userId },
     });
   };
 
@@ -95,6 +108,14 @@ export function UserActionsBar({ userId }: UserActionsBarProps) {
           action={handleViewClaims}
           shortcut={{ shortcut: "c" }}
           icon={<CaretUpIcon className="w-4 h-4" />}
+          className="!bg-gray-300 dark:!bg-gray-700 !text-gray-900 dark:!text-gray-50 [&>button]:hover:!bg-gray-400 dark:[&>button]:hover:!bg-gray-600"
+        />
+        <CommandBarSeperator className="!bg-gray-500 dark:!bg-gray-500" />
+        <CommandBarCommand
+          label="Add Dependent"
+          action={handleAddDependent}
+          shortcut={{ shortcut: "a" }}
+          icon={<UserPlus className="w-4 h-4" />}
           className="!bg-gray-300 dark:!bg-gray-700 !text-gray-900 dark:!text-gray-50 [&>button]:hover:!bg-gray-400 dark:[&>button]:hover:!bg-gray-600"
         />
       </CommandBarBar>

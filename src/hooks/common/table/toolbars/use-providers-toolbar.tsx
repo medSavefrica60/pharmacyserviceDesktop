@@ -7,7 +7,7 @@ import { ToolbarConfig, TableMethods } from "./types";
 import { Provider, PaginatedData } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { DEFAULT_PAGE_INDEX, DEFAULT_PAGE_SIZE } from "@/constant";
-import { useSearch } from "@tanstack/react-router";
+import { useSearch, useNavigate } from "@tanstack/react-router";
 
 export interface ProvidersToolbar<TData> extends ExtendDataTableProps<TData> {}
 
@@ -52,11 +52,31 @@ export const useProvidersToolbar = forwardRef<
   ref: React.ForwardedRef<TableMethods>
 ) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const search = useSearch({ from: "/providers" }) as {
     limit?: string;
+    filterStatus?: string;
   };
 
   const limit = search.limit ? parseInt(search.limit) : DEFAULT_PAGE_SIZE;
+
+  // Apply filterStatus from search params
+  useEffect(() => {
+    if (search.filterStatus && table) {
+      table.setColumnFilters([{ id: "status", value: search.filterStatus }]);
+    }
+  }, [search.filterStatus, table]);
+
+  // Custom onTabChange to update search params
+  const handleTabChange = (value: string) => {
+    navigate({
+      to: "/providers",
+      search: {
+        limit: search.limit,
+        filterStatus: value || undefined,
+      },
+    } as any);
+  };
 
   const globalFilter = table.getState().globalFilter;
   const columnFilters = table.getState().columnFilters;
@@ -127,6 +147,11 @@ export const useProvidersToolbar = forwardRef<
   ]);
 
   return (
-    <DynamicToolbar ref={ref} table={table} config={providersToolbarConfig} />
+    <DynamicToolbar
+      ref={ref}
+      table={table}
+      config={providersToolbarConfig}
+      onTabChange={handleTabChange}
+    />
   );
 });

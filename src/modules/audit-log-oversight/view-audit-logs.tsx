@@ -24,7 +24,7 @@ export const ViewAuditLogs = () => {
   });
 
   const auditLogs = auditLogsData?.auditLogs || [];
-  const totalCount = auditLogs.length || 0;
+  const totalCount = auditLogsData?.total || 0;
 
   if (isLoading) {
     return (
@@ -74,4 +74,3 @@ export const ViewAuditLogs = () => {
     </div>
   );
 };
-

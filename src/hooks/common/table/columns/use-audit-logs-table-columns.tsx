@@ -43,7 +43,10 @@ export const useAuditLogsTableColumns = () => {
           const description = row.original.description;
           return (
             <div className="max-w-md">
-              <p className="text-sm text-gray-900 line-clamp-2" title={description}>
+              <p
+                className="text-sm text-gray-900 line-clamp-2"
+                title={description}
+              >
                 {description}
               </p>
             </div>
@@ -51,27 +54,40 @@ export const useAuditLogsTableColumns = () => {
         },
       },
       {
-        accessorKey: "adminId",
+        accessorKey: "admin",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Admin ID" />
+          <DataTableColumnHeader column={column} title="Admin" />
         ),
         cell: ({ row }) => {
-          const adminId = row.original.adminId;
+          const admin = row.original.admin;
+          const adminName = `${admin.firstName} ${admin.lastName}`;
           return (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-700 font-mono">{adminId}</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 w-6 p-0"
-                onClick={() => copyToClipboard(adminId, `admin-${row.original.id}`)}
-              >
-                {copiedId === `admin-${row.original.id}` ? (
-                  <Check className="h-3 w-3 text-green-600" />
-                ) : (
-                  <Copy className="h-3 w-3" />
-                )}
-              </Button>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-900 font-medium">
+                  {adminName}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0"
+                  onClick={() =>
+                    copyToClipboard(admin.id, `admin-id-${row.original.id}`)
+                  }
+                >
+                  {copiedId === `admin-id-${row.original.id}` ? (
+                    <Check className="h-3 w-3 text-green-600" />
+                  ) : (
+                    <Copy className="h-3 w-3" />
+                  )}
+                </Button>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">{admin.email}</span>
+                <Badge variant="outline" className="text-xs">
+                  {admin.role}
+                </Badge>
+              </div>
             </div>
           );
         },
@@ -85,12 +101,16 @@ export const useAuditLogsTableColumns = () => {
           const ipAddress = row.original.ipAddress;
           return (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-700 font-mono">{ipAddress}</span>
+              <span className="text-sm text-gray-700 font-mono">
+                {ipAddress}
+              </span>
               <Button
                 variant="ghost"
                 size="sm"
                 className="h-6 w-6 p-0"
-                onClick={() => copyToClipboard(ipAddress, `ip-${row.original.id}`)}
+                onClick={() =>
+                  copyToClipboard(ipAddress, `ip-${row.original.id}`)
+                }
               >
                 {copiedId === `ip-${row.original.id}` ? (
                   <Check className="h-3 w-3 text-green-600" />
@@ -140,9 +160,7 @@ export const useAuditLogsTableColumns = () => {
         cell: ({ row }) => {
           const date = row.original.createdAt;
           return (
-            <div className="text-sm text-gray-700">
-              {formatDateTime(date)}
-            </div>
+            <div className="text-sm text-gray-700">{formatDateTime(date)}</div>
           );
         },
       },
@@ -162,7 +180,9 @@ export const useAuditLogsTableColumns = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
-                  onClick={() => copyToClipboard(auditLog.id, `id-${auditLog.id}`)}
+                  onClick={() =>
+                    copyToClipboard(auditLog.id, `id-${auditLog.id}`)
+                  }
                 >
                   {copiedId === `id-${auditLog.id}` ? (
                     <>
@@ -209,4 +229,3 @@ export const useAuditLogsTableColumns = () => {
 
   return columns;
 };
-

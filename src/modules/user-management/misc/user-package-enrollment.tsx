@@ -6,76 +6,23 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useGetUserPackageEnrollments } from "@/hooks/api/use-users";
-import { cn } from "@/lib/utils";
 import {
-  PackageIcon,
-  CalendarIcon,
-  ClockIcon,
-  CheckCircleIcon,
-  AlertCircleIcon,
-  XCircleIcon,
-} from "lucide-react";
+  cn,
+  formatAmountForIndicator,
+  formatDate,
+  formatTime,
+  getStatusIcon,
+  getStatusColor,
+} from "@/lib/utils";
+import { PackageIcon, CalendarIcon, ClockIcon } from "lucide-react";
 import { AmountIndicator } from "@/components/common/misc/kpi-indicators";
 import { Scroller } from "@/components/ui/scroller";
-import { useSearch, useNavigate } from "@tanstack/react-router";
+import { useSearch, useRouter } from "@tanstack/react-router";
 import { BaseSuccessResponse } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MedEmptyBoxIcon } from "@/components/common/icons";
 import { Badge } from "@/components/ui/badge";
 import type { UserPackageEnrollment as UserPackageEnrollmentType } from "@/types";
-
-// Utility functions
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("en-GH", {
-    style: "currency",
-    currency: "GHS",
-  }).format(amount);
-};
-
-const formatAmountForIndicator = (amount: number) => {
-  return amount.toFixed(2);
-};
-
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-};
-
-const formatTime = (dateString: string) => {
-  return new Date(dateString).toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
-
-const getStatusIcon = (status: string) => {
-  switch (status) {
-    case "ACTIVE":
-      return <CheckCircleIcon className="h-4 w-4 text-green-600" />;
-    case "INACTIVE":
-      return <XCircleIcon className="h-4 w-4 text-gray-600" />;
-    case "SUSPENDED":
-      return <AlertCircleIcon className="h-4 w-4 text-orange-600" />;
-    default:
-      return <AlertCircleIcon className="h-4 w-4 text-gray-600" />;
-  }
-};
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "ACTIVE":
-      return "bg-green-50 text-green-600 border-green-200";
-    case "INACTIVE":
-      return "bg-gray-50 text-gray-600 border-gray-200";
-    case "SUSPENDED":
-      return "bg-orange-50 text-orange-600 border-orange-200";
-    default:
-      return "bg-gray-50 text-gray-600 border-gray-200";
-  }
-};
 
 // Enrollment Metrics Component
 interface EnrollmentMetricsProps {
@@ -215,7 +162,7 @@ export const EnrollmentMetricsSkeleton = () => {
       {Array.from({ length: 4 }).map((_, index) => (
         <div key={index} className="border border-medsave-black-50 rounded-lg">
           <section className="p-3 flex flex-col space-y-2">
-            <Skeleton className="h-[40px] w-24" />
+            <Skeleton className="h-10 w-24" />
             <Skeleton className="h-4 w-full" />
           </section>
         </div>
@@ -286,7 +233,7 @@ export const EmptyState = () => {
 
 // Main UserPackageEnrollment Component
 export const UserPackageEnrollment = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const search = useSearch({ from: "/users" }) as {
     dialog?: string;
     userId?: string;
@@ -299,10 +246,7 @@ export const UserPackageEnrollment = () => {
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      navigate({
-        to: "/users",
-        search: { dialog: undefined, userId: undefined },
-      });
+      router.history.back();
     }
   };
 
@@ -318,7 +262,7 @@ export const UserPackageEnrollment = () => {
     <Sheet open={isOpen as boolean} onOpenChange={handleOpenChange}>
       <SheetContent
         side="bottom"
-        className="!max-w-[120rem] w-full max-h-[85vh] flex flex-col p-2"
+        className="max-w-480! w-full max-h-[85vh] flex flex-col p-2"
       >
         <SheetHeader className="px-6 pb-4">
           <SheetTitle className="text-xl">Package Enrollments</SheetTitle>
@@ -343,14 +287,4 @@ export const UserPackageEnrollment = () => {
   );
 };
 
-export {
-  formatCurrency,
-  formatAmountForIndicator,
-  formatDate,
-  formatTime,
-  getStatusIcon,
-  getStatusColor,
-  EnrollmentMetrics,
-  EnrollmentsList,
-  EnrollmentItem,
-};
+export { EnrollmentMetrics, EnrollmentsList, EnrollmentItem };

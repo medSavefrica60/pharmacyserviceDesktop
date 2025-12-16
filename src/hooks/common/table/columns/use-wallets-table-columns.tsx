@@ -89,7 +89,7 @@ export const useWalletsTableColumns = () => {
                 "px-4 py-0.5 min-w-20 text-sm rounded-sm",
                 isActive
                   ? "bg-green-50 text-green-600 border-green-200 hover:bg-green-50"
-                  : status === "INACTIVE"
+                  : status === "SUSPENDED"
                     ? "bg-gray-50 text-gray-500 border-gray-200"
                     : "bg-red-50 text-red-600 border-red-200"
               )}

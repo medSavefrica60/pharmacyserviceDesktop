@@ -118,7 +118,7 @@ export function CreateProviderForm() {
                 textareaClassName="h-15 w-full"
                 placeholder="e.g. 123 Test Street, Test City, Test Region, Ghana"
                 disabled={isSaving || upsertMutation.isPending}
-                rows={3}
+                rows={6}
               />
             </FormFieldWrapper>
             <FormFieldWrapper
@@ -128,6 +128,7 @@ export function CreateProviderForm() {
               <FormSelect
                 name="status"
                 placeholder="Select status"
+                selectClassName="h-[52px]! w-full"
                 disabled={isSaving || upsertMutation.isPending}
                 options={[
                   { label: "Active", value: "ACTIVE" },

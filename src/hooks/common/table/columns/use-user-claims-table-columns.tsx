@@ -30,6 +30,7 @@ export const useUserClaimsTableColumns = () => {
       {
         id: "index",
         header: "",
+        enableGlobalFilter: false,
         cell: ({ row }) => (
           <div className="text-sm text-medsave-black-300 font-medium">
             {row.index + 1}
@@ -38,6 +39,7 @@ export const useUserClaimsTableColumns = () => {
       },
       {
         accessorKey: "reference",
+        enableGlobalFilter: true,
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Reference" />
         ),
@@ -69,6 +71,8 @@ export const useUserClaimsTableColumns = () => {
       },
       {
         accessorKey: "provider",
+        accessorFn: (row) => row.provider?.organizationName || "",
+        enableGlobalFilter: true,
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Provider" />
         ),
@@ -110,6 +114,8 @@ export const useUserClaimsTableColumns = () => {
       },
       {
         accessorKey: "package",
+        accessorFn: (row) => row.package?.name || "",
+        enableGlobalFilter: true,
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Package" />
         ),
@@ -187,6 +193,7 @@ export const useUserClaimsTableColumns = () => {
       },
       {
         accessorKey: "amount",
+        enableGlobalFilter: true,
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Amount" />
         ),
@@ -250,6 +257,7 @@ export const useUserClaimsTableColumns = () => {
       },
       {
         accessorKey: "status",
+        enableGlobalFilter: true,
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Status" />
         ),
@@ -283,6 +291,7 @@ export const useUserClaimsTableColumns = () => {
       {
         id: "actions",
         enableSorting: false,
+        enableGlobalFilter: false,
         header: "",
         cell: ({ row }) => {
           return (
@@ -331,4 +340,3 @@ export const useUserClaimsTableColumns = () => {
 
   return columns;
 };
-

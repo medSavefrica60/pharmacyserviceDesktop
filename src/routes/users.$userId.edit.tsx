@@ -9,6 +9,7 @@ import ShowMiniStatement from "@/modules/user-management/misc/show-mini-statemen
 import { UserPackageEnrollment } from "@/modules/user-management/misc/user-package-enrollment";
 import { ViewUserClaims } from "@/modules/user-management/misc/user-claims";
 import { UserDependents } from "@/modules/user-management/misc/user-dependents";
+import { AddDependentDialog } from "@/modules/user-management/misc/add-dependent-dialog";
 
 export const Route = createFileRoute("/users/$userId/edit")({
   component: RouteComponent,
@@ -42,6 +43,7 @@ function RouteComponent() {
       <ShowMiniStatement />
       <UserPackageEnrollment />
       <ViewUserClaims />
+      <AddDependentDialog />
     </>
   );
 }

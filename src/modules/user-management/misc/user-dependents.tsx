@@ -6,6 +6,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MedEmptyBoxIcon } from "@/components/common/icons";
 import { useGetDependents } from "@/hooks/api/use-dependents";
 import { Dependent } from "@/types";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "@tanstack/react-router";
+import { UserPlus } from "lucide-react";
 
 type UserDependentsProps = {
   userId: string;
@@ -26,26 +29,40 @@ const formatDate = (dateString: string): string => {
   }
 };
 
-export const UserDependents = ({ userId, isLoading: parentLoading }: UserDependentsProps) => {
-  const { data: dependentsData, isLoading: dependentsLoading } = useGetDependents({
-    userId,
-  });
+export const UserDependents = ({
+  userId,
+  isLoading: parentLoading,
+}: UserDependentsProps) => {
+  const navigate = useNavigate();
+  const { data: dependentsData, isLoading: dependentsLoading } =
+    useGetDependents({
+      userId,
+    });
 
   const isLoading = parentLoading || dependentsLoading;
   const dependents = dependentsData?.dependents || [];
+  const dependentCount = dependents.length;
+
+  const handleAddDependent = () => {
+    navigate({
+      to: "/users/$userId/edit",
+      params: { userId },
+      search: { dialog: "add-dependent", userId },
+    });
+  };
 
   return (
     <div>
       <header className="flex items-center flex-1 justify-between px-4 py-3 border border-b-0">
         <h1 className="font-bold text-xl text-medsave-black-500">
-          Dependents
+          Dependents {!isLoading && `(${dependentCount})`}
         </h1>
       </header>
       <section className="p-4 border">
-        <Scroller className="h-[calc(100vh-600px)]">
-          <div className="flex flex-col gap-2.5 pr-4">
-            {isLoading ? (
-              Array.from({ length: 4 }).map((_, idx) => (
+        {isLoading ? (
+          <Scroller className="h-[calc(100vh-800px)]">
+            <div className="flex flex-col gap-2.5 pr-4">
+              {Array.from({ length: 4 }).map((_, idx) => (
                 <div
                   key={`skeleton-${idx}`}
                   className="rounded-md border bg-accent"
@@ -62,13 +79,14 @@ export const UserDependents = ({ userId, isLoading: parentLoading }: UserDepende
                     </div>
                   </div>
                 </div>
-              ))
-            ) : dependents.length > 0 ? (
-              dependents.map((dependent: Dependent) => (
-                <div
-                  key={dependent.id}
-                  className="rounded-md border bg-accent"
-                >
+              ))}
+            </div>
+          </Scroller>
+        ) : dependents.length > 0 ? (
+          <Scroller className="h-[calc(100vh-800px)]">
+            <div className="flex flex-col gap-2.5 pr-4">
+              {dependents.map((dependent: Dependent) => (
+                <div key={dependent.id} className="rounded-md border bg-accent">
                   <div className="p-2 flex items-center gap-3">
                     <Avatar className="h-12 w-12 bg-medsave-black-50">
                       <AvatarFallback className="text-sm font-medium text-medsave-black-300">
@@ -122,19 +140,26 @@ export const UserDependents = ({ userId, isLoading: parentLoading }: UserDepende
                     </div>
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="flex flex-col items-center justify-center py-12">
-                <MedEmptyBoxIcon />
-                <p className="text-sm text-muted-foreground mt-4">
-                  No dependents found for this user
-                </p>
-              </div>
-            )}
+              ))}
+            </div>
+          </Scroller>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-12">
+            <MedEmptyBoxIcon />
+            <p className="text-sm text-muted-foreground mt-4">
+              No dependents found for this user
+            </p>
+            <Button
+              onClick={handleAddDependent}
+              className="mt-4"
+              variant="outline"
+            >
+              <UserPlus className="h-4 w-4 mr-2" />
+              Add Dependent
+            </Button>
           </div>
-        </Scroller>
+        )}
       </section>
     </div>
   );
 };
-

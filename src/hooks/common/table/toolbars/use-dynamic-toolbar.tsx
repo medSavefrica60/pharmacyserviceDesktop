@@ -32,6 +32,24 @@ export const DynamicToolbar = forwardRef<
   const [search, setSearch] = useState<string>("");
   const debouncedSearch = useDebounce(search, 300); // 300ms delay
 
+  // Sync activeTab with column filters when they're set externally
+  useEffect(() => {
+    if (!table || !config.tabs) return;
+    const columnFilters = table.getState().columnFilters;
+    const statusFilter = columnFilters.find((filter) => filter.id === "status");
+    if (statusFilter && statusFilter.value) {
+      const matchingTab = config.tabs.find(
+        (tab) => tab.value === statusFilter.value
+      );
+      if (matchingTab && matchingTab.value !== activeTab) {
+        setActiveTab(matchingTab.value);
+      }
+    } else if (!statusFilter && activeTab !== config.tabs[0]?.value) {
+      setActiveTab(config.tabs[0]?.value || "");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [table.getState().columnFilters]);
+
   const handleRangeChange = ({ range }: { range: DateRange }) => {
     const startDate = range.from;
     const endDate = range.to;

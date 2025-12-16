@@ -1,4 +1,4 @@
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useNavigate, useRouter, useSearch } from "@tanstack/react-router";
 import {
   Sheet,
   SheetContent,
@@ -14,7 +14,7 @@ import { useGetUser, useGetUserClaims } from "@/hooks/api/use-users";
 import { UserClaimsMetrics } from "./user-claims-metrics";
 
 export const ViewUserClaims = () => {
-  const navigate = useNavigate();
+  const navigate = useRouter();
   const search = useSearch({ from: "/users" }) as {
     dialog?: string;
     userId?: string;
@@ -27,10 +27,8 @@ export const ViewUserClaims = () => {
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      navigate({
-        to: "/users",
-        search: { dialog: undefined, userId: undefined },
-      });
+      // go back to the previous page
+      navigate.history.back();
     }
   };
 
@@ -42,7 +40,7 @@ export const ViewUserClaims = () => {
     <Sheet open={isOpen as boolean} onOpenChange={handleOpenChange}>
       <SheetContent
         side="bottom"
-        className="!max-w-[120rem] w-full max-h-[85vh] flex flex-col p-2"
+        className="max-w-480! w-full h-full flex flex-col p-2"
       >
         <SheetHeader className="px-6 pb-4">
           <SheetTitle className="text-xl">User Claims</SheetTitle>
@@ -53,7 +51,7 @@ export const ViewUserClaims = () => {
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex flex-col flex-1 overflow-hidden px-6 pb-6 gap-4">
+        <div className="flex flex-col flex-1 overflow-hidden px-6 pb-6 gap-4 transition-all duration-300">
           {isLoading ? (
             <>
               <UserClaimsMetrics isLoading={true} />

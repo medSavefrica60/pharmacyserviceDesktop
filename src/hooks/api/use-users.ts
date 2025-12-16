@@ -80,8 +80,9 @@ export const useUpsertUser = () => {
         queryClient.invalidateQueries({ queryKey: ["users"] });
       }
     },
-    onError: (error) => {
+    onError: (error, { data }) => {
       logger.error("Failed to upsert user", error);
+      logger.error("Failed to upsert user data", data);
     },
   });
 };

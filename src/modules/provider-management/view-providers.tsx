@@ -13,6 +13,7 @@ export const ViewProviders = () => {
   const navigate = useNavigate();
   const search = useSearch({ from: "/providers" }) as {
     limit?: string;
+    filterStatus?: string;
   };
 
   const [pageSize, setPageSize] = useState(

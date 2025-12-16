@@ -3,7 +3,7 @@ import FormFieldWrapper from "@/components/common/form/form-field-wrapper";
 import { CreateActionButtons } from "@/components/common/misc/creat-actions";
 import { Form } from "@/components/ui/form";
 import { useUpsertUser } from "@/hooks/api/use-users";
-import { UserFormData, UserSchema } from "@/lib/zod/users";
+import { CreateUserFormData, CreateUserSchema } from "@/lib/zod/users";
 import { BaseFailedResponse } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
@@ -14,8 +14,8 @@ export default function MedsaveUserForm() {
   const [isSaving, startSavingTransition] = useTransition();
   const upsertMutation = useUpsertUser();
 
-  const form = useForm<UserFormData>({
-    resolver: zodResolver(UserSchema),
+  const form = useForm<CreateUserFormData>({
+    resolver: zodResolver(CreateUserSchema),
     defaultValues: {
       phoneNumber: "+233244111222",
       firstName: "John",
@@ -26,7 +26,7 @@ export default function MedsaveUserForm() {
     },
   });
 
-  const onSubmit = (data: UserFormData) => {
+  const onSubmit = (data: CreateUserFormData) => {
     startSavingTransition(() => {
       toast.loading("Creating user...");
       upsertMutation

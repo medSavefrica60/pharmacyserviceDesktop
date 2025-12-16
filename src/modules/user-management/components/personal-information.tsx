@@ -32,13 +32,7 @@ export default function PersonalInformation({
         email: true,
         phoneNumber: true,
       })
-    ),
-    defaultValues: {
-      firstName: user?.firstName || "",
-      lastName: user?.lastName || "",
-      email: user?.email || "",
-      phoneNumber: user?.phoneNumber || "",
-    },
+    ) as any,
   });
   const [isSaving, startSavingTransition] = useTransition();
   const upsertMutation = useUpsertUser();
@@ -46,7 +40,13 @@ export default function PersonalInformation({
   const onSubmit = (
     data: Pick<UserFormData, "firstName" | "lastName" | "email" | "phoneNumber">
   ) => {
-    console.log(data);
+    // Filter out undefined values to only send fields that were actually updated
+    const updateData = Object.fromEntries(
+      Object.entries(data).filter(
+        ([_, value]) => value !== undefined && value !== ""
+      )
+    );
+
     startSavingTransition(async () => {
       toast.loading(
         `Updating Personal Information for ${user?.firstName} ${user?.lastName}`
@@ -54,7 +54,7 @@ export default function PersonalInformation({
       upsertMutation
         .mutateAsync({
           id: user?.id || null,
-          data,
+          data: updateData,
         })
         .then((response) => {
           toast.dismiss();
