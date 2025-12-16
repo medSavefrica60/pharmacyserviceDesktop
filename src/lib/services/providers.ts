@@ -183,7 +183,7 @@ export const AppServices = {
       data: Record<string, unknown>
     ): ServiceDefinition => ({
       method: "PATCH",
-      url: `/dependents/${id}`,
+      url: `/admin/dependents/${id}`,
       data,
     }),
     delete_dependent: (id: string): ServiceDefinition => ({

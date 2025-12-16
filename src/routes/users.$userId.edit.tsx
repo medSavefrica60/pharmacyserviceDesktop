@@ -13,6 +13,13 @@ import { AddDependentDialog } from "@/modules/user-management/misc/add-dependent
 
 export const Route = createFileRoute("/users/$userId/edit")({
   component: RouteComponent,
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      dialog: (search.dialog as string | undefined) || undefined,
+      userId: (search.userId as string | undefined) || undefined,
+      dependentId: (search.dependentId as string | undefined) || undefined,
+    };
+  },
 });
 
 function RouteComponent() {

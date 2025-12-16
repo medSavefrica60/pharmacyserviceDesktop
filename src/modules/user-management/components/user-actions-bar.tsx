@@ -32,7 +32,7 @@ export function UserActionsBar({ userId }: UserActionsBarProps) {
     navigate({
       to: "/users/$userId/edit",
       params: { userId },
-      search: { userId, dialog: "delete" },
+      search: { userId, dialog: "delete", dependentId: undefined },
     });
   };
 
@@ -40,7 +40,7 @@ export function UserActionsBar({ userId }: UserActionsBarProps) {
     navigate({
       to: "/users/$userId/edit",
       params: { userId },
-      search: { dialog: "mini-statement", userId },
+      search: { dialog: "mini-statement", userId, dependentId: undefined },
     });
   };
 
@@ -48,7 +48,7 @@ export function UserActionsBar({ userId }: UserActionsBarProps) {
     navigate({
       to: "/users/$userId/edit",
       params: { userId },
-      search: { dialog: "packages", userId },
+      search: { dialog: "packages", userId, dependentId: undefined },
     });
   };
 
@@ -56,7 +56,7 @@ export function UserActionsBar({ userId }: UserActionsBarProps) {
     navigate({
       to: "/users/$userId/edit",
       params: { userId },
-      search: { dialog: "claims", userId },
+      search: { dialog: "claims", userId, dependentId: undefined },
     });
   };
 
@@ -64,7 +64,7 @@ export function UserActionsBar({ userId }: UserActionsBarProps) {
     navigate({
       to: "/users/$userId/edit",
       params: { userId },
-      search: { dialog: "add-dependent", userId },
+      search: { dialog: "add-dependent", userId, dependentId: undefined },
     });
   };
 

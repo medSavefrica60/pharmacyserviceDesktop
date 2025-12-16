@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +17,11 @@ import { Form } from "@/components/ui/form";
 import { FormInput } from "@/components/common/form/form-input";
 import { FormSelect } from "@/components/common/form/form-select";
 import FormFieldWrapper from "@/components/common/form/form-field-wrapper";
-import { useCreateDependent } from "@/hooks/api/use-dependents";
+import {
+  useCreateDependent,
+  useUpdateDependent,
+  useGetDependent,
+} from "@/hooks/api/use-dependents";
 import { useSearch, useNavigate } from "@tanstack/react-router";
 import toast from "react-hot-toast";
 import { logger } from "@/lib/logger";
@@ -49,10 +54,18 @@ export const AddDependentDialog = () => {
   const search = useSearch({ from: "/users/$userId/edit" }) as {
     dialog?: string;
     userId?: string;
+    dependentId?: string;
   };
 
-  const isOpen = search.dialog === "add-dependent" && !!search.userId;
+  const isEdit = search.dialog === "edit-dependent" && !!search.dependentId;
+  const isCreate = search.dialog === "add-dependent" && !!search.userId;
+  const isOpen = isEdit || isCreate;
   const userId = search.userId;
+  const dependentId = search.dependentId;
+
+  const { data: dependent, isLoading: isLoadingDependent } = useGetDependent(
+    isEdit ? dependentId : undefined
+  );
 
   const form = useForm<AddDependentFormData>({
     resolver: zodResolver(addDependentSchema),
@@ -65,52 +78,119 @@ export const AddDependentDialog = () => {
   });
 
   const createMutation = useCreateDependent();
+  const updateMutation = useUpdateDependent();
+
+  // Load dependent data when editing
+  useEffect(() => {
+    if (dependent && isEdit) {
+      const nameParts = dependent.dependentName.split(" ");
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || "";
+      form.reset({
+        firstName,
+        lastName,
+        relationship: dependent.relationship as
+          | "spouse"
+          | "child"
+          | "parent"
+          | "sibling"
+          | "other",
+        phoneNumber: dependent.dependentPhone,
+      });
+    } else if (isCreate) {
+      form.reset({
+        firstName: "",
+        lastName: "",
+        relationship: "child",
+        phoneNumber: "",
+      });
+    }
+  }, [dependent, isEdit, isCreate, form]);
 
   const handleClose = () => {
     form.reset();
     navigate({
       to: "/users/$userId/edit",
       params: { userId: userId || "" },
-      search: { dialog: undefined, userId: userId || "" },
+      search: {
+        dialog: undefined,
+        userId: userId || "",
+        dependentId: undefined,
+      },
     });
   };
 
   const onSubmit = (data: AddDependentFormData) => {
-    if (!userId) {
-      toast.error("User ID is required");
-      return;
-    }
+    if (isEdit) {
+      if (!dependentId) {
+        toast.error("Dependent ID is required");
+        return;
+      }
 
-    toast.loading("Adding dependent...");
-    createMutation
-      .mutateAsync({
-        userId,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        relationship: data.relationship,
-        phoneNumber: data.phoneNumber,
-      })
-      .then(() => {
-        toast.dismiss();
-        toast.success("Dependent added successfully");
-        logger.info("Dependent added successfully");
-        handleClose();
-      })
-      .catch((error) => {
-        toast.dismiss();
-        logger.error("Failed to add dependent", error);
-        toast.error("Failed to add dependent");
-      });
+      toast.loading("Updating dependent...");
+      updateMutation
+        .mutateAsync({
+          id: dependentId,
+          data: {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            relationship: data.relationship,
+            phoneNumber: data.phoneNumber,
+          },
+        })
+        .then(() => {
+          toast.dismiss();
+          toast.success("Dependent updated successfully");
+          logger.info("Dependent updated successfully");
+          handleClose();
+        })
+        .catch((error) => {
+          toast.dismiss();
+          logger.error("Failed to update dependent", error);
+          toast.error("Failed to update dependent");
+        });
+    } else {
+      if (!userId) {
+        toast.error("User ID is required");
+        return;
+      }
+
+      toast.loading("Adding dependent...");
+      createMutation
+        .mutateAsync({
+          userId,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          relationship: data.relationship,
+          phoneNumber: data.phoneNumber,
+        })
+        .then(() => {
+          toast.dismiss();
+          toast.success("Dependent added successfully");
+          logger.info("Dependent added successfully");
+          handleClose();
+        })
+        .catch((error) => {
+          toast.dismiss();
+          logger.error("Failed to add dependent", error);
+          toast.error("Failed to add dependent");
+        });
+    }
   };
+
+  const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[800px]">
         <DialogHeader>
-          <DialogTitle>Add Dependent</DialogTitle>
+          <DialogTitle>
+            {isEdit ? "Edit Dependent" : "Add Dependent"}
+          </DialogTitle>
           <DialogDescription>
-            Add a new dependent for this user. Fill in the required information
-            below.
+            {isEdit
+              ? "Update the dependent information below."
+              : "Add a new dependent for this user. Fill in the required information below."}
           </DialogDescription>
         </DialogHeader>
 
@@ -120,13 +200,14 @@ export const AddDependentDialog = () => {
               <FormFieldWrapper
                 label="First Name"
                 description="The first name of the dependent"
+                isLoading={isLoadingDependent}
               >
                 <FormInput
                   name="firstName"
                   inputClassName="h-[52px]! w-full"
                   type="text"
                   placeholder="e.g. John"
-                  disabled={createMutation.isPending}
+                  disabled={isLoadingDependent}
                 />
               </FormFieldWrapper>
 
@@ -139,7 +220,7 @@ export const AddDependentDialog = () => {
                   inputClassName="h-[52px]! w-full"
                   type="text"
                   placeholder="e.g. Doe"
-                  disabled={createMutation.isPending}
+                  disabled={isLoadingDependent}
                 />
               </FormFieldWrapper>
 
@@ -157,7 +238,7 @@ export const AddDependentDialog = () => {
                     { label: "Sibling", value: "sibling" },
                     { label: "Other", value: "other" },
                   ]}
-                  disabled={createMutation.isPending}
+                  disabled={isLoadingDependent}
                 />
               </FormFieldWrapper>
 
@@ -170,7 +251,7 @@ export const AddDependentDialog = () => {
                   inputClassName="h-[52px]! w-full"
                   type="tel"
                   placeholder="e.g. +233543482182"
-                  disabled={createMutation.isPending}
+                  disabled={isLoadingDependent}
                 />
               </FormFieldWrapper>
             </div>
@@ -181,16 +262,16 @@ export const AddDependentDialog = () => {
                 size="lg"
                 variant="outline"
                 onClick={handleClose}
-                disabled={createMutation.isPending}
+                disabled={isLoadingDependent}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 size="lg"
-                disabled={createMutation.isPending}
+                disabled={isPending || isLoadingDependent}
               >
-                {createMutation.isPending ? "Saving..." : "Save"}
+                {isPending ? "Saving..." : isEdit ? "Update" : "Save"}
               </Button>
             </DialogFooter>
           </form>
